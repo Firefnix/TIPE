@@ -1,0 +1,65 @@
+\documentclass[french]{article}
+
+\usepackage[french]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\newcommand{\somme}{\displaystyle\sum}
+
+\title{Algorithme de Shor : aménagements}
+\date{}
+\author{}
+
+\begin{document}
+
+\maketitle
+
+On cherche à implémenter l'algorithme de Shor sur un ordinateur classique, c'est-à-dire non quantique. Pour cela on se base sur l'article Wikipédia correspondante. Ce document à pour but d'expliquer quelques points particuliers de l'algorithme, ainsi que de justifier quelques aménagements d'implémentation.
+
+Étant donné qu'on cherche à réaliser un algorithme correct, chaque écart à l'article est précisément justifié.
+
+\section{Organisation de l'aglorithme}
+
+\subsection{Dérécursification}
+
+L'article propose un algorithme en « go-to », c'est-à-dire en sautant d'une étape à une autre. L'implémentation la plus naturelle de ce type d'algorithme est récursive, néanmoins dans notre cas cela pose quelques problèmes,  puisqu'on aurait une complexité spatiale non constante (inutilement), ce qui pourrait causer un dépassement de mémoire. On a donc préféré une boucle infinie, qui nous permet d'avoir un usage de mémoire constant.
+
+\subsection{Étapes 5 et 6 : négation}
+
+Les étapes 5 et 6 de l'article indiquent :
+$$(r \text{ est impair}) \text{ ou } (a^{r/2} \equiv -1 \pmod N) \Rightarrow (\text{retour à l'étape 1})$$
+Et dans le cas contraire, on accède à l'étape 7. On décide donc pour faciliter notre implémentation en boucle infinie, d'utiliser la contraposée. On sait que :
+
+$$\text{non(retour à l'étape 1)} \iff (\text{passage à l'étape 7})$$
+
+On en déduit :
+\begin{flalign*}
+(\text{passage à l'étape 7}) & \iff \text{non}\big( (r \text{ est impair}) \text{ ou } (a^{r/2} \equiv -1 \pmod N) \big ) \\
+& \iff (r \text{ pair}) \text{ et } (a^{r/2} \not\equiv -1 \pmod N)
+\end{flalign*}
+
+Intéressons-nous à la deuxième partie. Supposons $a^{r/2} \equiv -1 \pmod N$, alors $a^{r/2} \equiv N-1 \pmod N$, donc $a^{r/2}$ et $N-1$ ont le même reste dans la division euclidienne par $N$. Or le reste de $N-1$ dans la division euclidienne par $N$ est clairement $N-1$, on en déduit :
+$$a^{r/2} \equiv -1 \pmod N \iff (a^{r/2} \mod N) = N-1 $$
+
+\section{Recherche de période}
+
+On cherche à trouver \textit{le plus petit} $r \in \mathbb{N}$ tel que, avec $f : x \mapsto a^{x} \mod N$ :
+\begin{flalign*}
+    \forall x \in \mathbb{N},\ & f(x + r) = f(x) \\
+    \iff & a^{x+r} \equiv a^x \pmod N \\
+    \iff & a^x \cdot a^r \equiv a^x \pmod N
+\end{flalign*}
+Fixons $x \in \mathbb{N}$. Puisque $a \wedge N = 1$, $a$ est inversible modulo $N$, notons $\alpha$ cet inverse. On a $a \cdot \alpha \equiv 1 \pmod N$, donc $\forall x \in \mathbb{N}, a^x \cdot \alpha^x \equiv 1^x \equiv 1 \pmod N$. $a^x$ est donc inversible d'inverse $\alpha^x$ modulo $N$, et on en déduit :
+$$\big( \forall x \in \mathbb{N}, f(x + r) = f(x) \big) \iff a^r \equiv 1 \pmod N$$
+
+D'après le théorème d'Euler, en notant $\varphi$ l'indicatrice d'Euler, on a : $a^{\varphi(N)} \equiv 1 \pmod N$, ce qui permet de prouver l'existence de $r$.
+
+\subsection{Algorithme classique}
+
+On a clairement $0 < r \le \varphi(N) \le N - 1$. La recherche de $r$ avec un algorithme classique itérant tous les r entre 1 et $ N - 1$ est donc un $O(N)$, ce qui réduit l'intérêt d'utiliser l'algorithme de Shor.
+
+\subsection{Algorithme quantique}
+
+Le but est donc d'obtenir la valeur de $r$ en $O(\log N)$.
+
+\end{document}
