@@ -1,0 +1,50 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{\textbf{\underline{Du Formalisme de Dirac}}}
+\usepackage{geometry}
+\usepackage{amssymb}
+\usepackage{braket}
+\geometry{hmargin=2.5cm,vmargin=1.5cm}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Strucutre de $\mathfrak{F}$ :}
+
+On désigne par $\mathfrak{F}$ l'ensemble des fonctions d'onde de carré sommable. Une fonction est dite de carré sommable si $\displaystyle \int_{-\infty}^{+\infty}f(t)dt$ existe et est fini.
+$\mathfrak{F}$ est un espace vectoriel.
+$\newline \newline$
+Soient $\varphi ,\psi \in \mathfrak{F}$, on définit le produit scalaire de la façon suivante : $(\varphi, \psi) = \displaystyle \int d^3r \varphi^*\psi$ Le produit scalaire sur $\mathfrak{F}$ est antilinéaire par rapport à le deuxième variable, définie positive.
+
+\section{Opérateurs Linéaires :}
+
+Un opérateur linéaire est un objet qui, à toute fonction d'onde $\psi \in \mathfrak{F}$, associe une autre fonction $\psi' \in \mathfrak{F}$. Soit $A$ un opérateur linéaire, on note $A\psi(r) = \psi'(r)$.
+Un opérateur linéaire satisfait les propriétés de linéarités.
+$\newline$
+\underline{Exemples :} l'opérateur parité $\Pi\psi(x,y,z) = \psi(-x,-y,-z)$, l'operateur dérivée $D_x\psi(x,y,z) = \displaystyle \frac{\partial\psi}{\partial x}$
+$\\$ $\\$
+On définit le produit d'opérateurs de la façon suivante : $(AB)\psi(r) = A[B\psi(r)]$
+
+\section{Base Orthonormée :}
+
+Soit $\{u_i(r) \in \mathfrak{F}\}$ une base de $\mathfrak{F}$. Cette base est dite orthonormée si $(u_i,u_j) = \delta_{i,j}$ ou $\delta$ désigne le symbole de Kroenecker.
+
+\section{Espace des états $\mathcal{E}$ :}
+
+On définit $\mathcal{E}$ l'espce des états d'un système en associant un vecteur $\ket{\psi} \in \mathcal{E}$ à toute fonction d'onde $\psi(r)$.
+\underline{Attention :} $\ket{\psi}$ ne dépend plus de $r$.
+
+\section{Espace dual $\mathcal{E^*}$ :}
+
+Une fonctionnelle linéaire est une opération linéaire $\chi$ linéaire qui à tout vecteur $\ket{\psi} \in \mathcal{E}$ associe un nombre complexe. L'ensemble des fonctionnelles linéaires est un espace vectoriel, appelé espace dual et noté $\mathcal{E^*}$. Les éléments de $\mathcal{E^*}$ sont notés $\bra{\chi}$. Soit $\ket{\psi} \in \mathcal{E}$ et $\bra{\varphi} \in \mathcal{E^*}$, $\varphi(\ket{\psi}) = \braket{\varphi|\psi}$. Dans $\mathcal{E}$, le produit scalaire est une forme antilinéaire définie positive.
+
+\section{Notation $\ket{\psi}\bra{\varphi} :$}
+
+Soient $\ket{\psi} \in \mathcal{E}$ et $\bra{\varphi} \in \mathcal{E^*}$. Considérons de plus $\ket{\chi} \in \mathcal{E}$. Alors $\ket{\psi}\braket{\varphi|\chi} \in \mathcal{E}$. L'objet $\ket{\psi}\bra{\varphi}$ associe donc un vecteur de $\mathcal{E}$ à un autre vecteur de $\mathcal{E}$. Cet objet est donc un opérateur linéaire.
+
+\end{document}
+ 
