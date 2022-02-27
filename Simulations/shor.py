@@ -5,27 +5,12 @@ from time import time
 def main():
     # On prend un entier N dont on souhaite trouver la décomposition.
     # Pour cela on utilise la fonction facteur, qui donne deux diviseurs de N.
-    # N = int(input('Entrez un nombre entier : '))
-    # assert N > 1
+    N = int(input('Entrez un nombre entier : '))
+    assert N > 1
     t0 = time()
-    t_tab = []
-    try:
-        while True:
-            N = random.randint(2, 5000)
-            tN = time()
-            print(f'Computing for {N}')
-            f = facteurs(N)
-            print(f"{N} = {' × '.join([str(i) for i in f])}")
-            delta = time() - tN
-            t_tab.append(delta)
-            print(f'Got {delta:.2f} seconds')
-    except KeyboardInterrupt:
-        tf = time()
-        print('-' * 40)
-        print(f'Total time: {(tf - t0):.2f} s')
-        print(f'Mean time: {mean(t_tab):.2f} s')
-        print(f'Median: {median(t_tab):.2f} s')
-        print(f'Standard deviation: {stdev(t_tab):.2f}')
+    f = facteurs(N)
+    print(f"{N} = {' × '.join([str(i) for i in f])}")
+    print(f'(calcul effectué en {(time() - t0):.2f} s)')
 
 # Renvoie une liste correspodant à la décomposition en facteurs premiers de N
 def facteurs(N):
