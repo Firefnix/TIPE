@@ -28,16 +28,15 @@ class Loi:
 class Photon:
     def __init__(self, loi):
         self.loi = loi
-        self.est_effondre = False
         self.pol = None
-        self.copains = [self] # tout photon est intriqué avec lui-même
+        self.copains = []
 
     def mesure(self):
-        if self.est_effondre:
+        if self.est_effondre():
             return self.pol
 
         self.pol = self.loi.polarisation()
-        self.est_effondre = True
+        print(f'mesure: {self.pol}')
 
         for i in self.copains:
             i.effondrer(self.pol)
@@ -46,13 +45,18 @@ class Photon:
     def effondrer(self, pol):
         self.pol = pol
 
+    def est_effondre(self):
+        return self.pol != None
+
     def intrique_avec_tous(self, autres):
         for i in autres:
-            self.intrique_avec(self)
+            self.intrique_avec(i)
 
     def intrique_avec(self, autre):
-        self.copains.append(autre)
-        autre.copains.append(self)
+        if autre not in self.copains:
+            self.copains.append(autre)
+        if self not in autre.copains:
+            autre.copains.append(self)
 
 
 # Un filre à photons
@@ -79,12 +83,16 @@ class Source:
     def photons(self, N):
         return [self.photon() for i in range(N)]
 
+    def photons_intriques(self, N):
+        l = self.photons(N)
+        l[0].intrique_avec_tous(l[1:])
+        return l
+
     def photon(self):
         return Photon(self.loi)
 
 S = Source()
-l = S.photons(100)
-l[0].intrique_avec_tous(l)
+l = S.photons_intriques(100)
 P = Polariseur(Polarisation.D)
 lp = P.filtre(l)
 print(len(lp))
