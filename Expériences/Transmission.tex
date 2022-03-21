@@ -1,0 +1,23 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz-cd}
+
+\title{Transmission de lumière polarisée}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Schéma descriptif}
+
+\begin{tikzcd}[font=\ssmall]
+                                              &                                                                              & \text{Source 0} \arrow[r, "\text{Photons (pol. aléat.)}"] & \text{Polariseur 0} \arrow[rd, "\text{Photons (pol. 0)}"] &                                              &                   \\
+\text{Ordinateur} \arrow[r, "\text{Binaire}"] & \text{Carte Arduino} \arrow[ru, "\text{On/Off}"] \arrow[rd, "\text{On/Off}"] &                                                           &                                                           & \text{Polarimètre} \arrow[r, "\text{0 / 1}"] & \text{Ordinateur} \\
+                                              &                                                                              & \text{Source 1} \arrow[r, "\text{Photons (pol. aléat.)}"] & \text{Polariseur 1} \arrow[ru, "\text{Photons (pol. 1)}"] &                                              &
+\end{tikzcd}
+
+\end{document}
