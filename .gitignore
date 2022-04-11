@@ -4,3 +4,6 @@
 *.synctex.gz
 *.fdb_latexmk
 .archives/
+.idea/
+__pycache__/
+.pytest_cache/
