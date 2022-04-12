@@ -1,0 +1,116 @@
+\documentclass[french]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{babel}
+\usepackage{physics} % \bra et \ket
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage{stmaryrd} % intervalles d'entiers
+\usepackage{mleftright}
+
+\newcommand{\p}{\texttt} % Stylisé comme du code.
+\newcommand{\somme}{\displaystyle\sum}
+\newcommand{\tab}{\hspace*{5mm}}
+\newcommand{\floor}[1]{\lfloor #1 \rfloor} % Partie entière
+
+\title{%
+    DorEmy \\
+    \large Début d'ORdinateur pour EMY-22}
+\author{Groupe EMY}
+
+
+\begin{document}
+
+\maketitle
+
+Dans le cadre du développment du protocole EMY-22 (protocole de transmission quantique de clés cryptographiques), ainsi qu'en vue de l'implémentation de l'algorithme de Grover sur un ordinateur classique, ce projet a pour objectif de constituer une base logicielle aisée d'emploi et permettant de simuler, avec un réalisme (c'est-à-dire un abus) et un temps de calcul raisonnable les bases du calcul quantique.
+
+
+\section{Unités de mémoire – Qubits}
+
+Un bit est une unité de base de la mémoire qui peut prendre uniquement deux états : $0$ et $1$. Un qubit, ou bit quantique diffère d'un bit car il son état est une combinaison linéaire des deux états propres du qubit, $\ket{0}$ et $\ket{1}$. Cette combinaison linéaire doit néanmoins respecter la condition de normalisation, si bien que l'ensemble des états possibles d'un qubit est :
+
+\[ E_Q = \{\alpha \ket 0 + \beta \ket 1 \mid \alpha, \beta \in \mathbb{C}, |\alpha|^2 + |\beta|^2 = 1\} \]
+
+Un cas plus général est celui des qudits, qui sont une généralisation des qubits avec $d$ vecteurs propres. Par exemple avec $d = 3$ on aurait les vecteurs propres $\ket 0$, $\ket 1$ et $\ket 2$. L'ensemble des états d'un qudit est :
+
+$$ E_d = \left\{ \somme_{i = 0}^{d - 1} \alpha_i \ket i \middle|\, \forall i \in \llbracket 0, d-1 \rrbracket, \alpha_i \in \mathbb{C},  \somme_{i = 0}^{d - 1} |\alpha_i|^2 = 1\right\} $$
+
+
+\section{Calcul informatique quantique}
+
+
+Le calcul quantique à proprement parlé sera implémenté dans le module \p{qubit} ainsi que le module \p{portes} et éventuellement le module \p{circuit}.
+
+De manière analogue aux ordinateurs classiques, les ordinateurs quantiques sont basés sur des circuits électroniques. Ces circuits sont entre autres composés de portes logiques, qui agissent sur un petit nombre d'unités de mémoire (comme des qubits) en modifiant leur état. Un circuit est alors définissable comme : une entrée (avec un état initial de la mémoire connu), et un graphe représentant les différentes portes logiques opérant sur la mémoire, dont fait partie la sortie qui présente l'état de la mémoire qui est le résultat des calculs.
+
+On implémentera donc la structure de circuit sous forme de graphe orienté dont les sommets sont des portes logiques.
+
+
+\section{Calcul mathématique}
+
+
+Dans de nombreuses situations on aura besoin de réaliser des calculs de manière plus poussée que ce que permet nativement Python. Pour cela on implémentera un module, nommé \p{calcul}, dont le rôle sera de réaliser des calculs de manière formelle.
+
+\subsection{Ensembles de travail}
+
+
+Dans la construction des mathématiques par laquelle ce module passera, on admettra la construction des entiers relatifs $\mathbb{Z}$ (néanmoins on détaillera $\mathbb{N}$), et on implémentera quelques ensembles de valeurs :
+\begin{itemize}
+    \item Les rationnels $\mathbb{Q}$, qu'on assimilera l'ensemble des couples $(p, q) \in \mathbb{Z} \times \mathbb{N}^*$ avec $p$ et $q$ premiers entre eux. On prendra garde à toujours simplifier les rationnels lors des calculs de manière à garder un couple d'entiers avec les bons signes et premiers entre eux.
+    \item Les puissances rationnelles de rationnels positifs $\mathbb{P} = \{\sigma x^p \mid \sigma \in \{-1, 1\}, x \in \mathbb{Q}^+, p \in \mathbb{Q}\}$. En particulier, $\mathbb{P}$ contient l'ensemble des racines carrées des rationnels, ainsi que $\mathbb{Q}$ lui-même. La multiplication est interne dans $\mathbb{P}$ mais pas l'addition
+\end{itemize}
+
+On aura donc des réels que $\mathbb{P}$. Les complexes seront construits comme des couples : $x + iy$ sera assimilé à $(x, y) \in \mathbb{P}^2$.
+
+\subsection{Sous-ensemblage}
+
+\subsubsection{Principe}
+
+Une dynamique qu'il sera crucial d'implémenter est le \textbf{sous-ensemblage} : toute variable doit avoir à chaque fin de calcul (même partiel) un type (correspodant à un ensemble) le plus fin possible. Par exemple le calcul $\frac{2}{3} \times \frac{3}{2} = \frac{1}{1}$ doit automatiquement être converti en entier (un sous-ensemble des rationnels, ce qu'il est par ailleurs). On note en particulier les inclusions : $\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{P}$.
+
+Le sous-ensemblage est implémenté dans la fonction \p{sous}, qui appelle, sauf si aucune simplification n'est possible, la fonction \p{sous} du sous-type trouvé.
+Exemple pour le rationnel $\frac{2}{1} \in \mathbb{Q}$ :
+\begin{enumerate}
+  \item La fonction \p{sous} des rationnels détecte qu'on peut passer aux entiers relatifs. Elle construit donc un entier relatif correspondant : c'est $2 \in \mathbb{Z}$. On apelle ensuite \p{sous} sur le relatif 2.
+  \item Dans \p{sous} de 2, on trouve qu'on peut simplifier au naturel $2 \in \mathbb{N}$
+  \item On ne peut pas simplifier plus, donc le \p{sous} de $2 \in \mathbb{N}$ renvoit le même $2 \in \mathbb{N}$.
+\end{enumerate}
+
+\subsubsection{Simplification des puissances}
+
+L'ensemble $\mathbb{P}$ étant le plus grand sous-ensemble de $\mathbb{R}$ implémenté, il est important de mettre au point des techniques de simplification des puissances. \\
+
+Soit $a = \sigma x ^ p \in \mathbb{P}$ une puissance. On a $\sigma \in \{-1, 1\}$ le \textit{signe}, $x = \frac{n_x}{d_x} \in \mathbb{Q}^+$ le \textit{signifiant} et $p = \frac{n_p}{d_p} \in \mathbb{Q}^{+*}$ l'\textit{exposant}.
+
+\begin{enumerate}
+  \item Si $p \in \mathbb{Z}$, on calcule $\sigma x ^ p \in \mathbb{Q}$. Si $p \ge 0$ son numérateur non simplifié est $\sigma {n_x}^p$ et son dénominateur non simplifié est ${d_x}^p$. Si $p < 0$ son numérateur non simplifié est $\sigma {d_x}^p$ et son dénominateur non simplifié est ${n_x}^p$.
+  \item Sinon, on cherche à savoir si il existe $r = \frac{n_r}{d_r} \in \mathbb{Q}+$ tel que $r^{d_p} = x$. On a alors $x = r^{n_p} \in \mathbb{Q}$.
+\end{enumerate}
+
+\noindent \textbf{\underline{Algorithme :}} racine $d_p$-ième exacte d'un rationnel.
+
+\noindent On cherche à déterminer s'il existe un $r \in \mathbb{Q}^+$ tel que $r^{d_p} = x$, et si il existe à déterminer un couple numérateur-dénominateur.
+
+\noindent\texttt{Pour $d_r$ allant de $1$ à $d_x$ \\
+\tab Si $\eta = x \cdot {d_r}^{d_p} \in \mathbb{N}$ \\
+\tab\tab Si $\exists n_r \in \llbracket 1, \floor{\sqrt{\eta}} \rrbracket$ tel que ${n_r}^{d_p} = \eta$ \\
+\tab\tab\tab On renvoit $r = \frac{n_r}{d_r}$ \\
+\tab\tab Fin si \\
+\tab Fin si \\
+Fin pour\\
+Il n'existe pas de $r$ qui convient}
+
+
+\subsection{Sur-ensemblage}
+
+La dynamique inverse existe aussi : on la nomme \textbf{sur-ensemblage}, mis en place dans la fonction \p{sur}. Elle est néanmoins temporaire puisqu'elle n'est utilisée que pour permettre les calculs entre deux types différents.
+Exemple pour le calcul $-\frac{1}{2} \times (-2) = 1$ :
+\begin{enumerate}
+  \item $-2 \not\in \mathbb{Q} \backslash \mathbb{Z} $, on le projette sur l'ensemble $\mathbb{Q}$. On obtient $-\frac{2}{1} \in \mathbb{Q}$.
+  \item $-\frac{1}{2}$ et $-\frac{2}{1}$ sont de même type, on peut les muliplier. On obtient $\frac{1}{1} \in \mathbb{Q}$
+  \item Fin du calcul : on simplifie en appelant \p{sous} et on obtient finalement $1 \in \mathbb{N}$.
+\end{enumerate}
+
+\end{document}
