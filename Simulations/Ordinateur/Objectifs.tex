@@ -7,7 +7,8 @@
 \usepackage{amsfonts}
 \usepackage{mathrsfs}
 \usepackage{stmaryrd} % intervalles d'entiers
-\usepackage{mleftright}
+\usepackage{mleftright} % grandes barres dans les ensembles
+\usepackage{tikz-cd} % diagrammes, voir aussi: https://tikzcd.yichuanshen.de/
 
 \newcommand{\p}{\texttt} % Stylisé comme du code.
 \newcommand{\somme}{\displaystyle\sum}
@@ -54,6 +55,7 @@ On implémentera donc la structure de circuit sous forme de graphe orienté dont
 Dans de nombreuses situations on aura besoin de réaliser des calculs de manière plus poussée que ce que permet nativement Python. Pour cela on implémentera un module, nommé \p{calcul}, dont le rôle sera de réaliser des calculs de manière formelle.
 
 \subsection{Ensembles de travail}
+\subsection{Ensembles de travail} \label{ensembles}
 
 
 Dans la construction des mathématiques par laquelle ce module passera, on admettra la construction des entiers relatifs $\mathbb{Z}$ (néanmoins on détaillera $\mathbb{N}$), et on implémentera quelques ensembles de valeurs :
@@ -112,5 +114,11 @@ Exemple pour le calcul $-\frac{1}{2} \times (-2) = 1$ :
   \item $-\frac{1}{2}$ et $-\frac{2}{1}$ sont de même type, on peut les muliplier. On obtient $\frac{1}{1} \in \mathbb{Q}$
   \item Fin du calcul : on simplifie en appelant \p{sous} et on obtient finalement $1 \in \mathbb{N}$.
 \end{enumerate}
+
+\subsection{Matrices}
+
+Le nombre de lignes d'une matrice \p{m} est \p{m.p} et son nombre de colonnes est \p{m.q}, avec $p, q \in \mathbb{N}$. On peut accéder à $p$ et $q$ en même temps en regardant \p{m.forme}, qui vaut le tuple \p{(p, q)}. Les élements sont accessibles par un couple $(i, j) \in \llbracket 0, p -1 \rrbracket \times \llbracket 0, q -1 \rrbracket$, les indices commençant donc à 0. On aura par exemple \p{m[0, 0]} Pour les matrices lignes et colonnes, il n'est nécessaire que de spécifier l'une des deux coordonnées (l'autre étant forcément 0). On aura dans ce cas \p{m[2]} par exemple.
+
+Les éléments d'une matrice ne sont jamais des \p{int}, des \p{float} et encore moins des \p{str} : tous les coefficients sont des nombres formellements stockés (voir \ref{ensembles}), donc des éléments de $\mathbb{P}[i]$.
 
 \end{document}

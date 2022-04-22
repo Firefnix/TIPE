@@ -309,6 +309,7 @@ class Matrice(Nombre):
         assert isinstance(q, int)
         self.p = p
         self.q = q
+        self.forme = (p, q)
         self._c = [[Zero() for _ in range(q)] for _ in range(p)]
 
     def __eq__(self, autre):
@@ -346,19 +347,31 @@ class Matrice(Nombre):
         return self.p == self.q
 
     def __getitem__(self, item):
-        assert isinstance(item, tuple)
-        i, j = item
-        assert isinstance(i, int) and 0 <= i < self.p
-        assert isinstance(j, int) and 0 <= j < self.q
-        return self._c[i][j]
+        if isinstance(item, tuple):
+            i, j = item
+            assert isinstance(i, int) and 0 <= i < self.p
+            assert isinstance(j, int) and 0 <= j < self.q
+            return self._c[i][j]
+        assert isinstance(item, int)
+        if self.p == 1:
+            return self._c[0][item]
+        assert self.q == 1
+        return self._c[item][0]
 
     def __setitem__(self, cle, valeur):
-        assert isinstance(cle, tuple)
-        i, j = cle
-        assert isinstance(i, int) and 0 <= i < self.p
-        assert isinstance(j, int) and 0 <= j < self.q
-        assert isinstance(valeur, Nombre)
-        self._c[i][j] = valeur
+        if isinstance(cle, tuple):
+            i, j = cle
+            assert isinstance(i, int) and 0 <= i < self.p
+            assert isinstance(j, int) and 0 <= j < self.q
+            assert isinstance(valeur, Nombre)
+            self._c[i][j] = valeur
+        else:
+            assert isinstance(cle, int)
+            if self.p == 1:
+                self._c[0][cle] = valeur
+            else:
+                assert self.q == 1
+                self._c[cle][0] = valeur
 
     def _add__(self, autre):
         assert self.p == autre.p

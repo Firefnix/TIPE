@@ -187,5 +187,15 @@ class TestMatrice(TestCase):
         m1 = Matrice.int_tableau([[2, 4], [6, 8]])
         assert Rationnel(1, 2) * m1 == Matrice.int_tableau([[1, 2], [3, 4]])
 
+    def test_acces_rapide(self):
+        l = Matrice.int_tableau([[1, 2]])
+        c = Matrice.int_tableau([[1], [2]])
+        assert l[1] == Naturel(2)
+        assert c[1] == Naturel(2)
+        l[1] = zero
+        c[1] = un
+        assert l[1] == zero
+        assert c[1] == un
+
 if __name__ == '__main__':
     main()
