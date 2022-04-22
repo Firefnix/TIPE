@@ -95,7 +95,7 @@ class TestRationnels(TestCase):
         un_demi = Rationnel(1, 2)
         moins_un_tiers = Rationnel(-1, 3)
         un_sixieme = Rationnel(1, 6)
-        assert un_demi + un_demi == un()
+        assert un_demi + un_demi == un
         assert un_demi + (-un_demi) == Zero()
         assert un_demi + moins_un_tiers == un_sixieme
 
@@ -111,7 +111,7 @@ class TestRationnels(TestCase):
 class TestPuissance(TestCase):
     def test_sous(self):
         assert Puissance(Naturel(4), Rationnel(1, 2)).sous() == Naturel(2)
-        assert Puissance(Rationnel(1, 1), Rationnel(1, 1)) == un()
+        assert Puissance(Rationnel(1, 1), Rationnel(1, 1)) == un
 
     def test_eq(self):
         x = Puissance(Naturel(2), Rationnel(2, 3))
@@ -135,8 +135,8 @@ class TestComplexe(TestCase):
         assert z1 + z2 == z3
 
     def test_fois(self):
-        z1 = Complexe(un(), Relatif(-2))
-        z2 = Complexe(Relatif(-2), un())
+        z1 = Complexe(un, Relatif(-2))
+        z2 = Complexe(Relatif(-2), un)
         z3 = Complexe(Naturel(2), Naturel(5))
 
 class TestMatrice(TestCase):
@@ -149,23 +149,23 @@ class TestMatrice(TestCase):
     def test_setitem(self):
         m = Matrice(2)
         assert m[0, 1] == Zero()
-        m[0, 1] = un()
-        assert m[0, 1] == un()
+        m[0, 1] = un
+        assert m[0, 1] == un
 
     def test_identite(self):
         m = Matrice.identite(3)
         for i in range(3):
             for j in range(3):
                 if i == j:
-                    assert m[i, j] == un()
+                    assert m[i, j] == un
                 else:
                     assert m[i, j] == Zero()
 
     def test_tableau(self):
-        m = Matrice.tableau([[un(), Zero()], [un(), Zero()]])
-        assert m[0, 0] == un()
+        m = Matrice.tableau([[un, Zero()], [un, Zero()]])
+        assert m[0, 0] == un
         assert m[0, 1] == Zero()
-        assert m[1, 0] == un()
+        assert m[1, 0] == un
         assert m[1, 1] == Zero()
 
     def test_eq(self):

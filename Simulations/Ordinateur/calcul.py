@@ -48,6 +48,9 @@ class Zero(Nombre):
         return self
 
 
+zero = Zero()
+
+
 class Naturel(Nombre):
     def __init__(self, n: int):
         assert n >= 0
@@ -86,8 +89,7 @@ class Naturel(Nombre):
         return self.n
 
 
-def un():
-    return Naturel(1)
+un = Naturel(1)
 
 
 class Relatif(Nombre):
@@ -123,7 +125,7 @@ class Relatif(Nombre):
         if exposant.appartient(Naturel):
             return Relatif(self.z ** exposant.n)
         if exposant.appartient(Relatif):
-            return Rationnel(un(), self ** (- exposant))
+            return Rationnel(un, self ** (- exposant))
         self.sur(Rationnel) ** exposant
 
     def aff(self):
@@ -154,7 +156,7 @@ class Rationnel(Nombre):
         sigma = 1 if self.num >= 0 else -1
         return Puissance(
             Rationnel(abs(self.num), self.denom),
-            un(),
+            un,
             sigma
         ).sur(E)
 
@@ -294,6 +296,7 @@ class Complexe(Nombre):
     def conjugue(self):
         return Complexe(self.x, - self.y).sous()
 
+i = Complexe(zero, un)
 
 class Matrice(Nombre):
     # Renvoie une matrice remplie de zéros
@@ -404,7 +407,7 @@ class Matrice(Nombre):
 
     @staticmethod
     def identite(n):
-        return Matrice.scalaire(un(), n)
+        return Matrice.scalaire(un, n)
 
     def __str__(self):
         n = max([len(str(self[i, j])) for i in range(self.p) for j in range(self.q)])
