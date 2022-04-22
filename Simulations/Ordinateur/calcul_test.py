@@ -111,6 +111,7 @@ class TestRationnels(TestCase):
 class TestPuissance(TestCase):
     def test_sous(self):
         assert Puissance(Naturel(4), Rationnel(1, 2)).sous() == Naturel(2)
+        assert Puissance(Rationnel(1, 1), Rationnel(1, 1)) == un()
 
     def test_eq(self):
         x = Puissance(Naturel(2), Rationnel(2, 3))
@@ -123,6 +124,7 @@ class TestPuissance(TestCase):
 
     def test_fois(self):
         assert sqrt(2) * sqrt(2) == Naturel(2)
+        assert Puissance(Rationnel(1, 1), Rationnel(1, 1))
 
 
 class TestComplexe(TestCase):
@@ -180,6 +182,10 @@ class TestMatrice(TestCase):
         m4 = Matrice.int_tableau([[19, 28], [27, 40]])
         assert m1 * m2 == m3
         assert m2 * m1 ==  m4
+
+    def test_fois_scalaire(self):
+        m1 = Matrice.int_tableau([[2, 4], [6, 8]])
+        assert Rationnel(1, 2) * m1 == Matrice.int_tableau([[1, 2], [3, 4]])
 
 if __name__ == '__main__':
     main()

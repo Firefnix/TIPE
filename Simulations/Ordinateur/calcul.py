@@ -26,6 +26,9 @@ class Nombre:
 
 
 class Zero(Nombre):
+    def __init__(self):
+        self.n = 0 # par assimilation aux naturels
+
     def __eq__(self, autre):
         return isinstance(autre, Zero)
 
@@ -148,7 +151,12 @@ class Rationnel(Nombre):
     def sur(self, E: type):
         if E == Rationnel:
             return self
-        return Puissance(self, un()).sur(E)
+        sigma = 1 if self.num >= 0 else -1
+        return Puissance(
+            Rationnel(abs(self.num), self.denom),
+            un(),
+            sigma
+        ).sur(E)
 
     def fois(self, autre):
         return Rationnel(self.num * autre.num,
@@ -192,6 +200,7 @@ class Puissance(Nombre):
         if isinstance(p, int):
             p = Relatif(p)
         self.x = x.sur(Rationnel)
+        assert self.x.num >= 0
         self.p = p.sur(Rationnel)
         self.sigma = sigma
 
@@ -231,13 +240,15 @@ class Puissance(Nombre):
             return Puissance(self.x, self.p + autre.p).sous()
         if self.p == autre.p:
             return Puissance(self.x * autre.x, self.p).sous()
-        if autre == un():
-            return self
-        if autre == Relatif(-1):
-            return Puissance(self.x, self.p, - self.sigma).sous()
+        if autre.sous().sur(Rationnel) is not None:
+            a = Puissance(autre.sous().sur(Rationnel), self.p.inverse()).sous().sur(Rationnel)
+            if a is not None:
+                signe = 1 if a.num >= 0 else -1
+                return Puissance(self.x * a, self.p, self.sigma * signe).sous()
 
     def plus(self, autre):
-        pass
+        if autre.sous() == Zero():
+            return self
 
     def aff(self):
         return str(self.x) + '^' + str(self.p)
@@ -369,6 +380,7 @@ class Matrice(Nombre):
         for i in range(self.p):
             for j in range(self.q):
                 m[i, j] = autre * self[i, j]
+        return m
 
     def transposee(self):
         m = Matrice(self.q, self.p)
