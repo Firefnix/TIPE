@@ -401,7 +401,7 @@ class Matrice(Nombre):
     def __mul__(self, autre):
         if isinstance(autre, Matrice):
             assert self.q == autre.p
-            m = Matrice(self.p, self.q)
+            m = Matrice(self.p, autre.q)
             for i in range(self.p):
                 for j in range(autre.q):
                     m[i, j] = Zero()

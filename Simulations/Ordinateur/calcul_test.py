@@ -225,6 +225,10 @@ class TestMatrice(TestCase):
         m4 = Matrice.int_tableau([[19, 28], [27, 40]])
         assert m1 * m2 == m3
         assert m2 * m1 ==  m4
+        m5 = Matrice.int_tableau([[5], [6]])
+        m6 = Matrice.int_tableau([[17], [39]])
+        print(m1 * m5)
+        assert m1 * m5 == m6
 
     def test_fois_scalaire(self):
         m1 = Matrice.int_tableau([[2, 4], [6, 8]])
