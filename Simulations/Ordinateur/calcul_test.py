@@ -53,6 +53,11 @@ class TestNaturels(TestCase):
         assert deux * trois == six
         assert trois * deux == six
 
+    def test_neg(self):
+        assert (- un) == Relatif(-1)
+        assert (- Naturel(3)) == Relatif(-3)
+
+
 class TestRelatifs(TestCase):
     def test_sous(self):
         moins_trois = Relatif(-3)
@@ -75,6 +80,11 @@ class TestRelatifs(TestCase):
         moins_six = Relatif(-6)
         assert deux * moins_trois == moins_six
         assert moins_trois * deux == moins_six
+
+    def test_neg(self):
+        assert (- Relatif(-2)) == Naturel(2)
+        assert (- Relatif(2)) == Relatif(-2)
+
 
 class TestRationnels(TestCase):
     def test_sous(self):
@@ -138,6 +148,17 @@ class TestComplexe(TestCase):
         z1 = Complexe(un, Relatif(-2))
         z2 = Complexe(Relatif(-2), un)
         z3 = Complexe(Naturel(2), Naturel(5))
+
+    def test_neg(self):
+        z = Complexe(un, Relatif(-2))
+        moins_z = Complexe(Relatif(-1), Naturel(2))
+        assert (- z) == moins_z
+
+    def test_conjugue(self):
+        z = Complexe(un, Relatif(-2))
+        z_barre = Complexe(un, Naturel(2))
+        assert z.conjugue() == z_barre
+
 
 class TestMatrice(TestCase):
     def test_zero(self):

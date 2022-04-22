@@ -47,6 +47,8 @@ class Zero(Nombre):
     def __abs__(self):
         return self
 
+    def __neg__(self):
+        return self
 
 zero = Zero()
 
@@ -80,7 +82,7 @@ class Naturel(Nombre):
         return self.sur(Relatif) ** exposant
 
     def __neg__(self):
-        return Relatif(self.n).sous()
+        return Relatif(- self.n).sous()
 
     def __abs__(self):
         return self
@@ -116,7 +118,7 @@ class Relatif(Nombre):
         return Relatif(self.z * autre.z)
 
     def __neg__(self):
-        return Relatif(self.z).sous()
+        return Relatif(- self.z).sous()
 
     def __abs__(self):
         return Relatif(abs(self.z)).sous()
@@ -292,6 +294,9 @@ class Complexe(Nombre):
     def fois(self, autre):
         return Complexe(self.x * autre.x - self.y * autre.y,
             self.x * autre.y + self.y * autre.x)
+
+    def __neg__(self):
+        return Complexe(- self.x, - self.y)
 
     def conjugue(self):
         return Complexe(self.x, - self.y).sous()
