@@ -18,6 +18,9 @@ class Nombre:
             return (autre * self).sous()
         return self.fois(b).sous()
 
+    def __sub__(self, autre):
+        return self + (- autre)
+
     def __str__(self):
         return str(type(self))[8:-2].split('.')[-1] + f'({self.aff()})'
 
@@ -237,7 +240,8 @@ class Puissance(Nombre):
     def sur(self, E: type):
         if E == Puissance:
             return self
-        return None
+        if E == Complexe:
+            return Complexe(self.sous(), zero)
 
     def fois(self, autre):
         if self.x == autre.x:
@@ -311,8 +315,12 @@ class Complexe(Nombre):
     def __abs__(self):
         return sqrt(self.x * self.x + self.y * self.y)
 
+    def aff(self):
+        return str(self.x) + ', ' + str(self.y)
+
 
 i = Complexe(zero, un)
+
 
 class Matrice(Nombre):
     # Renvoie une matrice remplie de zéros

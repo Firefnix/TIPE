@@ -39,6 +39,13 @@ class TestNaturels(TestCase):
         assert trois.sous() == trois
         assert zero.sous() == Zero()
 
+    def test_sur(self):
+        deux = Naturel(2)
+        assert deux.sur(Relatif) == Relatif(2)
+        assert deux.sur(Rationnel) == Rationnel(2, 1)
+        assert deux.sur(Puissance) == Puissance(2, 1)
+        assert deux.sur(Complexe) == Complexe(deux, zero)
+
     def test_plus(self):
         deux = Naturel(2)
         trois = Naturel(3)
@@ -165,7 +172,9 @@ class TestComplexe(TestCase):
     def test_fois(self):
         z1 = Complexe(un, Relatif(-2))
         z2 = Complexe(Relatif(-2), un)
-        z3 = Complexe(Naturel(2), Naturel(5))
+        z3 = Complexe(zero, Naturel(5))
+        assert z1 * z2 == z3
+        assert i * (-i) == un
 
     def test_neg(self):
         z = Complexe(un, Relatif(-2))
@@ -219,6 +228,7 @@ class TestMatrice(TestCase):
         assert m1 != Matrice(2, 3)
 
     def test_fois(self):
+        assert un * i == i * un == i
         m1 = Matrice.int_tableau([[1, 2], [3, 4]])
         m2 = Matrice.int_tableau([[4, 5], [6, 7]])
         m3 = Matrice.int_tableau([[16, 19], [36, 43]])
@@ -227,7 +237,6 @@ class TestMatrice(TestCase):
         assert m2 * m1 ==  m4
         m5 = Matrice.int_tableau([[5], [6]])
         m6 = Matrice.int_tableau([[17], [39]])
-        print(m1 * m5)
         assert m1 * m5 == m6
 
     def test_fois_scalaire(self):
