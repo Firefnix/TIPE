@@ -57,6 +57,9 @@ class TestNaturels(TestCase):
         assert (- un) == Relatif(-1)
         assert (- Naturel(3)) == Relatif(-3)
 
+    def test_abs(self):
+        assert abs(Naturel(2)) == Naturel(2)
+
 
 class TestRelatifs(TestCase):
     def test_sous(self):
@@ -84,6 +87,9 @@ class TestRelatifs(TestCase):
     def test_neg(self):
         assert (- Relatif(-2)) == Naturel(2)
         assert (- Relatif(2)) == Relatif(-2)
+
+    def test_abs(self):
+        assert abs(Relatif(-2)) == Naturel(2)
 
 
 class TestRationnels(TestCase):
@@ -118,23 +124,35 @@ class TestRationnels(TestCase):
         assert Relatif(-2) * un_demi == Relatif(-1)
         assert un_demi * Relatif(-2) == Relatif(-1)
 
+    def test_abs(self):
+        assert abs(Rationnel(1, 2)) == Rationnel(1, 2)
+        assert abs(Rationnel(-1, 2)) == Rationnel(1, 2)
+
+
 class TestPuissance(TestCase):
     def test_sous(self):
-        assert Puissance(Naturel(4), Rationnel(1, 2)).sous() == Naturel(2)
+        assert Puissance(4, Rationnel(1, 2)).sous() == Naturel(2)
         assert Puissance(Rationnel(1, 1), Rationnel(1, 1)) == un
 
     def test_eq(self):
-        x = Puissance(Naturel(2), Rationnel(2, 3))
-        y = Puissance(Naturel(4), Rationnel(1, 3))
+        x = Puissance(2, Rationnel(2, 3))
+        y = Puissance(4, Rationnel(1, 3))
         assert x == y
 
     def test_sqrt(self):
         assert sqrt(2) == Puissance(2, Rationnel(1, 2))
         assert sqrt(5) == Puissance(5, Rationnel(1, 2))
+        assert sqrt(4) == Naturel(2)
 
     def test_fois(self):
         assert sqrt(2) * sqrt(2) == Naturel(2)
-        assert Puissance(Rationnel(1, 1), Rationnel(1, 1))
+
+    def test_neg(self):
+        assert - Puissance(5, Rationnel(1, 2)) == Puissance(5, Rationnel(1, 2), -1)
+        assert - Puissance(5, Rationnel(1, 2), -1) == Puissance(5, Rationnel(1, 2))
+
+    def test_abs(self):
+        assert abs(- sqrt(7)) == sqrt(7)
 
 
 class TestComplexe(TestCase):
@@ -159,6 +177,10 @@ class TestComplexe(TestCase):
         z_barre = Complexe(un, Naturel(2))
         assert z.conjugue() == z_barre
 
+    def test_abs(self):
+        z = Complexe(un, Relatif(-2))
+        assert abs(z) == sqrt(5)
+        assert abs(i) == un
 
 class TestMatrice(TestCase):
     def test_zero(self):

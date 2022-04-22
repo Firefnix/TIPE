@@ -174,7 +174,7 @@ class Rationnel(Nombre):
         return Rationnel(- self.num, self.denom)
 
     def __abs__(self):
-        return Rationnel(abs(self.p), self.q)
+        return Rationnel(abs(self.num), self.denom)
 
     def __pow__(self, exposant):
         if exposant.appartient(Naturel):
@@ -254,12 +254,18 @@ class Puissance(Nombre):
         if autre.sous() == Zero():
             return self
 
+    def __neg__(self):
+        return Puissance(self.x, self.p, - self.sigma)
+
+    def __abs__(self):
+        return Puissance(self.x, self.p)
+
     def aff(self):
         return str(self.x) + '^' + str(self.p)
 
 
 def sqrt(r):
-    return Puissance(r, Rationnel(1, 2))
+    return Puissance(r, Rationnel(1, 2)).sous()
 
 
 class Complexe(Nombre):
@@ -300,6 +306,11 @@ class Complexe(Nombre):
 
     def conjugue(self):
         return Complexe(self.x, - self.y).sous()
+
+    # Le module d'un nombre complexe
+    def __abs__(self):
+        return sqrt(self.x * self.x + self.y * self.y)
+
 
 i = Complexe(zero, un)
 
