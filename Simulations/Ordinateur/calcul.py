@@ -21,6 +21,9 @@ class Nombre:
     def __sub__(self, autre):
         return self + (- autre)
 
+    def signe(self):
+        return 1 if abs(self) == self else -1
+
     def __str__(self):
         return str(type(self))[8:-2].split('.')[-1] + f'({self.aff()})'
 
@@ -180,6 +183,10 @@ class Rationnel(Nombre):
         return Rationnel(abs(self.num), self.denom)
 
     def __pow__(self, exposant):
+        if exposant == zero:
+            return un
+        if self.sous() == zero:
+            return zero
         if exposant.appartient(Naturel):
             return Rationnel(Relatif(self.num ** exposant.n).z,
                 Relatif(self.denom ** exposant.n).z).sous()
@@ -214,6 +221,7 @@ class Puissance(Nombre):
     def __eq__(self, autre):
         autre = autre.sur(Puissance)
         return (autre is not None
+            and self.sigma == autre.sigma
             and self.x ** Relatif(self.p.num) == autre.x ** Relatif(autre.p.num)
             and self.p.denom == autre.p.denom)
 
@@ -222,7 +230,7 @@ class Puissance(Nombre):
             return self.sigma * (self.x ** self.p)
         r = self._sous_racine()
         if r is not None:
-            return r ** (Relatif(self.p.num).sous())
+            return Relatif(self.sigma) * (r ** Relatif(self.p.num).sous())
         return self
 
     def _sous_racine(self):
@@ -244,15 +252,15 @@ class Puissance(Nombre):
             return Complexe(self.sous(), zero)
 
     def fois(self, autre):
+        s = self.sigma * autre.sigma
         if self.x == autre.x:
-            return Puissance(self.x, self.p + autre.p).sous()
+            return Puissance(self.x, self.p + autre.p, s).sous()
         if self.p == autre.p:
-            return Puissance(self.x * autre.x, self.p).sous()
+            return Puissance(self.x * autre.x, self.p, s).sous()
         if autre.sous().sur(Rationnel) is not None:
-            a = Puissance(autre.sous().sur(Rationnel), self.p.inverse()).sous().sur(Rationnel)
+            a = Puissance(abs(autre.sous().sur(Rationnel)), self.p.inverse()).sous().sur(Rationnel)
             if a is not None:
-                signe = 1 if a.num >= 0 else -1
-                return Puissance(self.x * a, self.p, self.sigma * signe).sous()
+                return Puissance(self.x * a, self.p, self.sigma * autre.signe()).sous()
 
     def plus(self, autre):
         if autre.sous() == Zero():
@@ -265,7 +273,7 @@ class Puissance(Nombre):
         return Puissance(self.x, self.p)
 
     def aff(self):
-        return str(self.x) + '^' + str(self.p)
+        return str(self.x) + '^' + str(self.p) + ', ' + str(self.sigma)
 
 
 def sqrt(r):

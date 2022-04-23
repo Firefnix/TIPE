@@ -54,17 +54,16 @@ On implémentera donc la structure de circuit sous forme de graphe orienté dont
 
 Dans de nombreuses situations on aura besoin de réaliser des calculs de manière plus poussée que ce que permet nativement Python. Pour cela on implémentera un module, nommé \p{calcul}, dont le rôle sera de réaliser des calculs de manière formelle.
 
-\subsection{Ensembles de travail}
 \subsection{Ensembles de travail} \label{ensembles}
 
 
 Dans la construction des mathématiques par laquelle ce module passera, on admettra la construction des entiers relatifs $\mathbb{Z}$ (néanmoins on détaillera $\mathbb{N}$), et on implémentera quelques ensembles de valeurs :
 \begin{itemize}
     \item Les rationnels $\mathbb{Q}$, qu'on assimilera l'ensemble des couples $(p, q) \in \mathbb{Z} \times \mathbb{N}^*$ avec $p$ et $q$ premiers entre eux. On prendra garde à toujours simplifier les rationnels lors des calculs de manière à garder un couple d'entiers avec les bons signes et premiers entre eux.
-    \item Les puissances rationnelles de rationnels positifs $\mathbb{P} = \{\sigma x^p \mid \sigma \in \{-1, 1\}, x \in \mathbb{Q}^+, p \in \mathbb{Q}\}$. En particulier, $\mathbb{P}$ contient l'ensemble des racines carrées des rationnels, ainsi que $\mathbb{Q}$ lui-même. La multiplication est interne dans $\mathbb{P}$ mais pas l'addition
+    \item Les puissances rationnelles de rationnels positifs $\mathbb{P}$. En particulier, $\mathbb{P}$ contient l'ensemble des racines carrées des rationnels, ainsi que $\mathbb{Q}$ lui-même. La multiplication est interne dans $\mathbb{P}$ mais pas l'addition
 \end{itemize}
 
-On aura donc des réels que $\mathbb{P}$. Les complexes seront construits comme des couples : $x + iy$ sera assimilé à $(x, y) \in \mathbb{P}^2$.
+On aura donc des réels que $\mathbb{P} = \{\sigma x^p \mid \sigma \in \{-1, 1\}, x \in \mathbb{Q}^+, p \in \mathbb{Q}\}$. Les complexes seront construits comme des couples : $x + iy$ sera assimilé à $(x, y) \in \mathbb{P}^2$. Le plus grand ensemble de travail est donc $\mathbb{P}[i] = \{x + iy \mid x, y \in \mathbb{P}\}$.
 
 \subsection{Sous-ensemblage}
 
@@ -77,12 +76,12 @@ Exemple pour le rationnel $\frac{2}{1} \in \mathbb{Q}$ :
 \begin{enumerate}
   \item La fonction \p{sous} des rationnels détecte qu'on peut passer aux entiers relatifs. Elle construit donc un entier relatif correspondant : c'est $2 \in \mathbb{Z}$. On apelle ensuite \p{sous} sur le relatif 2.
   \item Dans \p{sous} de 2, on trouve qu'on peut simplifier au naturel $2 \in \mathbb{N}$
-  \item On ne peut pas simplifier plus, donc le \p{sous} de $2 \in \mathbb{N}$ renvoit le même $2 \in \mathbb{N}$.
+  \item On ne peut pas simplifier plus, donc le \p{sous} de $2 \in \mathbb{N}$ renvoie le même $2 \in \mathbb{N}$.
 \end{enumerate}
 
 \subsubsection{Simplification des puissances}
 
-L'ensemble $\mathbb{P}$ étant le plus grand sous-ensemble de $\mathbb{R}$ implémenté, il est important de mettre au point des techniques de simplification des puissances. \\
+L'ensemble $\mathbb{P}$ étant le plus grand sous-ensemble de $\mathbb{R}$ implémenté, il est important de mettre au point des techniques de simplification des puissances.
 
 Soit $a = \sigma x ^ p \in \mathbb{P}$ une puissance. On a $\sigma \in \{-1, 1\}$ le \textit{signe}, $x = \frac{n_x}{d_x} \in \mathbb{Q}^+$ le \textit{signifiant} et $p = \frac{n_p}{d_p} \in \mathbb{Q}^{+*}$ l'\textit{exposant}.
 
@@ -98,7 +97,7 @@ Soit $a = \sigma x ^ p \in \mathbb{P}$ une puissance. On a $\sigma \in \{-1, 1\}
 \noindent\texttt{Pour $d_r$ allant de $1$ à $d_x$ \\
 \tab Si $\eta = x \cdot {d_r}^{d_p} \in \mathbb{N}$ \\
 \tab\tab Si $\exists n_r \in \llbracket 1, \floor{\sqrt{\eta}} \rrbracket$ tel que ${n_r}^{d_p} = \eta$ \\
-\tab\tab\tab On renvoit $r = \frac{n_r}{d_r}$ \\
+\tab\tab\tab On renvoie $r = \frac{n_r}{d_r}$ \\
 \tab\tab Fin si \\
 \tab Fin si \\
 Fin pour\\

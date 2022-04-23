@@ -152,7 +152,13 @@ class TestPuissance(TestCase):
         assert sqrt(4) == Naturel(2)
 
     def test_fois(self):
+        un_demi = Rationnel(1, 2)
+        x = Puissance(un_demi, un_demi, -1)
         assert sqrt(2) * sqrt(2) == Naturel(2)
+        assert sqrt(2) * sqrt(un_demi) == sqrt(un_demi) * sqrt(2) == un
+        assert sqrt(un_demi) * sqrt(un_demi) == un_demi
+        assert un * sqrt(2) == sqrt(2) * un == sqrt(2)
+        assert Relatif(-1) * sqrt(un_demi) == sqrt(un_demi) * Relatif(-1) == x
 
     def test_neg(self):
         assert - Puissance(5, Rationnel(1, 2)) == Puissance(5, Rationnel(1, 2), -1)
