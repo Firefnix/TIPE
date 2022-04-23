@@ -454,6 +454,16 @@ class Matrice(Nombre):
     def identite(n):
         return Matrice.scalaire(un, n)
 
+    # Correspond au produit tensoriel pour deux matrices (prod. de Kronecker)
+    # S'utilise pour deux matrices A et B en écrivant A @ B.
+    def __matmul__(self, autre):
+        assert isinstance(autre, Matrice)
+        m = Matrice(self.p * autre.p, self.q * autre.q)
+        for i in range(self.p * autre.p):
+            for j in range(self.q * autre.q):
+                m[i, j] = self[i // autre.p, j // autre.q] * autre[i % autre.p, j % autre.q]
+        return m
+
     def __str__(self):
         n = max([len(str(self[i, j])) for i in range(self.p) for j in range(self.q)])
         return '\n'.join([

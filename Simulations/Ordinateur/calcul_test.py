@@ -259,5 +259,27 @@ class TestMatrice(TestCase):
         assert l[1] == zero
         assert c[1] == un
 
+    def test_produit_tensoriel(self):
+        m1 = Matrice.int_tableau([[1, 2], [3, 4]])
+        m2 = Matrice.int_tableau([[5, 6], [7, 8]])
+        m3 = Matrice.int_tableau([
+            [5, 6, 10, 12],
+            [7, 8, 14, 16],
+            [15, 18, 20, 24],
+            [21, 24, 28, 32]
+        ])
+        assert m1 @ m2 == m3
+        m4 = sqrt(Rationnel(1, 2)) * Matrice.int_tableau([[1, 1], [1, -1]])
+        m5 = Rationnel(1, 2) * Matrice.int_tableau([
+            [1,  1,  1,  1],
+            [1, -1,  1, -1],
+            [1,  1, -1, -1],
+            [1, -1, -1,  1]
+        ])
+        print(m4[0, 1], m4[1, 1], m4[0, 1] * m4[1, 1])
+        print(m4 @ m4)
+        assert m4 @ m4 == m5
+
+
 if __name__ == '__main__':
     main()
