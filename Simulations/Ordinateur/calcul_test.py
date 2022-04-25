@@ -191,6 +191,7 @@ class TestComplexe(TestCase):
         z = Complexe(un, Relatif(-2))
         z_barre = Complexe(un, Naturel(2))
         assert z.conjugue() == z_barre
+        assert sqrt(2).sur(Complexe).conjugue() == sqrt(2)
 
     def test_abs(self):
         z = Complexe(un, Relatif(-2))

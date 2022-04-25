@@ -441,7 +441,8 @@ class Matrice(Nombre):
         m = Matrice(self.p, self.q)
         for i in range(self.p):
             for j in range(self.q):
-                m[i, j] = (m[i, j].sur(Complexe)).conjugue()
+                m[i, j] = self[i, j].sur(Complexe).conjugue()
+        return m
 
     @staticmethod
     def scalaire(k, n):
