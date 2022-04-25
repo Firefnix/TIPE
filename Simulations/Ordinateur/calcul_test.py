@@ -3,7 +3,7 @@ from unittest import TestCase, main
 
 class TestZero(TestCase):
     def test_sous(self):
-        assert Zero().sous() == Zero()
+        assert Zero().sous() == Zero() == zero
 
     def test_sur(self):
         z = Zero()
@@ -35,9 +35,9 @@ class TestZero(TestCase):
 class TestNaturels(TestCase):
     def test_sous(self):
         trois = Naturel(3)
-        zero = Naturel(0)
+        z = Naturel(0)
         assert trois.sous() == trois
-        assert zero.sous() == Zero()
+        assert z.sous() == zero
 
     def test_sur(self):
         deux = Naturel(2)
@@ -72,8 +72,8 @@ class TestRelatifs(TestCase):
     def test_sous(self):
         moins_trois = Relatif(-3)
         trois = Relatif(3)
-        zero = Relatif(0)
-        assert zero.sous() == Zero()
+        z = Relatif(0)
+        assert z.sous() == zero
         assert trois.sous() == Naturel(3)
         assert moins_trois.sous() == moins_trois
 
@@ -101,7 +101,7 @@ class TestRelatifs(TestCase):
 
 class TestRationnels(TestCase):
     def test_sous(self):
-        assert Rationnel(0, 3).sous() == Zero()
+        assert Rationnel(0, 3).sous() == zero
         assert Rationnel(6, 2).sous() == Naturel(3)
         assert Rationnel(-6, 2).sous() == Relatif(-3)
 
@@ -119,7 +119,7 @@ class TestRationnels(TestCase):
         moins_un_tiers = Rationnel(-1, 3)
         un_sixieme = Rationnel(1, 6)
         assert un_demi + un_demi == un
-        assert un_demi + (-un_demi) == Zero()
+        assert un_demi + (-un_demi) == zero
         assert un_demi + moins_un_tiers == un_sixieme
 
     def test_fois(self):
@@ -202,11 +202,11 @@ class TestMatrice(TestCase):
         m = Matrice(2, 3)
         for i in range(2):
             for j in range(3):
-                assert m[i, j] == Zero()
+                assert m[i, j] == zero
 
     def test_setitem(self):
         m = Matrice(2)
-        assert m[0, 1] == Zero()
+        assert m[0, 1] == zero
         m[0, 1] = un
         assert m[0, 1] == un
 
@@ -217,14 +217,14 @@ class TestMatrice(TestCase):
                 if i == j:
                     assert m[i, j] == un
                 else:
-                    assert m[i, j] == Zero()
+                    assert m[i, j] == zero
 
     def test_tableau(self):
-        m = Matrice.tableau([[un, Zero()], [un, Zero()]])
+        m = Matrice.tableau([[un, zero], [un, zero]])
         assert m[0, 0] == un
-        assert m[0, 1] == Zero()
+        assert m[0, 1] == zero
         assert m[1, 0] == un
-        assert m[1, 1] == Zero()
+        assert m[1, 1] == zero
 
     def test_eq(self):
         m1 = Matrice.int_tableau([[1, 0], [0, 1]])
