@@ -72,6 +72,8 @@ class Naturel(Nombre):
     def sur(self, E: type):
         if E == Naturel:
             return self
+        if E == F2:
+            return F2(self.n)
         return Relatif(self.n).sur(E)
 
     def plus(self, autre):
@@ -328,6 +330,34 @@ class Complexe(Nombre):
 
 
 i = Complexe(zero, un)
+
+
+class F2(Nombre):
+    def __init__(self, n):
+        if isinstance(n, int):
+            self.n = n % 2
+        else:
+            self.n = n.sous().sur(Relatif).z % 2
+
+    def __eq__(self, autre):
+        return isinstance(autre, F2) and self.n == autre.n
+
+    def __int__(self):
+        return self.n
+
+    def sous(self):
+        return self
+
+    def plus(self, autre):
+        return F2((self.n + autre.n) % 2)
+
+    def fois(self, autre):
+        return F2(self.n * autre.n)
+
+    def sur(self, E):
+        if E == F2:
+            return self
+        return Naturel(self.n).sur(E)
 
 
 class Matrice(Nombre):

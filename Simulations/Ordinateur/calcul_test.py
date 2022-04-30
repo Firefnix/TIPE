@@ -198,6 +198,44 @@ class TestComplexe(TestCase):
         assert abs(z) == sqrt(5)
         assert abs(i) == un
 
+class TestF2(TestCase):
+    def test_sous(self):
+        z = F2(0)
+        u = F2(1)
+        assert z.sous() == z
+        assert u.sous() == u
+
+    def test_int(self):
+        assert int(F2(1)) == int(F2(5)) == 1
+        assert int(F2(0)) == int(F2(8)) == 0
+
+    def test_calcul(self):
+        assert F2(0) == F2(zero) == F2(Rationnel(8, 4))
+        assert F2(1) == F2(un) == F2(Rationnel(9, 3))
+
+    def test_sur(self):
+        z = F2(0)
+        u = F2(1)
+        assert z.sur(Naturel) == Naturel(0)
+        assert u.sur(Naturel) == un
+
+    def test_plus(self):
+        z = F2(0)
+        u = F2(1)
+        assert z + z == z
+        assert z + u == u
+        assert u + z == u
+        assert u + u == z
+
+    def test_fois(self):
+        z = F2(0)
+        u = F2(1)
+        assert z * z == z
+        assert z * u == z
+        assert u * z == z
+        assert u * u == u
+
+
 class TestMatrice(TestCase):
     def test_zero(self):
         m = Matrice(2, 3)
