@@ -13,11 +13,13 @@ class Porte:
     def __eq__(self, autre):
         return isinstance(autre, Porte) and self.matrice == autre.matrice
 
-    def __mul__(self, qubit):
-        assert isinstance(qubit, Qubit)
-        q = Qubit()
-        q.matrice = self.matrice * qubit.matrice
-        return q
+    def __mul__(self, autre):
+        if isinstance(autre, Qubit):
+            q = Qubit()
+            q.matrice = self.matrice * autre.matrice
+            return q
+        elif isinstance(autre, Porte):
+            return Porte(self.matrice * autre.matrice)
 
     def dague(self):
         return Porte(self.matrice.transposee().conjuguee())
@@ -25,6 +27,9 @@ class Porte:
     def __matmul__(self, autre):
         assert isinstance(autre, Porte)
         return Porte(self.matrice @ autre.matrice)
+
+    def __str__(self):
+        return str(self.matrice)
 
 
 I = Identite = Porte(Matrice.int_tableau([[1, 0], [0, 1]]))

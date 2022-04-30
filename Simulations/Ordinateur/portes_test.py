@@ -48,7 +48,14 @@ class TestPortes:
         assert H @ H == M
 
     def test_dague(self):
-        assert H.matrice * H.dague().matrice == I.matrice
+        assert H * H.dague() == I
+        assert CNOT * CNOT.dague() == I @ I
+
+    def test_petit_circuit(self):
+        C = S * (X @ I) * S * (I @ X)
+        assert C.matrice == Matrice.identite(4)
+        assert C == I @ I
+
 
 if __name__ == '__main__':
     main()
