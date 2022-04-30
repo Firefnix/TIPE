@@ -24,6 +24,12 @@ class Nombre:
     def signe(self):
         return 1 if abs(self) == self else -1
 
+    def __float__(self):
+        if isinstance(self, Complexe):
+            return float(self.x) + 1j * float(self.y)
+        a = self.sur(Puissance)
+        return a.sigma * ((a.x.num / a.x.denom) ** (a.p.num / a.p.denom))
+
 
 class Zero(Nombre):
     def __init__(self):
@@ -171,7 +177,7 @@ class Rationnel(Nombre):
         return Rationnel(self.num * autre.num,
             self.denom * autre.denom)
 
-    def __add__(self, autre):
+    def plus(self, autre):
         return Rationnel(self.num * autre.denom + autre.num * self.denom,
             self.denom * autre.denom).sous()
 
