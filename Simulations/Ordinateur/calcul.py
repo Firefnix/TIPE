@@ -24,12 +24,6 @@ class Nombre:
     def signe(self):
         return 1 if abs(self) == self else -1
 
-    def __str__(self):
-        return str(type(self))[8:-2].split('.')[-1] + f'({self.aff()})'
-
-    def aff(self):
-        return ''
-
 
 class Zero(Nombre):
     def __init__(self):
@@ -55,6 +49,9 @@ class Zero(Nombre):
 
     def __neg__(self):
         return self
+
+    def __str__(self):
+        return '0'
 
 zero = Zero()
 
@@ -93,8 +90,8 @@ class Naturel(Nombre):
     def __abs__(self):
         return self
 
-    def aff(self):
-        return self.n
+    def __str__(self):
+        return str(self.n)
 
 
 un = Naturel(1)
@@ -136,8 +133,8 @@ class Relatif(Nombre):
             return Rationnel(un, self ** (- exposant))
         self.sur(Rationnel) ** exposant
 
-    def aff(self):
-        return self.z
+    def __str__(self):
+        return str(self.z)
 
 
 class Rationnel(Nombre):
@@ -203,7 +200,7 @@ class Rationnel(Nombre):
             return a
         return Rationnel._pgcd(b, a % b)
 
-    def aff(self):
+    def __str__(self):
         return f'{self.num}/{self.denom}'
 
 class Puissance(Nombre):
@@ -272,8 +269,11 @@ class Puissance(Nombre):
     def __abs__(self):
         return Puissance(self.x, self.p)
 
-    def aff(self):
-        return str(self.x) + '^' + str(self.p) + ', ' + str(self.sigma)
+    def __str__(self):
+        s = '+' if self.sigma == 1 else '-'
+        if self.p == Rationnel(1, 2):
+            return f'{s}sqrt({str(self.x)})'
+        return s + str(self.x) + '^' + str(self.p)
 
 
 def sqrt(r):
@@ -323,8 +323,8 @@ class Complexe(Nombre):
     def __abs__(self):
         return sqrt(self.x * self.x + self.y * self.y)
 
-    def aff(self):
-        return str(self.x) + ', ' + str(self.y)
+    def __str__(self):
+        return str(self.x) + '+ i * (' + str(self.y) + ')'
 
 
 i = Complexe(zero, un)
