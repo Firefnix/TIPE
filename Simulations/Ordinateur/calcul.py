@@ -509,3 +509,29 @@ class Matrice(Nombre):
             ]) + ' )'
             for i in range(self.p)
         ])
+
+
+class Eipi(Nombre):
+    def __init__(self, arg):
+        self._arg = arg
+
+    def arg(self):
+        return self._arg
+
+    def sur(self, E: type):
+        if E == Eipi:
+            return self
+        return None
+
+    def __mul__(self, autre):
+        if autre == un:
+            return self
+        if autre == zero:
+            return zero
+
+    def __add__(self, autre):
+        if autre.sous() == zero:
+            return self
+
+    def __str__(self):
+        return f'eipi({self.arg()})'
