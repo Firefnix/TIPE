@@ -7,8 +7,8 @@ class TestQubit:
     def test_ket_zero(self):
         q = Qubit()
         p = Qubit.zero()
-        assert q[0] == un
-        assert q[1] == zero
+        assert q[0] == q[(0,)] == un
+        assert q[1] == q[(1,)] == zero
         assert p == q
 
     def test_un(self):
@@ -33,6 +33,24 @@ class TestQubit:
         assert q3[1, 0] == zero
         assert q3[1, 1] == zero
         assert str(q3) == '1|01⟩'
+
+    def test_pow(self):
+        ket_0 = Qubit.zero()
+        e = ket_0 ** 3
+        assert e[0, 0, 0] == un
+        for i in range(2):
+            for j in range(2):
+                for k in range(2):
+                    if (i, j, k) != (0, 0, 0):
+                        assert e[i, j, k] == zero
+
+    def test_ket(self):
+        assert ket(0) == Qubit.zero() == Qubit()
+        assert ket(1) == Qubit.un()
+        assert ket(0, 0) == Qubit.zero() @ Qubit.zero()
+        assert ket(0, 1) == Qubit.zero() @ Qubit.un()
+        assert ket(1, 1, 1) == Qubit.un() ** 3
+
 
 class TestEtatPropre:
     def test_nom(self):
@@ -59,6 +77,19 @@ class TestEtatPropre:
         e101 = e1 & e01
         assert str(e01) == '|01⟩'
         assert str(e101) == '|101⟩'
+
+
+class TestBra(TestCase):
+    def test_raccourci(self):
+        assert Bra(0) == bra(0)
+        assert Bra(1) == bra(1)
+        assert Bra(1, 0, 1) == bra(1, 0, 1)
+
+    def test_bra(self):
+        assert bra(0) | ket(0) == un
+        assert bra(1) | ket(0) == zero
+        assert bra(1, 0) | (ket(1) @ ket(0)) == un
+        assert bra(1, 1) | (ket(1) @ ket(0)) == zero
 
 
 if __name__ == '__main__':

@@ -78,6 +78,13 @@ class Qubit(Qudit):
             self.matrice[1] = c1
 
     @staticmethod
+    def propre(n: int):
+        assert n == 0 or n == 1
+        if n == 0:
+            return Qubit.zero()
+        return Qubit.un()
+
+    @staticmethod
     def zero():
         return Qubit()
 
@@ -89,3 +96,35 @@ class Qubit(Qudit):
     def matrice(m: Matrice):
         assert m.forme == (2, 1)
         q = Qubit()
+
+    def __pow__(self, n: int):
+        q = self
+        for i in range(n - 1):
+            q = q @ self
+        return q
+
+
+def ket(*arg):
+    assert all([i == 0 or i == 1 for i in arg])
+    q = Qubit.propre(arg[0])
+    for i in arg[1:]:
+        q = q @ Qubit.propre(i)
+    return q
+
+
+class Bra:
+    def __init__(self, *composante):
+        print('New bra:', composante)
+        self.composante = composante
+
+    def __eq__(self, autre):
+        return (isinstance(autre, Bra)
+            and self.composante  == autre.composante)
+
+    def __or__(self, q):
+        assert isinstance(q, Qudit)
+        return q[self.composante]
+
+
+def bra(*composante):
+    return Bra(*composante)

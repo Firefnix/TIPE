@@ -56,6 +56,10 @@ class TestPortes:
         assert C.matrice == Matrice.identite(4)
         assert C == I @ I
 
+    def test_pow(self):
+        assert H ** 3 == H @ H @ H
+        assert (I ** 2).matrice == Matrice.identite(4)
+
 
 if __name__ == '__main__':
     main()

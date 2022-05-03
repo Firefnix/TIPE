@@ -31,6 +31,13 @@ class Porte:
     def __str__(self):
         return str(self.matrice)
 
+    def __pow__(self, n: int):
+        p = self
+        for i in range(n - 1):
+            p = p @ self
+        return p
+
+
 
 I = Identite = Porte(Matrice.int_tableau([[1, 0], [0, 1]]))
 
