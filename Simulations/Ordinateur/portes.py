@@ -1,4 +1,4 @@
-from calcul import un, zero, i, sqrt, Matrice, Rationnel
+from calcul import un, zero, i, sqrt, Matrice, Rationnel, Eipi
 from qubit import Qubit
 
 class Porte:
@@ -53,6 +53,8 @@ iY = iPauliY = Porte(Matrice.int_tableau([[0, 1], [-1, 0]]))
 
 Z = PauliZ = Porte(Matrice.int_tableau([[1, 0], [0, -1]]))
 
+R = lambda phi: Porte(Matrice.tableau([[un, zero], [zero, Eipi(phi)]]))
+
 S = SWAP = Porte(Matrice.int_tableau([
     [1, 0, 0, 0],
     [0, 0, 1, 0],
@@ -64,5 +66,12 @@ cX = CNOT = Porte(Matrice.int_tableau([
     [1, 0, 0, 0],
     [0, 1, 0, 0],
     [0, 0, 0, 1],
-    [0, 0, 1, 0],
+    [0, 0, 1, 0]
 ]))
+
+class Oracle:
+    def __init__(self, f):
+        self.f = f
+
+    def __mul__(self, qubit):
+        return Qubit.propre(self.f(qubit[1]))
