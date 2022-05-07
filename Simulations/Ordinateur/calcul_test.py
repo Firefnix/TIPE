@@ -31,6 +31,9 @@ class TestZero(TestCase):
         assert zero * un_tiers == zero
         assert un_tiers * zero == zero
 
+    def test_signe(self):
+        assert zero.signe() == 1
+
 
 class TestNaturels(TestCase):
     def test_sous(self):
@@ -72,6 +75,9 @@ class TestNaturels(TestCase):
         assert Naturel(6) / Naturel(2) == Naturel(3)
         assert (un*6) / 2 == (un*3)
 
+    def test_signe(self):
+        assert Naturel(3).signe() == 1
+
 
 class TestRelatifs(TestCase):
     def test_sous(self):
@@ -102,6 +108,10 @@ class TestRelatifs(TestCase):
 
     def test_abs(self):
         assert abs(Relatif(-2)) == Naturel(2)
+
+    def test_signe(self):
+        assert Relatif(3).signe() == 1
+        assert Relatif(-3).signe() == -1
 
 
 class TestRationnels(TestCase):
@@ -144,6 +154,10 @@ class TestRationnels(TestCase):
         assert abs(Rationnel(1, 2)) == Rationnel(1, 2)
         assert abs(Rationnel(-1, 2)) == Rationnel(1, 2)
 
+    def test_signe(self):
+        assert (un / 2).signe() == 1
+        assert Rationnel(-1, 2).signe() == -1
+
 
 class TestPuissance(TestCase):
     def test_sous(self):
@@ -179,6 +193,10 @@ class TestPuissance(TestCase):
     def test_inverse(self):
         assert sqrt(2).inverse() == sqrt(Rationnel(1, 2))
 
+    def test_signe(self):
+        assert sqrt(2).signe() == 1
+        assert (-sqrt(2)).signe() == -1
+
 
 class TestComplexe(TestCase):
     def test_plus(self):
@@ -209,6 +227,7 @@ class TestComplexe(TestCase):
         z = Complexe(un, Relatif(-2))
         assert abs(z) == sqrt(5)
         assert abs(i) == un
+
 
 class TestF2(TestCase):
     def test_sous(self):
@@ -330,6 +349,57 @@ class TestMatrice(TestCase):
         print(m4[0, 1], m4[1, 1], m4[0, 1] * m4[1, 1])
         print(m4 @ m4)
         assert m4 @ m4 == m5
+
+
+class TestVectPi(TestCase):
+    def test_pi(self):
+        assert pi == VectPi(1)
+        assert pi == VectPi(un)
+
+    def test_sous(self):
+        assert VectPi(0).sous() == zero
+        assert pi.sous() == pi
+        assert VectPi(sqrt(2)) == VectPi(sqrt(2))
+
+    def test_add(self):
+        pi_sur_trois = VectPi(Rationnel(1, 3))
+        pi_sur_quatre = VectPi(Rationnel(1, 4))
+        pi_sur_six = VectPi(Rationnel(1, 12))
+        assert pi - pi == zero
+        assert pi + pi == VectPi(2)
+        assert pi_sur_trois - pi_sur_quatre == pi_sur_six
+
+    def test_mul(self):
+        deux_pi = VectPi(2)
+        assert zero * pi == pi * zero == zero
+        assert un * pi == pi * un == pi
+
+    def test_neg(self):
+        assert (- VectPi(2)) == VectPi(-2)
+
+
+class TestExpi(TestCase):
+    def test_exp0(self):
+        assert expi(zero) == expi(0) == un
+        assert Expi(zero) == Expi(0) != un
+
+    def test_arg(self):
+        e3i = expi(3)
+        pi_sur_4 = VectPi(Rationnel(1, 4))
+        eipi_sur_4 = expi(pi_sur_4)
+        assert e3i.arg() == Naturel(3)
+        assert eipi_sur_4.arg() == pi_sur_4
+
+    def test_abs(self): # le module
+        z1 = Expi(1, module = 4)
+        z2 = expi(3)
+        assert abs(z1) == Naturel(4)
+        assert abs(z2) == un
+
+    def test_mul(self):
+        z1 = expi(pi / 2)
+        assert z1 * z1 == (-un)
+        assert z1 * 3 == Expi(pi / 2, module = 3)
 
 
 if __name__ == '__main__':

@@ -29,7 +29,7 @@ class Nombre:
         return self + (- autre)
 
     def signe(self):
-        return 1 if abs(self) == self else -1
+        return 1 if abs(self) == self.sous() else -1
 
     def __float__(self):
         if isinstance(self, Complexe):
@@ -524,27 +524,92 @@ class Matrice(Nombre):
         ])
 
 
-class Eipi(Nombre):
-    def __init__(self, arg):
+class VectPi(Nombre): # pi * t avec t.appartient(Puissance)
+    _float_pi = 3.141592653589793
+
+    def __init__(self, t):
+        t = Nombre.ou_int(t)
+        assert t.appartient(Puissance)
+        self.t = t
+
+    def __float__(self):
+        return VectPi._float_pi * float(self.t)
+
+    def __eq__(self, autre):
+        return (isinstance(autre, VectPi) and self.t == autre.t)
+
+    def sous(self):
+        if self.t == zero:
+            return zero
+        return self
+
+    def sur(self, E: type):
+        if E == VectPi:
+            return self
+
+    def __add__(self, autre):
+        if autre == zero:
+            return self
+        if isinstance(autre, VectPi):
+            return VectPi(self.t + autre.t).sous()
+
+    def __neg__(self):
+        return VectPi(- self.t)
+
+    def __mul__(self, autre):
+        if autre.appartient(Puissance):
+            return VectPi(self.t * autre).sous()
+
+    def __str__(self):
+        return f'({str(self.t)})*π'
+
+pi = VectPi(1)
+
+class Expi(Nombre): # module * exp(i * arg)
+    def __init__(self, arg, *, module = un):
+        arg, module = Nombre.ou_int(arg), Nombre.ou_int(module)
+        assert arg.appartient(Puissance) or arg.appartient(VectPi)
+        assert module.signe() == 1
         self._arg = arg
+        self._module = module
+
+    def __eq__(self, autre):
+        return (isinstance(autre, Expi)
+            and self.arg() == autre.arg()
+            and abs(self) == abs(autre))
 
     def arg(self):
         return self._arg
 
+    def sous(self):
+        if self.arg() == zero:
+            return un
+        if self.arg().appartient(VectPi) and self.arg().t.appartient(Relatif):
+            print(self.arg().t)
+            return abs(self) * ((-un) ** self.arg().t)
+        return self
+
     def sur(self, E: type):
-        if E == Eipi:
+        if E == Expi:
             return self
-        return None
+
+    def __abs__(self):
+        return self._module
 
     def __mul__(self, autre):
-        if autre == un:
-            return self
-        if autre == zero:
-            return zero
+        autre = Nombre.ou_int(autre)
+        if autre.appartient(Puissance):
+            return Expi(self.arg(), module = abs(self) * autre).sous()
+        if isinstance(autre, Expi):
+            return Expi(self.arg() + autre.arg(),
+                module = abs(self) * abs(autre)).sous()
 
     def __add__(self, autre):
         if autre.sous() == zero:
             return self
 
     def __str__(self):
-        return f'eipi({self.arg()})'
+        return f'exp(i*({self.arg()}))'
+
+
+expi = lambda theta: Expi(theta).sous()

@@ -1,4 +1,4 @@
-from calcul import un, zero, i, sqrt, Matrice, Rationnel, Eipi
+from calcul import un, zero, i, sqrt, Matrice, Rationnel, Expi
 from qubit import Qubit
 
 class Porte:
