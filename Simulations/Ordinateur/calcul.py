@@ -1,4 +1,10 @@
 class Nombre:
+    @staticmethod
+    def ou_int(x):
+        if isinstance(x, int):
+            return Relatif(x).sous()
+        return x
+
     def appartient(self, E):
         return not (self.sur(E) is None)
 
@@ -10,6 +16,7 @@ class Nombre:
         return self.plus(b).sous()
 
     def __mul__(self, autre):
+        autre = Nombre.ou_int(autre)
         if isinstance(autre, Matrice):
             return autre * self
         T = type(self)
@@ -29,6 +36,10 @@ class Nombre:
             return float(self.x) + 1j * float(self.y)
         a = self.sur(Puissance)
         return a.sigma * ((a.x.num / a.x.denom) ** (a.p.num / a.p.denom))
+
+    def __truediv__(self, autre):
+        autre = Nombre.ou_int(autre)
+        return self * autre.inverse()
 
 
 class Zero(Nombre):
@@ -88,6 +99,9 @@ class Naturel(Nombre):
     def fois(self, autre):
         a =  Naturel(self.n * autre.n)
         return a
+
+    def inverse(self):
+        return Rationnel(1, self.n).sous()
 
     def __pow__(self, exposant):
         return self.sur(Relatif) ** exposant
@@ -211,13 +225,11 @@ class Rationnel(Nombre):
     def __str__(self):
         return f'{self.num}/{self.denom}'
 
+
 class Puissance(Nombre):
     def __init__(self, x, p, sigma: int = 1):
         assert sigma == 1 or sigma == -1
-        if isinstance(x, int):
-            x = Relatif(x)
-        if isinstance(p, int):
-            p = Relatif(p)
+        x, p = Nombre.ou_int(x), Nombre.ou_int(p)
         self.x = x.sur(Rationnel)
         assert self.x.num >= 0
         self.p = p.sur(Rationnel)
@@ -267,6 +279,10 @@ class Puissance(Nombre):
             if a is not None:
                 return Puissance(self.x * a, self.p, self.sigma * autre.signe()).sous()
 
+    def inverse(self):
+        assert self.x != zero
+        return Puissance(self.x, - self.p, self.sigma)
+
     def plus(self, autre):
         if autre.sous() == Zero():
             return self
@@ -290,10 +306,7 @@ def sqrt(r):
 
 class Complexe(Nombre):
     def __init__(self, x, y):
-        if isinstance(x, int):
-            x = Relatif(x)
-        if isinstance(y, int):
-            y = Relatif(y)
+        x, y = Nombre.ou_int(x), Nombre.ou_int(y)
         self.x = x.sous()
         self.y = y.sous()
 

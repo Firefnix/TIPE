@@ -59,6 +59,7 @@ class TestNaturels(TestCase):
         six = Naturel(6)
         assert deux * trois == six
         assert trois * deux == six
+        assert deux * trois == deux * 3
 
     def test_neg(self):
         assert (- un) == Relatif(-1)
@@ -66,6 +67,10 @@ class TestNaturels(TestCase):
 
     def test_abs(self):
         assert abs(Naturel(2)) == Naturel(2)
+
+    def test_div(self):
+        assert Naturel(6) / Naturel(2) == Naturel(3)
+        assert (un*6) / 2 == (un*3)
 
 
 class TestRelatifs(TestCase):
@@ -131,6 +136,10 @@ class TestRationnels(TestCase):
         assert Relatif(-2) * un_demi == Relatif(-1)
         assert un_demi * Relatif(-2) == Relatif(-1)
 
+    def test_div(self):
+        assert un / 5 == Rationnel(1, 5)
+        assert Rationnel(1, 3) / Rationnel(4, 3) == un / 4
+
     def test_abs(self):
         assert abs(Rationnel(1, 2)) == Rationnel(1, 2)
         assert abs(Rationnel(-1, 2)) == Rationnel(1, 2)
@@ -166,6 +175,9 @@ class TestPuissance(TestCase):
 
     def test_abs(self):
         assert abs(- sqrt(7)) == sqrt(7)
+
+    def test_inverse(self):
+        assert sqrt(2).inverse() == sqrt(Rationnel(1, 2))
 
 
 class TestComplexe(TestCase):
