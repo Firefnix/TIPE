@@ -1,0 +1,36 @@
+\documentclass{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{physics} % \bra et \ket
+\usepackage{tikz-cd} % diagrammes, voir aussi: https://tikzcd.yichuanshen.de/
+
+\title{Pair ou impair}
+\author{Groupe EMY}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+On checher à établir un algorithme de détermination de parité fonctionnant sur ordinateur quantique. Le but, étant donné $n \in \mathbb{N}$ fixé, de savoir si $n$ est pair ou impair. Bien entendu l'intérêt de cet algorithme n'est pas d'être plus efficace que des algorithmes classiques (non quantiques) : on cherche principalement à illustrer comment on peut utiliser un ordinateur quantique, avec ses composantes principales (qubits, portes, oracle) afin de résoudre un problème simple.
+
+\section{Détail du circuit}
+
+Le circuit est illustré par le schéma ci-dessous. On dispose d'un qubit, initialement dans l'état $\ket 0$. Il passe par une porte Pauli-X (de symbole $\oplus$), qui en fait un $\ket 1$. Le qubit passe ensuite par une porte de déphasage $R_n$, qui déphase l'état $\ket 1$ pour en faire l'état $e^{in} \ket 1$. Cet état passe ensuite par un \textit{oracle quantique}. Cette porte, qui peut être un système physique, renvoie $\ket{f(e^{in}\ket{1})}$, avec $f(\ket{\psi}) = \bra{1}\ket{\psi} \mod 2$, en notant $\mod$ le reste de la division euclidienne des entiers.
+
+\begin{tikzcd}
+\ket 0 \arrow[r] & \oplus \arrow[r, "\ket 1"', no head] & R_n \arrow[r, "e^{in} \ket 1"', no head] & U_f \arrow[r] &
+\begin{cases}
+    \ket 0 \text{ si $n$ pair} \\
+    \ket 1 \text{ si $n$ impair}
+\end{cases}
+\end{tikzcd}
+
+\end{document}
+
+% Lien du schéma de circuit :
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRGJAF9T1Nd9CKAIzkqtRizYAdKRDTME3XtjwEiAJlHV6zVohAAlAPqElIDCoFEAzFvG62AVSMAzLj3N9Vg5ABY7OpL6MgBGMADmWGDAAMZ0cPCcQu7K-GooZEJigXrsMjBgULHxiVxiMFDh8ESgLgBOEAC2SGQgOBBIIvZBICEg1Ax0YQwACl5W+nVY4QAWOP0gMzB0UGyQYKxm9U2d1O1Imt25dAuDw2OW6SBTs-PUSytrBJse282Ih-uItkdsJwNDGCjcZXG5zBYPVb6dYvWoNd4-L7+X6IMBMBgMAHnEGCEAMGAueacCicIA
