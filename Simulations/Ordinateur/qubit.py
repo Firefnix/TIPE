@@ -28,7 +28,8 @@ class Qudit:
     # Un Qudit possède d'états possibles
     def __init__(self, dim):
         self.dim = dim
-        self.base = [EtatPropre(i) for i in range(dim)]  # vecteurs propres
+        nom = lambda i: (len(bin(dim)[3:]) - len(bin(i)[2:])) * '0' + bin(i)[2:]
+        self.base = [EtatPropre(nom(i)) for i in range(dim)]  # vecteurs propres
         self.matrice = Matrice(dim, 1)
         self.matrice[0] = un
 
@@ -43,12 +44,15 @@ class Qudit:
             int(''.join([str(i) for i in bras]), base=2)
         ]
 
+    def __rshift__(self, autre):
+        return autre * self
+
     def __matmul__(self, autre):
         r = Qudit(self.dim * autre.dim)
         r.matrice = self.matrice @ autre.matrice
         for i in range(self.dim * autre.dim):
             nom = bin(i)[2:]
-            nom = '0' * ((self.dim * autre.dim)//2 - len(nom)) + nom
+            nom = '0' * ((self.dim * autre.dim) // 2 - len(nom)) + nom
             r.base[i].renomme(nom)
         return r
 
@@ -114,6 +118,7 @@ class Qubit(Qudit):
 
 
 def ket(*arg):
+    arg = [int(i) for i in arg]
     assert all([i == 0 or i == 1 for i in arg])
     q = Qubit.propre(arg[0])
     for i in arg[1:]:
@@ -123,7 +128,6 @@ def ket(*arg):
 
 class Bra:
     def __init__(self, *composante):
-        print('New bra:', composante)
         self.composante = composante
 
     def __eq__(self, autre):

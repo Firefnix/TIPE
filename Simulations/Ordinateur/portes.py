@@ -1,5 +1,5 @@
-from calcul import un, zero, i, sqrt, Matrice, Rationnel, Expi
-from qubit import Qubit
+from calcul import un, zero, i, sqrt, Matrice, Rationnel, expi
+from qubit import bra, ket, Qudit
 
 class Porte:
     # Une `Porte` s'utilise comme une matrice, en multipliant
@@ -14,12 +14,15 @@ class Porte:
         return isinstance(autre, Porte) and self.matrice == autre.matrice
 
     def __mul__(self, autre):
-        if isinstance(autre, Qubit):
-            q = Qubit()
+        if isinstance(autre, Qudit):
+            q = Qudit(autre.dim)
             q.matrice = self.matrice * autre.matrice
             return q
         elif isinstance(autre, Porte):
             return Porte(self.matrice * autre.matrice)
+
+    def __rshift__(self, autre):
+        return autre * self
 
     def dague(self):
         return Porte(self.matrice.transposee().conjuguee())
@@ -43,9 +46,7 @@ class Porte:
 
 I = Identite = Porte(Matrice.int_tableau([[1, 0], [0, 1]]))
 
-H = Hadamard = Porte(
-    sqrt(Rationnel(1, 2)) * Matrice.int_tableau([[1, 1], [1, -1]])
-)
+H = Hadamard = Porte(sqrt(un / 2) * Matrice.int_tableau([[1, 1], [1, -1]]))
 
 X = PauliX = Porte(Matrice.int_tableau([[0, 1], [1, 0]]))
 
@@ -55,7 +56,7 @@ iY = iPauliY = Porte(Matrice.int_tableau([[0, 1], [-1, 0]]))
 
 Z = PauliZ = Porte(Matrice.int_tableau([[1, 0], [0, -1]]))
 
-R = lambda phi: Porte(Matrice.tableau([[un, zero], [zero, Eipi(phi)]]))
+R = lambda phi: Porte(Matrice.tableau([[un, zero], [zero, expi(phi)]]))
 
 S = SWAP = Porte(Matrice.int_tableau([
     [1, 0, 0, 0],
@@ -75,5 +76,6 @@ class Oracle:
     def __init__(self, f):
         self.f = f
 
-    def __mul__(self, qubit):
-        return Qubit.propre(self.f(qubit[1]))
+    def __mul__(self, qudit):
+        assert isinstance(qudit, Qudit)
+        return ket(self.f(qudit))
