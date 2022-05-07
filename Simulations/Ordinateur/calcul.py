@@ -11,12 +11,18 @@ class Nombre:
     def __add__(self, autre):
         T = type(self)
         b = autre.sur(T)
+        if self == zero:
+            return autre
+        if autre == zero:
+            return self
         if b is None:
             return (autre + self).sous()
         return self.plus(b).sous()
 
     def __mul__(self, autre):
         autre = Nombre.ou_int(autre)
+        if self == zero or autre == zero:
+            return zero
         if isinstance(autre, Matrice):
             return autre * self
         T = type(self)
@@ -45,6 +51,9 @@ class Nombre:
 class Zero(Nombre):
     def __init__(self):
         self.n = 0 # par assimilation aux naturels
+
+    def __int__(self):
+        return 0
 
     def __eq__(self, autre):
         return isinstance(autre, Zero)
@@ -81,6 +90,9 @@ class Naturel(Nombre):
     def __eq__(self, autre):
         return isinstance(autre, Naturel) and autre.n == self.n
 
+    def __int__(self):
+        return self.n
+
     def sous(self):
         if self.n == 0:
             return Zero()
@@ -101,7 +113,13 @@ class Naturel(Nombre):
         return a
 
     def inverse(self):
-        return Rationnel(1, self.n).sous()
+        return self.sur(Relatif).inverse()
+
+    def __mod__(self, autre):
+        return self.sur(Relatif) % autre
+
+    def __floordiv__(self, autre):
+        return self.sur(Relatif) // autre
 
     def __pow__(self, exposant):
         return self.sur(Relatif) ** exposant
@@ -126,6 +144,9 @@ class Relatif(Nombre):
     def __eq__(self, autre):
         return isinstance(autre, Relatif) and autre.z == self.z
 
+    def __int__(self):
+        return self.z
+
     def sous(self):
         if self.z >= 0:
             return Naturel(self.z).sous()
@@ -141,6 +162,15 @@ class Relatif(Nombre):
 
     def fois(self, autre):
         return Relatif(self.z * autre.z)
+
+    def inverse(self):
+        return Rationnel(self.signe(), abs(self.z)).sous()
+
+    def __mod__(self, autre):
+        return Relatif(int(self) % int(autre)).sous()
+
+    def __floordiv__(self, autre):
+        return Relatif(int(self) // int(autre)).sous()
 
     def __neg__(self):
         return Relatif(- self.z).sous()
@@ -394,7 +424,7 @@ class Matrice(Nombre):
         self._c = [[Zero() for _ in range(q)] for _ in range(p)]
 
     def __eq__(self, autre):
-        if self.p != autre.p or self.q != autre.q:
+        if (not isinstance(autre, Matrice)) or self.p != autre.p or self.q != autre.q:
             return False
         for i in range(self.p):
             for j in range(self.q):

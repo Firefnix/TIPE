@@ -75,6 +75,16 @@ class TestNaturels(TestCase):
         assert Naturel(6) / Naturel(2) == Naturel(3)
         assert (un*6) / 2 == (un*3)
 
+    def test_mod(self):
+        quinze = Naturel(15)
+        assert quinze % Naturel(3) == quinze % 3 == zero
+        assert quinze % Naturel(6) == quinze % 6 == Naturel(3)
+
+    def test_floordiv(self):
+        quinze = Naturel(15)
+        assert quinze // Naturel(3) == quinze // 3 == Naturel(5)
+        assert quinze // Naturel(6) == quinze // 6 == Naturel(2)
+
     def test_signe(self):
         assert Naturel(3).signe() == 1
 
@@ -101,6 +111,7 @@ class TestRelatifs(TestCase):
         moins_six = Relatif(-6)
         assert deux * moins_trois == moins_six
         assert moins_trois * deux == moins_six
+        assert un * (-3) == moins_trois
 
     def test_neg(self):
         assert (- Relatif(-2)) == Naturel(2)
@@ -108,6 +119,20 @@ class TestRelatifs(TestCase):
 
     def test_abs(self):
         assert abs(Relatif(-2)) == Naturel(2)
+
+    def test_div(self):
+        assert Relatif(-2) / Relatif(3) == Rationnel(-2, 3)
+        assert Relatif(-2) / Relatif(-3) == Rationnel(2, 3)
+
+    def test_mod(self):
+        moins_quinze = Relatif(-15)
+        assert moins_quinze % Relatif(-3) == moins_quinze % (-3) == zero
+        assert moins_quinze % Relatif(-6) == moins_quinze % (-6) == Relatif(-3)
+
+    def test_floordiv(self):
+        moins_quinze = Relatif(-15)
+        assert moins_quinze // Relatif(-3) == moins_quinze // (-3) == Naturel(5)
+        assert moins_quinze // Relatif(-6) == moins_quinze // (-6) == Naturel(2)
 
     def test_signe(self):
         assert Relatif(3).signe() == 1

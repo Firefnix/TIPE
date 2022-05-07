@@ -97,7 +97,16 @@ class Qubit(Qudit):
         assert m.forme == (2, 1)
         q = Qubit()
 
+    def _puissance_rapide(self, n : int):
+        q = Qudit(2 ** n)
+        if self == ket(1):
+            q.matrice[0] = zero
+            q.matrice[2**n - 1] = un
+        return q
+
     def __pow__(self, n: int):
+        if self == ket(0) or self == ket(1):
+            return self._puissance_rapide(n)
         q = self
         for i in range(n - 1):
             q = q @ self

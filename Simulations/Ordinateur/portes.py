@@ -32,6 +32,8 @@ class Porte:
         return str(self.matrice)
 
     def __pow__(self, n: int):
+        if self.matrice == Matrice.identite(self.matrice.p):
+            return Porte(Matrice.identite(self.matrice.p ** n))
         p = self
         for i in range(n - 1):
             p = p @ self
