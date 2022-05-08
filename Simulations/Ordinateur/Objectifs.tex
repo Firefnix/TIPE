@@ -30,13 +30,15 @@ Dans le cadre du développment du protocole EMY-22 (protocole de transmission qu
 
 \section{Unités de mémoire – Qubits}
 
-Un bit est une unité de base de la mémoire qui peut prendre uniquement deux états : $0$ et $1$. Un qubit, ou bit quantique diffère d'un bit car il son état est une combinaison linéaire des deux états propres du qubit, $\ket{0}$ et $\ket{1}$. Cette combinaison linéaire doit néanmoins respecter la condition de normalisation, si bien que l'ensemble des états possibles d'un qubit est :
+Un bit est une unité de base de la mémoire qui peut prendre uniquement deux états : $0$ et $1$. Un qubit, ou bit quantique diffère d'un bit car il son état est une combinaison linéaire des deux états de base (ou \textit{vecteurs propres}) du qubit, $\ket{0}$ et $\ket{1}$. Cette combinaison linéaire doit néanmoins respecter la condition de normalisation, si bien que l'ensemble des états possibles d'un qubit est :
 
 \[ E_Q = \{\alpha \ket 0 + \beta \ket 1 \mid \alpha, \beta \in \mathbb{C}, |\alpha|^2 + |\beta|^2 = 1\} \]
 
 Un cas plus général est celui des qudits, qui sont une généralisation des qubits avec $d$ vecteurs propres. Par exemple avec $d = 3$ on aurait les vecteurs propres $\ket 0$, $\ket 1$ et $\ket 2$. L'ensemble des états d'un qudit est :
 
 $$ E_d = \left\{ \somme_{i = 0}^{d - 1} \alpha_i \ket i \middle|\, \forall i \in \llbracket 0, d-1 \rrbracket, \alpha_i \in \mathbb{C},  \somme_{i = 0}^{d - 1} |\alpha_i|^2 = 1\right\} $$
+
+L'état est représenté sous la forme d'une matrice colonne, ce qui facilite l'applications de portes quantiques. Par exemple l'état $\ket \psi = a \ket 0 + b \ket 1$, avec $a, b \in \mathbb{C}$ est assimilé à la matrice $\left(\begin{smallmatrix} a \\ b\end{smallmatrix}\right)$.
 
 
 \section{Calcul informatique quantique}
@@ -46,7 +48,13 @@ Le calcul quantique à proprement parlé sera implémenté dans le module \p{qub
 
 De manière analogue aux ordinateurs classiques, les ordinateurs quantiques sont basés sur des circuits électroniques. Ces circuits sont entre autres composés de portes logiques, qui agissent sur un petit nombre d'unités de mémoire (comme des qubits) en modifiant leur état. Un circuit est alors définissable comme : une entrée (avec un état initial de la mémoire connu), et un graphe représentant les différentes portes logiques opérant sur la mémoire, dont fait partie la sortie qui présente l'état de la mémoire qui est le résultat des calculs.
 
-On implémentera donc la structure de circuit sous forme de graphe orienté dont les sommets sont des portes logiques.
+\noindent \textbf{\underline{Exemple :}} pour le circuit ci-dessous (où $H$ est la porte de Hadamard et $X$ la porte \p{NOT} ou encore porte de Pauli-X).
+
+\begin{tikzcd}
+\text{Entrée 1} \arrow[r] & H \arrow[r]  & \text{Swap} \arrow[d, no head] \arrow[r] & X \arrow[r]                              & \text{Sortie 1} \\
+\text{Entrée 2} \arrow[r] & X \arrow[r]  & \text{Swap} \arrow[r]                    & \text{Swap} \arrow[r]                    & \text{Sortie 2} \\
+\text{Entrée 3} \arrow[r] & H \arrow[rr] &                                          & \text{Swap} \arrow[u, no head] \arrow[r] & \text{Sortie 3}
+\end{tikzcd}
 
 
 \section{Calcul mathématique}
@@ -121,3 +129,6 @@ Le nombre de lignes d'une matrice \p{m} est \p{m.p} et son nombre de colonnes es
 Les éléments d'une matrice ne sont jamais des \p{int}, des \p{float} et encore moins des \p{str} : tous les coefficients sont des nombres formellements stockés (voir \ref{ensembles}), donc des éléments de $\mathbb{P}[i]$.
 
 \end{document}
+
+% Lien vers le schéma du cicruit :
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRAB12cYAPHYAKJgcAJwCXMAAQBGAL4hZpdJlz5CKaeSq1GLNgAkFSkBmx4CRAExbq9Zq0QcuvfgGUA7nTTzFys2qIAZhsdezYADSM-VQsUABYQuz1HTm4+YFcIETwpOSiTFXN1ElJpbSSHJzT+IVEJSUsfY1MY4s0y211KyN8C-1jkaw7Q5KqXDM9vfJaioNLyrrZU8Y8vJujZ+PnOsJTndMzsrClG6cKAlDJLBd2x9NrxKUD1vtaiTWud0cNemYvkYKfEaVZYHSYvP4DBJAipLfZuLI5STPBTaGBQADm8CIoAAZiIIABbJBkEA4CBITTApBgJgMBjUBh0ABGMAYAAVzrEQAwYLicPl8UTKdRyUhrNTELT6YyWWzOf11Dy+QLekLiYgJWLEAB2L4OaUMnlyjlcpW8-kgagACxgdCgbEgYFYaoJGq1FMQwUlhtlrNNirYFtVxnVSG92oSPrpRqZ-oVb0cwcFbqQAFZRZ6AGz6mkxv3ys1BlUp4WIHNkz166My43xotJkuusvV7UADlzUvzdcLgcblubGo7laQAE5O76ewHE8qB6HU4hpKTtdIqbCu7W472Z8nB5SqSuJevJ1vp5tZyG8QvpB6kMPj93Twnz8mbXaHY4nS752Wb5nKd6D6biaz4XBeqKyEAA
