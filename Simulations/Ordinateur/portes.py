@@ -37,11 +37,12 @@ class Porte:
     def __pow__(self, n: int):
         if self.matrice == Matrice.identite(self.matrice.p):
             return Porte(Matrice.identite(self.matrice.p ** n))
-        p = self
-        for i in range(n - 1):
-            p = p @ self
-        return p
-
+        if n == 1:
+            return self
+        a = self ** (n//2)
+        if n % 2 == 1:
+            return self @ (a @ a)
+        return a @ a
 
 
 I = Identite = Porte(Matrice.int_tableau([[1, 0], [0, 1]]))
