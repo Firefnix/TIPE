@@ -33,6 +33,12 @@ class Qudit:
         self.matrice = Matrice(dim, 1)
         self.matrice[0] = un
 
+    @staticmethod
+    def matrice(self, mat: Matrice):
+        q = Qudit()
+        q.matrice = mat
+        return q
+
     def __eq__(self, autre):
         return self.matrice == autre.matrice
 
@@ -96,11 +102,6 @@ class Qubit(Qudit):
     def un():
         return Qubit(zero, un)
 
-    @staticmethod
-    def matrice(m: Matrice):
-        assert m.forme == (2, 1)
-        q = Qubit()
-
     def _puissance_rapide(self, n : int):
         q = Qudit(2 ** n)
         if self == ket(1):
@@ -111,10 +112,12 @@ class Qubit(Qudit):
     def __pow__(self, n: int):
         if self == ket(0) or self == ket(1):
             return self._puissance_rapide(n)
-        q = self
-        for i in range(n - 1):
-            q = q @ self
-        return q
+        if n == 1:
+            return self
+        a = self ** (n//2)
+        if n % 2 == 1:
+            return self @ (a @ a)
+        return a @ a
 
 
 def ket(*arg):
@@ -137,6 +140,11 @@ class Bra:
     def __or__(self, q):
         assert isinstance(q, Qudit)
         return q[self.composante]
+
+    def __str__(self):
+        if isinstance(self.composante, int):
+            return '⟨' + str(self.composante) + '|'
+        return '⟨' + ''.join([str(i) for i in self.composante]) + '|'
 
 
 def bra(*composante):
