@@ -51,6 +51,11 @@ class TestQubit:
         assert ket(0, 1) == Qubit.zero() @ Qubit.un()
         assert ket(1, 1, 1) == Qubit.un() ** 3
 
+    def test_str_ket(self):
+        assert str(ket(0, 0)) == '1|00⟩'
+        assert str(ket(1, 1, 0)) == '1|110⟩'
+        assert str(ket(1, 1, 1, 0)) == '1|1110⟩'
+
 
 class TestEtatPropre:
     def test_nom(self):

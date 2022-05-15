@@ -324,7 +324,7 @@ class Puissance(Nombre):
         return Puissance(self.x, self.p)
 
     def __str__(self):
-        s = '+' if self.sigma == 1 else '-'
+        s = '' if self.sigma == 1 else '-'
         if self.p == Rationnel(1, 2):
             return f'{s}sqrt({str(self.x)})'
         return s + str(self.x) + '^' + str(self.p)
@@ -379,6 +379,26 @@ class Complexe(Nombre):
 
 
 i = Complexe(zero, un)
+
+def int_vers_bin(n: int, *, taille = None):
+    assert n >= 0
+    b = [int(i) for i in bin(n)[2:]]
+    return b if taille is None else [0] * (taille - len(b)) + b
+
+def bin_vers_int(*valeurs):
+    return int(''.join([str(i) for i in valeurs]) or '0', base = 2)
+
+def int_log2(n: int): # partie entière supérieure de log2(n)
+    assert n > 0
+    return len(bin(n)[2:])
+
+def strbin_vers_int(s):
+    return int(s, base = 2)
+
+def int_vers_strbin(n: int, *, taille = None):
+    assert n >= 0
+    s = bin(n)[2:]
+    return s if taille is None else '0' * (taille - len(s)) + s
 
 
 class F2(Nombre):

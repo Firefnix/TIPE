@@ -1,5 +1,5 @@
 from random import choices
-from calcul import Matrice, un, zero
+from calcul import Matrice, un, zero, int_log2, int_vers_strbin, bin_vers_int
 
 
 class EtatPropre:
@@ -23,12 +23,12 @@ class EtatPropre:
         self.nom = str(nom)
 
 
-# L'équivalent d'un Qubit, mais avec d états propres différents
+# L'équivalent d'un Qubit, mais avec dim états propres différents
 class Qudit:
-    # Un Qudit possède d'états possibles
+    # Un Qudit possède dim états possibles
     def __init__(self, dim):
         self.dim = dim
-        nom = lambda i: (len(bin(dim)[3:]) - len(bin(i)[2:])) * '0' + bin(i)[2:]
+        nom = lambda i: int_vers_strbin(i, taille = int_log2(dim)-1)
         self.base = [EtatPropre(nom(i)) for i in range(dim)]  # vecteurs propres
         self.matrice = Matrice(dim, 1)
         self.matrice[0] = un
@@ -46,9 +46,7 @@ class Qudit:
         if isinstance(bras, int):
             return self.matrice[bras]
         assert all([(i == 0 or i == 1) for i in bras])
-        return self.matrice[
-            int(''.join([str(i) for i in bras]), base=2)
-        ]
+        return self.matrice[bin_vers_int(*bras)]
 
     def __rshift__(self, autre):
         return autre * self
@@ -56,10 +54,6 @@ class Qudit:
     def __matmul__(self, autre):
         r = Qudit(self.dim * autre.dim)
         r.matrice = self.matrice @ autre.matrice
-        for i in range(self.dim * autre.dim):
-            nom = bin(i)[2:]
-            nom = '0' * ((self.dim * autre.dim) // 2 - len(nom)) + nom
-            r.base[i].renomme(nom)
         return r
 
     def mesure(self):

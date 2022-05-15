@@ -292,6 +292,28 @@ class TestF2(TestCase):
         assert u * z == z
         assert u * u == u
 
+    def test_int_vers_bin(self):
+        assert int_vers_bin(11) == [1, 0, 1, 1]
+        assert int_vers_bin(0) == [0]
+        assert int_vers_bin(2, taille = 4) == [0, 0, 1, 0]
+
+    def test_bin_vers_int(self):
+        assert bin_vers_int(1, 0, 1, 1) == 11
+        assert bin_vers_int() == bin_vers_int(0) == 0
+
+    def test_int_log2(self):
+        assert int_log2(3) == 2
+        assert int_log2(4) == int_log2(5) == 3
+
+    def test_int_vers_strbin(self):
+        assert int_vers_strbin(11) == '1011'
+        assert int_vers_strbin(0) == '0'
+        assert int_vers_strbin(2, taille = 4) == '0010'
+
+    def strbin_vers_int(self):
+        assert strbin_vers_int('1011') == 11
+        assert strbin_vers_int('0010') == 2
+
 
 class TestF2Uplet(TestCase):
     def test_creation(self):
