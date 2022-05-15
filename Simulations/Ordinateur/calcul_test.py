@@ -266,6 +266,7 @@ class TestF2(TestCase):
         assert int(F2(0)) == int(F2(8)) == 0
 
     def test_calcul(self):
+        assert F2(F2(1)) == F2(1)
         assert F2(0) == F2(zero) == F2(Rationnel(8, 4))
         assert F2(1) == F2(un) == F2(Rationnel(9, 3))
 
@@ -290,6 +291,22 @@ class TestF2(TestCase):
         assert z * u == z
         assert u * z == z
         assert u * u == u
+
+
+class TestF2Uplet(TestCase):
+    def test_creation(self):
+        assert F2.uplet(1) == F2Uplet(1)
+
+    def test_eq(self):
+        t1 = F2Uplet(un, un, zero)
+        t2 = F2Uplet(1, 1, 0)
+        assert t1 == t2
+
+    def test_plus(self):
+        t1 = F2Uplet(1, 0, 0)
+        t2 = F2Uplet(1, 1, 0)
+        t3 = F2Uplet(0, 1, 0)
+        assert t1 + t2 == t3
 
 
 class TestMatrice(TestCase):

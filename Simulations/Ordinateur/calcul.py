@@ -408,6 +408,32 @@ class F2(Nombre):
             return self
         return Naturel(self.n).sur(E)
 
+    @staticmethod
+    def uplet(*valeurs):
+        return F2Uplet(*valeurs)
+
+
+class F2Uplet:
+    def __init__(self, *valeurs):
+        self.taille = len(valeurs)
+        self._valeurs = [F2(i) for i in valeurs]
+
+    def __eq__(self, autre):
+        return (isinstance(autre, F2Uplet)
+            and self.taille == autre.taille
+            and all([self[i] == autre[i] for i in range(self.taille)]))
+
+    def __add__(self, autre):
+        assert isinstance(autre, F2Uplet) and self.taille == autre.taille
+        return F2Uplet(*[self[i] + autre[i] for i in range(self.taille)])
+
+    def __getitem__(self, indice):
+        return self._valeurs[indice]
+
+    def __setitem__(self, indice, valeur):
+        assert isinstance(valeur, F2)
+        self._valeurs[indice] = valeur
+
 
 class Matrice(Nombre):
     # Renvoie une matrice remplie de zéros
