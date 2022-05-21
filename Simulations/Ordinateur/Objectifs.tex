@@ -15,6 +15,7 @@
 \newcommand{\tab}{\hspace*{5mm}}
 \newcommand{\floor}[1]{\lfloor #1 \rfloor} % Partie entière
 \newcommand{\exemple}{\textbf{\underline{Exemple :} }}
+\newcommand{\entiers}[2]{\llbracket #1,\ #2\rrbracket} % intervalle d'entiers
 
 % Fonctions :
 \newcommand{\fonction}[5]{\begin{array}{l|rcl}
@@ -44,7 +45,7 @@ Un bit est une unité de base de la mémoire qui peut prendre uniquement deux é
 
 Un cas plus général est celui des qudits, qui sont une généralisation des qubits avec $d$ vecteurs propres. Par exemple avec $d = 3$ on aurait les vecteurs propres $\ket 0$, $\ket 1$ et $\ket 2$. L'ensemble des états d'un qudit est :
 
-$$ E_d = \left\{ \somme_{i = 0}^{d - 1} \alpha_i \ket i \middle|\, \forall i \in \llbracket 0, d-1 \rrbracket, \alpha_i \in \mathbb{C},  \somme_{i = 0}^{d - 1} |\alpha_i|^2 = 1\right\} $$
+$$ E_d = \left\{ \somme_{i = 0}^{d - 1} \alpha_i \ket i \middle|\, \forall i \in \entiers{0}{d-1}, \alpha_i \in \mathbb{C},  \somme_{i = 0}^{d - 1} |\alpha_i|^2 = 1\right\} $$
 
 L'état est représenté sous la forme d'une matrice colonne, ce qui facilite l'applications de portes quantiques. Par exemple l'état $\ket \psi = a \ket 0 + b \ket 1$, avec $a, b \in \mathbb{C}$ est assimilé à la matrice $\left(\begin{smallmatrix} a \\ b\end{smallmatrix}\right)$.
 
@@ -66,15 +67,46 @@ De manière analogue aux ordinateurs classiques, les ordinateurs quantiques sont
 \text{Entrée 3} \arrow[r] & H \arrow[rr] &                                          & \text{Swap} \arrow[u, no head] \arrow[r] & \text{Sortie 3}
 \end{tikzcd}
 
+
 \subsection{L'oracle quantique $U_f$}
 
-L'oracle quantique est une porte à part, puisqu'il est la plupart du temps un système physique, qui fournit la partie la plus difficile de la réponse au problème que l'on souhaite résoudre. Un cas assez général (celui de l'algorithme de Grover ou de celui de Deutch-Jotza) est celui ou on cherche à résoudre une équation du type : $f(x_1, ..., x_n) = (y_1, ..., y_m)$, avec $n, m \in \mathbb{N}^*$. Pour une \textit{fonction d'oracle} notée $f : {\mathbb{F}_2} ^ n \rightarrow {\mathbb{F}_2} ^ m$, on a en notant $x = x_1, ..., x_n$ les paramètres de $f$ et $y = y_1, ..., y_m$ la valeur recherchée :
+
+L'oracle quantique est une porte à part, puisqu'il ne peut pas être représenté par une matrice dans la plupart des cas. Il s'agit néanmoins d'une opération réversible comme toute autre porte. On distingue principalement deux types d'oracles, qui sont utilisés dans deux algorithmes célèbres.
+
+
+\subsubsection{Oracle de phase}
+
+
+Soit $n \in \mathbb{N}^*$, on dispose d'une fonction $f : {\mathbb{F}_2}^n \rightarrow \mathbb{F}_2$. On assimile chaque entier $0 \le i < 2^n - 1$ à sa décomposition en base 2 si bien qu'on a $\tilde{f} : \entiers{0}{2^n - 1} \rightarrow \{0, 1\}$ On définit l'oracle de phase $U_f$ tel que pour tout \underline{état propre} $p_i$ :
+
+$$U_f \ket{p_i} = (-1)^{\tilde{f}(i)} \ket{p_i}$$
+
+Pour toute superposition de $n$ qubits $\ket \psi$, on peut écrire :
+
+$$\ket \psi = \somme^{2^n-1}_{i = 0} \bra{p_i}\ket{q} \ket{p_i}$$
+
+Cela nous permet, en utilisant la linéarité de $U_f$, de calculer $U_f \ket \psi$ :
+
+\begin{align*}
+U_f \ket \psi &= U_f \somme^{2^n-1}_{i = 0} \bra{p_i}\ket{q} \ket{p_i} \\
+              &= \somme^{2^n-1}_{i = 0} \bra{p_i}\ket{q} U_f \ket{p_i} \\
+              &= \somme^{2^n-1}_{i = 0} \bra{p_i}\ket{q} (-1)^{\tilde{f}(i)} \ket{p_i} \\
+              &= \somme^{2^n-1}_{i = 0} (\bra{p_i}\ket{q} \ket{p_i}) \cdot (-1)^{\tilde{f}(i)}
+\end{align*}
+
+Il suffit donc pour obtenir $U_f \ket \psi$ de multiplier chacune des composantes d'indice $i$ de $\ket \psi$ par $(-1)^{\tilde{f}(i)}$.
+
+
+\subsubsection{Oracle de somme}
+
+
+Cet oracle courant est notamment utilisé dans l'algorithme de Deutch-Jozsa, ou lorsqu'on cherche à résoudre une équation du type : $f(x_1, ..., x_n) = (y_1, ..., y_m)$, avec $n, m \in \mathbb{N}^*$. Pour une \textit{fonction d'oracle} notée $f : {\mathbb{F}_2} ^ n \rightarrow {\mathbb{F}_2} ^ m$, on a en notant $x = x_1, ..., x_n$ les paramètres de $f$ et $y = y_1, ..., y_m$ la valeur recherchée :
 
 $$U_f \ket{x, y} = \ket{x, f(x) \oplus y}$$
 
 avec $\oplus$ l'addition usuelle des $m$-uplets dans le corps $\mathbb{F}_2$ et notant que pour tous $\psi_1, ..., \psi_k$, la notation $\ket{\psi_1, ..., \psi_k}$ désigne $\ket{\psi_1} \otimes ... \otimes \ket{\psi_k}$ (avec $\otimes$ le produit tensoriel, qui est dans notre cas celui des matrices). \newline
 
-\noindent \exemple le calcul serait assez simple si les états $x_1, ..., x_n$ n'étaient pas dans le cas général une superposition d'états. On a donc en pratique des situations comme celles-ci :
+\noindent \exemple le calcul serait assez simple si les états $x_1, ..., x_n$ n'étaient pas dans le cas général une superposition d'états. On a donc en pratique des situations comme celle-ci :
 
 On a $n = m = 2$ et la fonction $f$ est donnée par :
 
@@ -138,7 +170,7 @@ Soit $a = \sigma x ^ p \in \mathbb{P}$ une puissance. On a $\sigma \in \{-1, 1\}
 
 \noindent\texttt{Pour $d_r$ allant de $1$ à $d_x$ \\
 \tab Si $\eta = x \cdot {d_r}^{d_p} \in \mathbb{N}$ \\
-\tab\tab Si $\exists n_r \in \llbracket 1, \floor{\sqrt{\eta}} \rrbracket$ tel que ${n_r}^{d_p} = \eta$ \\
+\tab\tab Si $\exists n_r \in \entiers{1}{\floor{\sqrt{\eta}}}$ tel que ${n_r}^{d_p} = \eta$ \\
 \tab\tab\tab On renvoie $r = \frac{n_r}{d_r}$ \\
 \tab\tab Fin si \\
 \tab Fin si \\
@@ -158,7 +190,7 @@ Exemple pour le calcul $-\frac{1}{2} \times (-2) = 1$ :
 
 \subsection{Matrices}
 
-Le nombre de lignes d'une matrice \p{m} est \p{m.p} et son nombre de colonnes est \p{m.q}, avec $p, q \in \mathbb{N}$. On peut accéder à $p$ et $q$ en même temps en regardant \p{m.forme}, qui vaut le tuple \p{(p, q)}. Les élements sont accessibles par un couple $(i, j) \in \llbracket 0, p -1 \rrbracket \times \llbracket 0, q -1 \rrbracket$, les indices commençant donc à 0. On aura par exemple \p{m[0, 0]} Pour les matrices lignes et colonnes, il n'est nécessaire que de spécifier l'une des deux coordonnées (l'autre étant forcément 0). On aura dans ce cas \p{m[2]} par exemple.
+Le nombre de lignes d'une matrice \p{m} est \p{m.p} et son nombre de colonnes est \p{m.q}, avec $p, q \in \mathbb{N}$. On peut accéder à $p$ et $q$ en même temps en regardant \p{m.forme}, qui vaut le tuple \p{(p, q)}. Les élements sont accessibles par un couple $(i, j) \in \entiers{0}{p -1} \times \entiers{0}{q -1}$, les indices commençant donc à 0. On aura par exemple \p{m[0, 0]} Pour les matrices lignes et colonnes, il n'est nécessaire que de spécifier l'une des deux coordonnées (l'autre étant forcément 0). On aura dans ce cas \p{m[2]} par exemple.
 
 Les éléments d'une matrice ne sont jamais des \p{int}, des \p{float} et encore moins des \p{str} : tous les coefficients sont des nombres formellements stockés (voir \ref{ensembles}), donc des éléments de $\mathbb{P}[i]$.
 

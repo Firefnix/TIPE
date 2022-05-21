@@ -1,4 +1,5 @@
 from unittest import TestCase, main
+from calcul import F2
 from portes import *
 from qubit import Qubit
 
@@ -68,6 +69,12 @@ class TestPortesRemarquables:
         assert H * z == q1
         assert H * u == q2
 
+    def test_swap(self):
+        q1 = ket(0) >> H
+        q2 = ket(1) >> H
+        assert (q1 @ q2) >> S == q2 @ q1
+        assert (q2 @ q1) >> S == q1 @ q2
+
     def test_neutre(self):
         # la porte neutre n'est applicable sur aucun qubit
         n = Porte.neutre()
@@ -76,6 +83,18 @@ class TestPortesRemarquables:
         assert n * n == n == n ** 7
         assert n * (H ** 2) == H ** 2
         assert (H ** 2) * n == H ** 2
+
+class TestOracles:
+    def test_phase(self):
+        def f(x, y):
+            assert isinstance(x, F2) and isinstance(y, F2)
+            return x + y
+        Uf = OracleDePhase(f, 2)
+        e1, e2 = ket(1, 0), ket(1, 0)
+        e2 |= bra(1, 0) | (-un)
+        print(e1)
+        print(e1 >> Uf)
+        assert e1 >> Uf == e2
 
 
 if __name__ == '__main__':
