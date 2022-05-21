@@ -1,4 +1,4 @@
-from calcul import un, zero, i, sqrt, Matrice, Rationnel, expi
+from calcul import un, zero, i, sqrt, Matrice, F2, expi, int_vers_bin
 from qubit import bra, ket, Qudit
 
 class Porte:
@@ -85,10 +85,17 @@ cX = CNOT = Porte(Matrice.int_tableau([
     [0, 0, 1, 0]
 ]))
 
-class Oracle:
-    def __init__(self, f):
+
+class OracleDePhase():
+    # taille_x: nombre de paramètres pris par f
+    def __init__(self, f, taille_x):
         self.f = f
+        self.n = taille_x
 
     def __mul__(self, qudit):
-        assert isinstance(qudit, Qudit)
-        return ket(self.f(qudit))
+        assert qudit.dim == 2 ** self.n
+        r = Qudit(qudit.dim)
+        for i in range(qudit.dim):
+            r |= bra(i) | (bra(i) | qudit) * (-un) ** self.f(
+                *[F2(i) for i in int_vers_bin(i, taille = self.n)])
+        return r
