@@ -8,6 +8,35 @@ class TestPortes:
         assert I == Porte(Matrice.int_tableau([[1, 0], [0, 1]]))
         assert I != X
 
+    def test_produit_tensoriel(self):
+        M = Porte(un / 2 * Matrice.int_tableau([
+            [1,  1,  1,  1],
+            [1, -1,  1, -1],
+            [1,  1, -1, -1],
+            [1, -1, -1,  1]
+        ]))
+        assert H @ H == M
+
+    def test_pow(self):
+        assert H ** 3 == H @ H @ H
+        assert (I ** 2).matrice == Matrice.identite(4)
+
+    def test_dague(self):
+        assert H * H.dague() == I
+        assert CNOT * CNOT.dague() == I @ I
+
+    def test_petit_circuit(self):
+        C = S * (X @ I) * S * (I @ X)
+        assert C.matrice == Matrice.identite(4)
+        assert C == I @ I
+
+    def test_droite_a_gauche(self):
+        C1 = S * (X @ I) * S * (I @ X)
+        C2 = (I @ X) >> S >> (X @ I) >> S
+        assert C1 == C2
+
+
+class TestPortesRemarquables:
     def test_identite(self):
         q = Qubit(sqrt(un / 2), sqrt(un / 2))
         assert I * ket(0) == ket(0)
@@ -39,32 +68,14 @@ class TestPortes:
         assert H * z == q1
         assert H * u == q2
 
-    def test_produit_tensoriel(self):
-        M = Porte(un / 2 * Matrice.int_tableau([
-            [1,  1,  1,  1],
-            [1, -1,  1, -1],
-            [1,  1, -1, -1],
-            [1, -1, -1,  1]
-        ]))
-        assert H @ H == M
-
-    def test_pow(self):
-        assert H ** 3 == H @ H @ H
-        assert (I ** 2).matrice == Matrice.identite(4)
-
-    def test_dague(self):
-        assert H * H.dague() == I
-        assert CNOT * CNOT.dague() == I @ I
-
-    def test_petit_circuit(self):
-        C = S * (X @ I) * S * (I @ X)
-        assert C.matrice == Matrice.identite(4)
-        assert C == I @ I
-
-    def test_droite_a_gauche(self):
-        C1 = S * (X @ I) * S * (I @ X)
-        C2 = (I @ X) >> S >> (X @ I) >> S
-        assert C1 == C2
+    def test_neutre(self):
+        # la porte neutre n'est applicable sur aucun qubit
+        n = Porte.neutre()
+        ph, pi = H ** 0, I ** 0
+        assert ph == pi == n
+        assert n * n == n == n ** 7
+        assert n * (H ** 2) == H ** 2
+        assert (H ** 2) * n == H ** 2
 
 
 if __name__ == '__main__':

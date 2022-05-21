@@ -6,14 +6,22 @@ class Porte:
     def __init__(self, matrice):
         assert isinstance(matrice, Matrice)
         assert matrice.p == matrice.q
-        assert matrice.p % 2 == 0
+        assert (matrice.p == 1) or matrice.p % 2 == 0
         self.matrice = matrice
-        self.taille = matrice.p // 2
+        self.taille = matrice.p // 2 # 0 si c'est la porte neutre
+
+    @staticmethod
+    def neutre():
+        return Porte(Matrice.identite(1))
 
     def __eq__(self, autre):
         return isinstance(autre, Porte) and self.matrice == autre.matrice
 
     def __mul__(self, autre):
+        if self == Porte.neutre():
+            return autre
+        if autre == Porte.neutre():
+            return self
         if isinstance(autre, Qudit):
             q = Qudit(autre.dim)
             q.matrice = self.matrice * autre.matrice
@@ -35,8 +43,12 @@ class Porte:
         return str(self.matrice)
 
     def __pow__(self, n: int):
+        if n == 0:
+            return Porte.neutre()
         if self.matrice == Matrice.identite(self.matrice.p):
             return Porte(Matrice.identite(self.matrice.p ** n))
+        if self == Porte.neutre():
+            return self
         if n == 1:
             return self
         a = self ** (n//2)
