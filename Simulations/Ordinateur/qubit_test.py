@@ -56,6 +56,12 @@ class TestQubit:
         assert str(ket(1, 1, 0)) == '1|110⟩'
         assert str(ket(1, 1, 1, 0)) == '1|1110⟩'
 
+    def test_change_composante(self):
+        e0 = ket(1, 0)
+        e0 |= bra(0, 0) | un
+        e0 |= bra(1, 0) | zero
+        assert e0 == ket(0, 0)
+
 
 class TestEtatPropre:
     def test_nom(self):

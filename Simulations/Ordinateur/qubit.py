@@ -49,8 +49,20 @@ class Qudit:
         assert all([(i == 0 or i == 1) for i in bras])
         return self.matrice[bin_vers_int(*bras)]
 
+    # Notation plus commode pour les circuits
     def __rshift__(self, autre):
         return autre * self
+
+    # Stockage d'une valeur dans une composante
+    # La condition de normalisation peut ne plus être vérifiée après
+    def __ior__(self, autre):
+        bra, val = autre
+        if isinstance(bra, int):
+            self.matrice[bra] = val
+        else:
+            assert isinstance(bra, Bra)
+            self |= (bin_vers_int(*bra.composante), val)
+        return self
 
     def __mul__(self, bra):
         assert isinstance(bra, Bra)
@@ -67,15 +79,15 @@ class Qudit:
         probs = [float(abs(self[i])*abs(self[i])) for i in range(self.dim)]
         choix = choices(list(range(self.dim)), weights = probs)[0]
         for i in range(self.dim):
-            self.matrice[i] = zero
-        self.matrice[choix] = un
+            self |= (i, zero)
+        self |= (choix, un)
         return self
 
     def __str__(self):
         return ' + '.join([
-            str(self.matrice[i]) + str(self.base[i])
+            str(self[i]) + str(self.base[i])
             for i in range(self.dim)
-            if self.matrice[i] != zero
+            if self[i] != zero
         ])
 
 
@@ -141,9 +153,11 @@ class Bra:
         return (isinstance(autre, Bra)
             and self.composante  == autre.composante)
 
-    def __or__(self, q):
-        assert isinstance(q, Qudit)
-        return q[self.composante]
+    def __or__(self, autre):
+        if isinstance(autre, Qudit):
+            return autre[self.composante]
+        # Il s'agit d'une assignation
+        return self, autre
 
     def __matmul__(self, autre):
         assert isinstance(autre, Bra)
