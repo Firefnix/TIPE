@@ -34,6 +34,10 @@ class TestZero(TestCase):
     def test_signe(self):
         assert zero.signe() == 1
 
+    def test_pow(self):
+        assert zero ** 3 == zero ** un == zero
+        assert zero ** zero == un
+
 
 class TestNaturels(TestCase):
     def test_sous(self):
@@ -88,6 +92,11 @@ class TestNaturels(TestCase):
     def test_signe(self):
         assert Naturel(3).signe() == 1
 
+    def test_pow(self):
+        deux, trois = Naturel(2), Naturel(3)
+        assert deux ** 3 == deux ** trois == Naturel(8)
+        assert deux ** (-3) == deux ** (-trois) == Rationnel(1, 8)
+
 
 class TestRelatifs(TestCase):
     def test_sous(self):
@@ -137,6 +146,11 @@ class TestRelatifs(TestCase):
     def test_signe(self):
         assert Relatif(3).signe() == 1
         assert Relatif(-3).signe() == -1
+
+    def test_pow(self):
+        moins_deux, trois = Relatif(-2), Naturel(3)
+        assert moins_deux ** 3 == moins_deux ** trois == Relatif(-8)
+        assert moins_deux ** (-3) == moins_deux ** (-trois) == Rationnel(-1, 8)
 
 
 class TestRationnels(TestCase):

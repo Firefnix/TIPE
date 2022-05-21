@@ -79,6 +79,9 @@ class Zero(Nombre):
     def __str__(self):
         return '0'
 
+    def __pow__(self, autre):
+        return Naturel(0) ** autre
+
 zero = Zero()
 
 
@@ -95,7 +98,7 @@ class Naturel(Nombre):
 
     def sous(self):
         if self.n == 0:
-            return Zero()
+            return zero
         return self
 
     def sur(self, E: type):
@@ -179,11 +182,16 @@ class Relatif(Nombre):
         return Relatif(abs(self.z)).sous()
 
     def __pow__(self, exposant):
+        if isinstance(exposant, int):
+            exposant = Relatif(exposant).sous()
         if exposant.appartient(Naturel):
-            return Relatif(self.z ** exposant.n)
+            return Relatif(self.z ** exposant.n).sous()
         if exposant.appartient(Relatif):
-            return Rationnel(un, self ** (- exposant))
-        self.sur(Rationnel) ** exposant
+            return Rationnel(
+                un,
+                self.z ** abs(int(exposant))
+            ).sous()
+        return self.sur(Rationnel) ** exposant
 
     def __str__(self):
         return str(self.z)
@@ -192,6 +200,7 @@ class Relatif(Nombre):
 class Rationnel(Nombre):
     def __init__(self, num: int, denom: int):
         assert denom != 0
+        num, denom = int(num), int(denom)
         d = Rationnel._pgcd(abs(num), abs(denom))
         signe = 1 if num * denom >= 0 else -1
         self.num = signe * abs(num) // d
@@ -314,7 +323,7 @@ class Puissance(Nombre):
         return Puissance(self.x, - self.p, self.sigma)
 
     def plus(self, autre):
-        if autre.sous() == Zero():
+        if autre.sous() == zero:
             return self
 
     def __neg__(self):
@@ -346,7 +355,7 @@ class Complexe(Nombre):
             and self.y == autre.y)
 
     def sous(self):
-        if self.y == Zero():
+        if self.y == zero:
             return self.x
         return self
 
@@ -467,7 +476,7 @@ class Matrice(Nombre):
         self.p = p
         self.q = q
         self.forme = (p, q)
-        self._c = [[Zero() for _ in range(q)] for _ in range(p)]
+        self._c = [[zero for _ in range(q)] for _ in range(p)]
 
     def __eq__(self, autre):
         if (not isinstance(autre, Matrice)) or self.p != autre.p or self.q != autre.q:
@@ -530,7 +539,7 @@ class Matrice(Nombre):
                 assert self.q == 1
                 self._c[cle][0] = valeur
 
-    def _add__(self, autre):
+    def __add__(self, autre):
         assert self.p == autre.p
         assert self.q == autre.q
         m = Matrice(self.p, self.q)
@@ -545,7 +554,7 @@ class Matrice(Nombre):
             m = Matrice(self.p, autre.q)
             for i in range(self.p):
                 for j in range(autre.q):
-                    m[i, j] = Zero()
+                    m[i, j] = zero
                     for k in range(self.q):
                         m[i, j] += self[i, k] * autre[k, j]
             return m
