@@ -661,7 +661,6 @@ class Expi(Nombre): # module * exp(i * arg)
         if self.arg() == zero:
             return un
         if self.arg().appartient(VectPi) and self.arg().t.appartient(Relatif):
-            print(self.arg().t)
             return abs(self) * ((-un) ** self.arg().t)
         return self
 

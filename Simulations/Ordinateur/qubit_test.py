@@ -96,6 +96,34 @@ class TestBra(TestCase):
         assert bra(1, 0) | (ket(1) @ ket(0)) == un
         assert bra(1, 1) | (ket(1) @ ket(0)) == zero
 
+    def test_eq(self):
+        assert bra(0, 1) == bra(zero, un)
+
+    def test_produit(self):
+        mx, my = Matrice(8, 1), Matrice(4, 1)
+        mx[7] = un
+        my[3] = un
+        x, y = Qudit.matrice(mx), Qudit.matrice(my)
+        z = x @ y
+        for i in range(8):
+            for j in range(4):
+                if (i, j) != (7, 3):
+                    assert bra(i, j) | z == zero
+        assert bra(7, 3) | z == un
+
+    def test_ket_bra(self):
+        k = ket(0, 1)
+        b = bra(1, 1)
+        m = Matrice(4)
+        m[1, 3] = un
+        assert k * b == m
+
+    def test_bra_vectoriel_bra(self):
+        b1 = bra(1, 0)
+        b2 = bra(1, 1, 0)
+        b3 = bra(1, 0, 1, 1, 0)
+        assert b1 @ b2 == b3
+
 
 if __name__ == '__main__':
     main()

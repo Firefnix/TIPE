@@ -1,5 +1,5 @@
 from random import choices
-from calcul import Matrice, un, zero, int_log2, int_vers_strbin, bin_vers_int
+from calcul import Matrice, un, zero, int_log2, int_vers_strbin, bin_vers_int, int_vers_bin
 
 
 class EtatPropre:
@@ -34,8 +34,9 @@ class Qudit:
         self.matrice[0] = un
 
     @staticmethod
-    def matrice(self, mat: Matrice):
-        q = Qudit()
+    def matrice(mat: Matrice):
+        assert mat.q == 1
+        q = Qudit(mat.p)
         q.matrice = mat
         return q
 
@@ -50,6 +51,11 @@ class Qudit:
 
     def __rshift__(self, autre):
         return autre * self
+
+    def __mul__(self, bra):
+        assert isinstance(bra, Bra)
+        return self.matrice * bra.matrice
+
 
     def __matmul__(self, autre):
         r = Qudit(self.dim * autre.dim)
@@ -125,7 +131,11 @@ def ket(*arg):
 
 class Bra:
     def __init__(self, *composante):
-        self.composante = composante
+        self.composante = ()
+        for i in composante:
+            self.composante += tuple(int_vers_bin(int(i)))
+        self.matrice = Matrice(1, 2 ** len(self.composante))
+        self.matrice[bin_vers_int(*self.composante)] = un
 
     def __eq__(self, autre):
         return (isinstance(autre, Bra)
@@ -134,6 +144,10 @@ class Bra:
     def __or__(self, q):
         assert isinstance(q, Qudit)
         return q[self.composante]
+
+    def __matmul__(self, autre):
+        assert isinstance(autre, Bra)
+        return Bra(*(self.composante + autre.composante))
 
     def __str__(self):
         if isinstance(self.composante, int):
