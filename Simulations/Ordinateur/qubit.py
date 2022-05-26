@@ -132,11 +132,16 @@ class Qubit(Qudit):
         return a @ a
 
 
-def ket(*arg):
-    arg = [int(i) for i in arg]
-    assert all([i == 0 or i == 1 for i in arg])
-    q = Qubit.propre(arg[0])
-    for i in arg[1:]:
+def ket(*arg, taille = None):
+    assert taille is None or isinstance(taille, int)
+    d = []
+    for i in arg:
+        d += int_vers_bin(int(i))
+    assert all([i == 0 or i == 1 for i in d])
+    if taille is not None:
+        d = (taille - len(d)) * [0] + d
+    q = Qubit.propre(d[0])
+    for i in d[1:]:
         q = q @ Qubit.propre(i)
     return q
 

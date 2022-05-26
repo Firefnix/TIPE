@@ -51,6 +51,14 @@ class TestQubit:
         assert ket(0, 1) == Qubit.zero() @ Qubit.un()
         assert ket(1, 1, 1) == Qubit.un() ** 3
 
+    def test_ket_int(self):
+        assert ket(6) == ket(1, 1, 0)
+        assert ket(2, 3) == ket(1, 0, 1, 1)
+
+    def test_ket_taille(self):
+        assert ket(1, taille=3) == ket(0, 0, 1)
+        assert ket(1, 0, 1, taille=1) == ket(1, 0, 1)
+
     def test_str_ket(self):
         assert str(ket(0, 0)) == '1|00⟩'
         assert str(ket(1, 1, 0)) == '1|110⟩'
