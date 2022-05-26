@@ -147,7 +147,7 @@ $$\alpha = {\left(
     {\bra{p_{i_0}} \ket{\psi}
 }\right)}^2
 + 1
-\right)}^{-1}$$
+\right)}^{-1/2}$$
 \underline{Si $i_0$ est impair :} par un raisonnement similaire, on obtient :
 $$\beta = {\left(
 {\left(\frac
@@ -155,7 +155,7 @@ $$\beta = {\left(
     {\bra{p_{i_0}} \ket{\psi}
 }\right)}^2
 + 1
-\right)}^{-1}$$
+\right)}^{-1/2}$$
 Puisqu'on a la valeur de $\ket y$, on en déduit celle de $\ket x$ par la relation :
 $$\forall i \in \entiers{0}{2^n - 1},
 \bra{q_i} \ket{x} = \begin{cases}
@@ -174,8 +174,8 @@ alors on conclut par linéarité de $U_f$ :
 U_f \ket \psi
 &= \alpha \somme^{2^n-1}_{j=0} \bra{q_j} \ket{x} U_f \ket{q_j0}
 + \beta \somme^{2^n-1}_{j=0} \bra{q_j} \ket{x} U_f \ket{q_j1} \\
-&= \alpha \somme^{2^n-1}_{j=0} \bra{q_j} \ket{x} U_f \ket{q_j, f(q_j)}
-+ \beta \somme^{2^n-1}_{j=0} \bra{q_j} \ket{x} U_f \ket{q_j, 1 + f(q_j)} \\
+&= \alpha \somme^{2^n-1}_{j=0} \bra{q_j} \ket{x} \ket{q_j, f(q_j)}
++ \beta \somme^{2^n-1}_{j=0} \bra{q_j} \ket{x} \ket{q_j, 1 + f(q_j)} \\
 \end{align*}
 
 \section{Calcul mathématique}
