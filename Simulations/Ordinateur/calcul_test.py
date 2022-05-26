@@ -1,5 +1,7 @@
-from calcul import *
 from unittest import TestCase, main
+from calcul import Zero, zero, un, Naturel, Relatif, Rationnel, Puissance, \
+    sqrt, Complexe, i, F2, F2Uplet, int_log2, int_vers_bin, bin_vers_int, \
+    strbin_vers_int, int_vers_strbin, Matrice, VectPi, pi, Expi, expi
 
 class TestZero(TestCase):
     def test_sous(self):
@@ -293,10 +295,10 @@ class TestF2(TestCase):
     def test_plus(self):
         z = F2(0)
         u = F2(1)
-        assert z + z == z
-        assert z + u == u
-        assert u + z == u
-        assert u + u == z
+        assert z + z == u + u == z
+        assert z + u == u + z == u
+        assert z + 0 == u + 1 == z
+        assert z + 1 == u + 0 == u
 
     def test_fois(self):
         z = F2(0)
@@ -446,11 +448,13 @@ class TestVectPi(TestCase):
         assert pi - pi == zero
         assert pi + pi == VectPi(2)
         assert pi_sur_trois - pi_sur_quatre == pi_sur_six
+        assert pi + zero == zero + pi == pi
 
     def test_mul(self):
         deux_pi = VectPi(2)
         assert zero * pi == pi * zero == zero
         assert un * pi == pi * un == pi
+        assert pi * 2 == pi * Naturel(2) == deux_pi
 
     def test_neg(self):
         assert (- VectPi(2)) == VectPi(-2)
