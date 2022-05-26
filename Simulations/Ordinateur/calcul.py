@@ -48,6 +48,9 @@ class Nombre:
         autre = Nombre.ou_int(autre)
         return self * autre.inverse()
 
+    def __repr__(self):
+        return str(self)
+
 
 class Zero(Nombre):
     def __init__(self):
@@ -314,6 +317,8 @@ class Puissance(Nombre):
         s = self.sigma * autre.sigma
         if self.x == autre.x:
             return Puissance(self.x, self.p + autre.p, s).sous()
+        if self.x == autre.x.inverse():
+            return Puissance(self.x, self.p - autre.p, s).sous()
         if self.p == autre.p:
             return Puissance(self.x * autre.x, self.p, s).sous()
         if autre.sous().sur(Rationnel) is not None:
@@ -329,6 +334,7 @@ class Puissance(Nombre):
     def plus(self, autre):
         if autre.sous() == zero:
             return self
+        raise ArithmeticError(f'Addition impossible: {self}, {autre}')
 
     def __neg__(self):
         return Puissance(self.x, self.p, - self.sigma)
@@ -340,7 +346,10 @@ class Puissance(Nombre):
         s = '' if self.sigma == 1 else '-'
         if self.p == Rationnel(1, 2):
             return f'{s}sqrt({str(self.x)})'
-        return s + str(self.x) + '^' + str(self.p)
+        x, p = self.x.sous(), self.p.sous()
+        if x.appartient(Naturel) and p.appartient(Naturel):
+            return s + str(x) + '^' + str(p)
+        return f'{s}({str(x)})^({str(p)})'
 
 
 def sqrt(r):
@@ -449,6 +458,9 @@ class F2(Nombre):
     @staticmethod
     def uplet(*valeurs):
         return F2Uplet(*valeurs)
+
+    def __str__(self):
+        return str(self.n)
 
 
 class F2Uplet:
