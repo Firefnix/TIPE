@@ -130,6 +130,14 @@ class TestBra(TestCase):
         b3 = bra(1, 0, 1, 1, 0)
         assert b1 @ b2 == b3
 
+    def test_pow(self):
+        b0 = bra(0, 0)
+        b1 = bra(0, 0, 0, 0, 0, 0)
+        b2 = bra(1, 0, 1)
+        b3 = bra(1, 0, 1, 1, 0, 1)
+        assert b0 ** 3 == b1
+        assert b2 ** 2 == b3
+
 
 if __name__ == '__main__':
     main()

@@ -163,6 +163,15 @@ class Bra:
         assert isinstance(autre, Bra)
         return Bra(*(self.composante + autre.composante))
 
+    def __pow__(self, n):
+        n = int(n)
+        if n == 1:
+            return self
+        a = self ** (n//2)
+        if n % 2:
+            return self @ (a @ a)
+        return (a @ a)
+
     def __str__(self):
         if isinstance(self.composante, int):
             return '⟨' + str(self.composante) + '|'
