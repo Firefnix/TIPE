@@ -57,7 +57,9 @@ L'état est représenté sous la forme d'une matrice colonne, ce qui facilite l'
 
 Le calcul quantique à proprement parlé sera implémenté dans le module \p{qubit} ainsi que le module \p{portes}.
 
-De manière analogue aux ordinateurs classiques, les ordinateurs quantiques sont basés sur des circuits électroniques. Ces circuits sont entre autres composés de portes logiques, qui agissent sur un petit nombre d'unités de mémoire (comme des qubits) en modifiant leur état. Un circuit est alors définissable comme : une entrée (avec un état initial de la mémoire connu), et un graphe représentant les différentes portes logiques opérant sur la mémoire, dont fait partie la sortie qui présente l'état de la mémoire qui est le résultat des calculs. Pour des raisons d'efficactité, il a néanmoins été décidé qu'un circuit sera stocké en mémoire sous la forme d'une seule matrice, nommée matrice de circuit \p{C}. \newline
+
+De manière analogue aux ordinateurs classiques, les ordinateurs quantiques sont basés sur des circuits électroniques. Ces circuits sont entre autres composés de portes logiques, qui agissent sur un petit nombre d'unités de mémoire (comme des qubits) en modifiant leur état. Un circuit est alors définissable comme : une entrée (avec un état initial de la mémoire connu), et un graphe représentant les différentes portes logiques opérant sur la mémoire, dont fait partie la sortie qui présente l'état de la mémoire qui est le résultat des calculs. Pour des raisons d'efficactité, il a néanmoins été décidé qu'un circuit sera stocké en mémoire sous la forme d'une seule matrice, nommée matrice de circuit \p{C}.
+
 
 \noindent \exemple pour le circuit ci-dessous (où $H$ est la porte de Hadamard et $X$ la porte \p{NOT} ou encore porte de Pauli-X). On aurait en code \texttt{C = (H @  X @ H) >> (S @ I) >> (X @ S)}.
 
@@ -100,11 +102,12 @@ Il suffit donc pour obtenir $U_f \ket \psi$ de multiplier chacune des composante
 \subsubsection{Oracle de somme}
 
 
-Cet oracle courant est notamment utilisé dans l'algorithme de Deutch-Jozsa, ou lorsqu'on cherche à résoudre une équation du type : $f(x_1, ..., x_n) = (y_1, ..., y_m)$, avec $n, m \in \mathbb{N}^*$. Pour une \textit{fonction d'oracle} notée $f : {\mathbb{F}_2} ^ n \rightarrow {\mathbb{F}_2} ^ m$, on a en notant $x = x_1, ..., x_n$ les paramètres de $f$ et $y = y_1, ..., y_m$ la valeur recherchée :
-
+Cet oracle courant est notamment utilisé dans l'algorithme de Deutch-Jozsa, ou lorsqu'on cherche à résoudre une équation du type :
+$$f(x_1, ..., x_n) = (y_1, ..., y_m), \text{avec } n, m \in \mathbb{N}^*.$$
+Pour une \textit{fonction d'oracle} notée $f : {\mathbb{F}_2} ^ n \rightarrow {\mathbb{F}_2} ^ m$, on a en notant $x = x_1, ..., x_n$ les paramètres de $f$ et $y = y_1, ..., y_m$ la valeur recherchée :
 $$U_f \ket{x, y} = \ket{x, f(x) \oplus y}$$
+avec $\oplus$ l'addition usuelle des $m$-uplets dans le corps $\mathbb{F}_2$ et notant que pour tous $\psi_1, ..., \psi_k$, la notation $\ket{\psi_1, ..., \psi_k}$ désigne $\ket{\psi_1} \otimes ... \otimes \ket{\psi_k}$ (avec $\otimes$ le produit tensoriel, qui est dans notre cas celui des matrices).
 
-avec $\oplus$ l'addition usuelle des $m$-uplets dans le corps $\mathbb{F}_2$ et notant que pour tous $\psi_1, ..., \psi_k$, la notation $\ket{\psi_1, ..., \psi_k}$ désigne $\ket{\psi_1} \otimes ... \otimes \ket{\psi_k}$ (avec $\otimes$ le produit tensoriel, qui est dans notre cas celui des matrices). \newline
 
 \noindent \exemple le calcul serait assez simple si les états $x_1, ..., x_n$ n'étaient pas dans le cas général une superposition d'états. On a donc en pratique des situations comme celle-ci :
 
@@ -112,7 +115,8 @@ On a $n = m = 2$ et la fonction $f$ est donnée par :
 
 $$\fonction{f}{{\mathbb{F}_2}^2}{{\mathbb{F}_2}^2}{(a, b)}{(a \oplus b, b)}$$
 
-On a $y = (y_1, y_2) = (1, 1)$ donc $\ket y = \ket{11}$. On fait passer notre état initial $\ket{00}$, propre, dans deux portes de Hadamard et on obtient $\ket{x} = \frac{1}{2}\ket{00} + \frac{1}{2}\ket{01} + \frac{1}{2} \ket{10} + \frac{1}{2} \ket{11}$. Comment alors calculer le résultat de notre oracle ? La clé est d'utiliser le caractère linéaire de $U_f$ (les paramètres x et y ont étés séparés par un virgule pour clarifier) :
+On a $y = (y_1, y_2) = (1, 1)$ donc $\ket y = \ket{11}$. On fait passer notre état initial $\ket{00}$, propre, dans deux portes de Hadamard et on obtient $\ket{x} = \frac{1}{2}\ket{00} + \frac{1}{2}\ket{01} + \frac{1}{2} \ket{10} + \frac{1}{2} \ket{11}$.
+Comment alors calculer le résultat de notre oracle ? La clé est d'utiliser le caractère linéaire de $U_f$ (les paramètres x et y ont étés séparés par un virgule pour clarifier) :
 
 \begin{equation*}
 \begin{split}
@@ -122,6 +126,57 @@ On a $y = (y_1, y_2) = (1, 1)$ donc $\ket y = \ket{11}$. On fait passer notre é
     =& \frac{1}{2} \ket{0011} + \frac{1}{2} \ket{0100} + \frac{1}{2} \ket{1001} + \frac{1}{2} \ket{1110}
 \end{split}
 \end{equation*}
+
+
+\noindent \underline{\textbf{Implémentation :}} En première approche, on fait l'hypothèse que $m = 1$, d'où $f : {\mathbb{F}_2}^n \rightarrow \mathbb{F}_2$.
+Soit $\ket \psi \in \mathbb{C}^{2^{n+1}}$ une superposition des états $\ket x \in \mathbb{C}^{2^n}$ et $\ket y = \alpha \ket 0 + \beta \ket 1 \in \mathbb{C}^{2}$, d'où $\ket \psi = \ket{x, y} = \ket x \otimes \ket y$.
+On note $(\ket{p_i})_{1 \le i < 2^{n+1}}$ la base canonique de $\mathbb{C}^{2^{n+1}}$ et $(\ket{q_i})_{1 \le i < 2^n}$ celle de $\mathbb{C}^{2^n}$.
+On cherche à calculer $U_f \ket \psi$ en ayant uniquement accès aux $\bra{p_i} \ket{\psi}$.
+
+
+Puisqu'il est impossible de récupérer les valeurs de $\ket x$ et $\ket y$ pour des composantes quelconques (si on multiplie $\ket x$ par $e^{i\theta}$ et $\ket y$ par $e^{-i\theta}$, $\ket x \otimes \ket y$ ne change pas), on suppose aussi que les composantes de $\ket x$ et $\ket y$ sont \underline{réelles positives}, d'où $\beta = \sqrt{1 - \alpha^2}$.
+
+
+Puisque $\ket x$ et $\ket y$ sont non nuls il existe $i_0 \in \entiers{0}{2^{n+1}-1}$ tel que $\bra{p_{i_0}} \ket{\psi} \not= 0$.
+
+
+\noindent \underline{Si $i_0$ est pair :} en notant $i_0 = 2 j_0$ on a $\bra{p_{2 j_0}} \ket{\psi} = \alpha \bra{q_{j_0}} \ket{x} \not= 0$ donc $\alpha \not= 0$. On peut en déduire la valeur de $\alpha$ (donc celle de $\beta$) :
+$$\alpha = {\left(
+{\left(\frac
+    {\bra{p_{i_0+1}} \ket{\psi}}
+    {\bra{p_{i_0}} \ket{\psi}
+}\right)}^2
++ 1
+\right)}^{-1}$$
+\underline{Si $i_0$ est impair :} par un raisonnement similaire, on obtient :
+$$\beta = {\left(
+{\left(\frac
+    {\bra{p_{i_0+1}} \ket{\psi}}
+    {\bra{p_{i_0}} \ket{\psi}
+}\right)}^2
++ 1
+\right)}^{-1}$$
+Puisqu'on a la valeur de $\ket y$, on en déduit celle de $\ket x$ par la relation :
+$$\forall i \in \entiers{0}{2^n - 1},
+\bra{q_i} \ket{x} = \begin{cases}
+\alpha^{-1} \bra{p_{2i}} \ket{\psi} \text{si } \alpha \not= 0 \\
+\beta^{-1} \bra{p_{2i+1}} \ket{\psi} \text{si } \beta \not= 0 \\
+\end{cases}$$
+On peut alors calculer $U_f \ket \psi$. Puisque par développement de $\ket \psi$ :
+\begin{align*}
+\ket \psi &= \ket x \otimes \ket y \\
+&= \left( \somme^{2^n-1}_{j=0} \bra{q_j}\ket{x}\ket{q_j} \right) \otimes (\alpha \ket 0 + \beta \ket 1) \\
+&= \alpha \somme^{2^n-1}_{j=0} \bra{q_j}\ket{x}\ket{q_j0}
++ \beta \somme^{2^n-1}_{j=0} \bra{q_j}\ket{x}\ket{q_j1}
+\end{align*}
+alors on conclut par linéarité de $U_f$ :
+\begin{align*}
+U_f \ket \psi
+&= \alpha \somme^{2^n-1}_{j=0} \bra{q_j} \ket{x} U_f \ket{q_j0}
++ \beta \somme^{2^n-1}_{j=0} \bra{q_j} \ket{x} U_f \ket{q_j1} \\
+&= \alpha \somme^{2^n-1}_{j=0} \bra{q_j} \ket{x} U_f \ket{q_j, f(q_j)}
++ \beta \somme^{2^n-1}_{j=0} \bra{q_j} \ket{x} U_f \ket{q_j, 1 + f(q_j)} \\
+\end{align*}
 
 \section{Calcul mathématique}
 
