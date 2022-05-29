@@ -1,5 +1,5 @@
-from calcul import un, zero, i, sqrt, Matrice, F2, expi, int_vers_bin
-from qubit import bra, ket, Qudit
+from calcul import un, zero, i, sqrt, Matrice, expi
+from qubit import Qudit, bra, ket
 
 class Porte:
     # Une `Porte` s'utilise comme une matrice, en multipliant
@@ -39,9 +39,6 @@ class Porte:
         assert isinstance(autre, Porte)
         return Porte(self.matrice @ autre.matrice)
 
-    def __str__(self):
-        return str(self.matrice)
-
     def __pow__(self, n: int):
         if n == 0:
             return Porte.neutre()
@@ -51,10 +48,19 @@ class Porte:
             return self
         if n == 1:
             return self
-        a = self ** (n//2)
+        a = self ** (n // 2)
         if n % 2 == 1:
             return self @ (a @ a)
         return a @ a
+
+    def __neg__(self):
+        return Porte(- self.matrice)
+
+    def __str__(self):
+        return str(self.matrice)
+
+    def __repr__(self):
+        return str(self)
 
 
 I = Identite = Porte(Matrice.int_tableau([[1, 0], [0, 1]]))

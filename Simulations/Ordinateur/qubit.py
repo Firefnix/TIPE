@@ -49,6 +49,9 @@ class Qudit:
         assert all([(i == 0 or i == 1) for i in bras])
         return self.matrice[bin_vers_int(*bras)]
 
+    def __setitem__(self, bras, valeur):
+        self |= bras, valeur
+
     # Notation plus commode pour les circuits
     def __rshift__(self, autre):
         return autre * self
@@ -68,14 +71,12 @@ class Qudit:
         assert isinstance(bra, Bra)
         return self.matrice * bra.matrice
 
-
     def __matmul__(self, autre):
         r = Qudit(self.dim * autre.dim)
         r.matrice = self.matrice @ autre.matrice
         return r
 
     def mesure(self):
-        propres = [Qubit.zero(), Qubit.un()]
         probs = [float(abs(self[i])*abs(self[i])) for i in range(self.dim)]
         choix = choices(list(range(self.dim)), weights = probs)[0]
         for i in range(self.dim):
@@ -83,12 +84,21 @@ class Qudit:
         self |= (choix, un)
         return self
 
+    def __neg__(self):
+        q = Qudit(self.dim)
+        for i in range(self.dim):
+            q[i] = - self[i]
+        return q
+
     def __str__(self):
         return ' + '.join([
             str(self[i]) + str(self.base[i])
             for i in range(self.dim)
             if self[i] != zero
         ])
+
+    def __repr__(self):
+        return str(self)
 
 
 class Qubit(Qudit):

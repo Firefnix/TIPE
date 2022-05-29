@@ -1,6 +1,6 @@
 from unittest import TestCase, main
-from qubit import *
-from calcul import un, zero
+from qubit import Qubit, Qudit, ket, bra, Bra, EtatPropre
+from calcul import un, zero, Matrice
 from portes import H
 
 class TestQubit:
@@ -22,21 +22,18 @@ class TestQubit:
         assert a.mesure() == Qubit.un()
         assert b.mesure() == Qubit.zero()
         assert all([i in [a, b] for i in l])
-        assert 3/4 <= l.count(a) / l.count(b) <= 4/3
+        assert 2/3 <= l.count(a) / l.count(b) <= 3/2
 
     def test_multiples_qubits(self):
-        q1 = Qubit.zero()
-        q2 = Qubit.un()
-        q3 = q1 @ q2
-        assert q3[0, 0] == zero
-        assert q3[0, 1] == un
-        assert q3[1, 0] == zero
-        assert q3[1, 1] == zero
-        assert str(q3) == '1|01⟩'
+        q = ket(0) @ ket(1)
+        assert q[0, 0] == zero
+        assert q[0, 1] == un
+        assert q[1, 0] == zero
+        assert q[1, 1] == zero
+        assert str(q) == '1|01⟩'
 
     def test_pow(self):
-        ket_0 = Qubit.zero()
-        e = ket_0 ** 3
+        e = ket(0) ** 3
         assert e[0, 0, 0] == un
         for i in range(2):
             for j in range(2):
@@ -69,6 +66,12 @@ class TestQubit:
         e0 |= bra(0, 0) | un
         e0 |= bra(1, 0) | zero
         assert e0 == ket(0, 0)
+
+    def test_neg(self):
+        e0 = ket(1, 0)
+        e1 = Qubit.matrice(Matrice.int_tableau([[0], [0], [-1], [0]]))
+        assert e1 == -e0
+        assert e0 == -e1
 
 
 class TestEtatPropre:

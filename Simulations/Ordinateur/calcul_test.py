@@ -361,6 +361,8 @@ class TestMatrice(TestCase):
         assert m[0, 1] == zero
         m[0, 1] = un
         assert m[0, 1] == un
+        m[0, 1] = 2
+        assert m[0, 1] == Naturel(2)
 
     def test_identite(self):
         m = Matrice.identite(3)
@@ -386,7 +388,6 @@ class TestMatrice(TestCase):
         assert m1 != Matrice(2, 3)
 
     def test_fois(self):
-        assert un * i == i * un == i
         m1 = Matrice.int_tableau([[1, 2], [3, 4]])
         m2 = Matrice.int_tableau([[4, 5], [6, 7]])
         m3 = Matrice.int_tableau([[16, 19], [36, 43]])
@@ -399,7 +400,9 @@ class TestMatrice(TestCase):
 
     def test_fois_scalaire(self):
         m1 = Matrice.int_tableau([[2, 4], [6, 8]])
-        assert Rationnel(1, 2) * m1 == Matrice.int_tableau([[1, 2], [3, 4]])
+        m2 = Matrice.int_tableau([[1, 2], [3, 4]])
+        assert Rationnel(1, 2) * m1 == m1 * Rationnel(1, 2) == m2
+        assert m2 * Naturel(2) == m2 * 2 == m1
 
     def test_acces_rapide(self):
         l = Matrice.int_tableau([[1, 2]])
@@ -428,8 +431,6 @@ class TestMatrice(TestCase):
             [1,  1, -1, -1],
             [1, -1, -1,  1]
         ])
-        print(m4[0, 1], m4[1, 1], m4[0, 1] * m4[1, 1])
-        print(m4 @ m4)
         assert m4 @ m4 == m5
 
 

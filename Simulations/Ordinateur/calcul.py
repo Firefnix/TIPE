@@ -546,11 +546,12 @@ class Matrice(Nombre):
         return self._c[item][0]
 
     def __setitem__(self, cle, valeur):
+        valeur = Nombre.ou_int(valeur)
+        assert isinstance(valeur, Nombre)
         if isinstance(cle, tuple):
             i, j = cle
             assert isinstance(i, int) and 0 <= i < self.p
             assert isinstance(j, int) and 0 <= j < self.q
-            assert isinstance(valeur, Nombre)
             self._c[i][j] = valeur
         else:
             assert isinstance(cle, int)
@@ -580,6 +581,7 @@ class Matrice(Nombre):
                         m[i, j] += self[i, k] * autre[k, j]
             return m
         m = Matrice(self.p, self.q)
+        autre = Nombre.ou_int(autre)
         for i in range(self.p):
             for j in range(self.q):
                 m[i, j] = autre * self[i, j]
