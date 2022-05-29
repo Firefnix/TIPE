@@ -1,9 +1,9 @@
 from unittest import TestCase, main
-from calcul import F2
-from portes import *
-from qubit import Qubit
+from calcul import Matrice, sqrt, un, zero, i
+from portes import H, I, X, Y, Z, CNOT, S, Porte, PhaseCond
+from qubit import Qubit, ket
 
-class TestPortes:
+class TestPortes(TestCase):
     def test_eq(self):
         assert H == H
         assert I == Porte(Matrice.int_tableau([[1, 0], [0, 1]]))
@@ -37,7 +37,7 @@ class TestPortes:
         assert C1 == C2
 
 
-class TestPortesRemarquables:
+class TestPortesRemarquables(TestCase):
     def test_identite(self):
         q = Qubit(sqrt(un / 2), sqrt(un / 2))
         assert I * ket(0) == ket(0)
@@ -84,17 +84,10 @@ class TestPortesRemarquables:
         assert n * (H ** 2) == H ** 2
         assert (H ** 2) * n == H ** 2
 
-class TestOracles:
-    def test_phase(self):
-        def f(x, y):
-            assert isinstance(x, F2) and isinstance(y, F2)
-            return x + y
-        Uf = OracleDePhase(f, 2)
-        e1, e2 = ket(1, 0), ket(1, 0)
-        e2 |= bra(1, 0) | (-un)
-        print(e1)
-        print(e1 >> Uf)
-        assert e1 >> Uf == e2
+    def test_phase_conditionelle(self):
+        pc = PhaseCond(3)
+        assert ket(0, 0, 0) >> pc == ket(0, 0, 0)
+        assert ket(1, 1, 0) >> pc == (- ket(1, 1, 0))
 
 
 if __name__ == '__main__':

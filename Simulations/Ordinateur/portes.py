@@ -77,6 +77,8 @@ Z = PauliZ = Porte(Matrice.int_tableau([[1, 0], [0, -1]]))
 
 R = lambda phi: Porte(Matrice.tableau([[un, zero], [zero, expi(phi)]]))
 
+PhaseCond = lambda n: Porte((ket(0) ** n) * (bra(0) ** n) * 2 - (Matrice.identite(2**n)))
+
 S = SWAP = Porte(Matrice.int_tableau([
     [1, 0, 0, 0],
     [0, 0, 1, 0],
@@ -90,18 +92,3 @@ cX = CNOT = Porte(Matrice.int_tableau([
     [0, 0, 0, 1],
     [0, 0, 1, 0]
 ]))
-
-
-class OracleDePhase():
-    # taille_x: nombre de paramètres pris par f
-    def __init__(self, f, taille_x):
-        self.f = f
-        self.n = taille_x
-
-    def __mul__(self, qudit):
-        assert qudit.dim == 2 ** self.n
-        r = Qudit(qudit.dim)
-        for i in range(qudit.dim):
-            r |= bra(i) | (bra(i) | qudit) * (-un) ** self.f(
-                *[F2(i) for i in int_vers_bin(i, taille = self.n)])
-        return r
