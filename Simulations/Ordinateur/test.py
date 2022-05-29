@@ -1,9 +1,5 @@
 from qubit import bra, ket
-from portes import *
-
-def deutsch_jozsa(psi, f):
-    n = psi.dim
-    Hn = H ** n
+from portes import H, S
 
 e0 = ket(1,1,1,0)
 e1 = e0 >> H**4

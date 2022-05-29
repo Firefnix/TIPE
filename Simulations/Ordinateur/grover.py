@@ -7,7 +7,7 @@ def grover(f, n, rep):
     e = etat_de_base(n-1, 1, 1) >> (H**n)
     H_op = H_option(n, debut=0, fin=1)
     B = H_op >> (PhaseCond(n-1) @ I) >> H_op
-    Uf = Oracle.phase(f, n)
+    Uf = Oracle.phase(f)
     for i in range(rep):
         e = e >> B >> Uf
     return e
