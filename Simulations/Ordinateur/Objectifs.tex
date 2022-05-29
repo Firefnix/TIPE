@@ -115,7 +115,7 @@ On a $n = m = 2$ et la fonction $f$ est donnée par :
 
 $$\fonction{f}{{\mathbb{F}_2}^2}{{\mathbb{F}_2}^2}{(a, b)}{(a \oplus b, b)}$$
 
-On a $y = (y_1, y_2) = (1, 1)$ donc $\ket y = \ket{11}$. On fait passer notre état initial $\ket{00}$, propre, dans deux portes de Hadamard et on obtient $\ket{x} = \frac{1}{2}\ket{00} + \frac{1}{2}\ket{01} + \frac{1}{2} \ket{10} + \frac{1}{2} \ket{11}$.
+\noindent On a $y = (y_1, y_2) = (1, 1)$ donc $\ket y = \ket{11}$. On fait passer notre état initial $\ket{00}$, propre, dans deux portes de Hadamard et on obtient $\ket{x} = \frac{1}{2}\ket{00} + \frac{1}{2}\ket{01} + \frac{1}{2} \ket{10} + \frac{1}{2} \ket{11}$.
 Comment alors calculer le résultat de notre oracle ? La clé est d'utiliser le caractère linéaire de $U_f$ (les paramètres x et y ont étés séparés par un virgule pour clarifier) :
 
 \begin{equation*}
@@ -140,7 +140,7 @@ Puisqu'il est impossible de récupérer les valeurs de $\ket x$ et $\ket y$ pour
 Puisque $\ket x$ et $\ket y$ sont non nuls il existe $i_0 \in \entiers{0}{2^{n+1}-1}$ tel que $\bra{p_{i_0}} \ket{\psi} \not= 0$.
 
 
-\noindent \underline{Si $i_0$ est pair :} en notant $i_0 = 2 j_0$ on a $\bra{p_{2 j_0}} \ket{\psi} = \alpha \bra{q_{j_0}} \ket{x} \not= 0$ donc $\alpha \not= 0$. On peut en déduire la valeur de $\alpha$ (donc celle de $\beta$) :
+\noindent \underline{Si $i_0$ est pair :} en notant $i_0 = 2 j_0$ on a $\bra{p_{2 j_0}} \ket{\psi} = \alpha \bra{q_{j_0}} \ket{x} \not= 0$ donc $\alpha \not= 0$. On peut en déduire la valeur de $\alpha$ puis celle de $\beta$ :
 $$\alpha = {\left(
 {\left(\frac
     {\bra{p_{i_0+1}} \ket{\psi}}
@@ -151,7 +151,7 @@ $$\alpha = {\left(
 \underline{Si $i_0$ est impair :} par un raisonnement similaire, on obtient :
 $$\beta = {\left(
 {\left(\frac
-    {\bra{p_{i_0+1}} \ket{\psi}}
+    {\bra{p_{i_0-1}} \ket{\psi}}
     {\bra{p_{i_0}} \ket{\psi}
 }\right)}^2
 + 1
@@ -200,8 +200,10 @@ On aura donc des réels que $\mathbb{P} = \{\sigma x^p \mid \sigma \in \{-1, 1\}
 
 Une dynamique qu'il sera crucial d'implémenter est le \textbf{sous-ensemblage} : toute variable doit avoir à chaque fin de calcul (même partiel) un type (correspodant à un ensemble) le plus fin possible. Par exemple le calcul $\frac{2}{3} \times \frac{3}{2} = \frac{1}{1}$ doit automatiquement être converti en entier (un sous-ensemble des rationnels, ce qu'il est par ailleurs). On note en particulier les inclusions : $\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{P}$.
 
-Le sous-ensemblage est implémenté dans la fonction \p{sous}, qui appelle, sauf si aucune simplification n'est possible, la fonction \p{sous} du sous-type trouvé.
-Exemple pour le rationnel $\frac{2}{1} \in \mathbb{Q}$ :
+Le sous-ensemblage est implémenté dans la fonction \p{sous}, qui appelle, sauf si aucune simplification n'est possible, la fonction \p{sous} du sous-type trouvé. \clearpage
+
+
+\noindent \exemple pour le rationnel $\frac{2}{1} \in \mathbb{Q}$ :
 \begin{enumerate}
   \item La fonction \p{sous} des rationnels détecte qu'on peut passer aux entiers relatifs. Elle construit donc un entier relatif correspondant : c'est $2 \in \mathbb{Z}$. On apelle ensuite \p{sous} sur le relatif 2.
   \item Dans \p{sous} de 2, on trouve qu'on peut simplifier au naturel $2 \in \mathbb{N}$

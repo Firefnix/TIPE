@@ -1,5 +1,5 @@
 from qubit import bra, Qudit
-from calcul import zero, un, F2, int_vers_bin, sqrt, int_log2
+from calcul import zero, un, F2, int_vers_bin, sqrt, int_log2, Matrice
 
 class Oracle:
     @staticmethod
@@ -40,7 +40,7 @@ class OracleDeSomme:
 
     def _trouve_alpha_beta(self, psi):
         i0 = self._trouve_i0(psi)
-        i1 = (i0+1) % psi.dim if i0 % 2 == 0 else (i0-1) % psi.dim
+        i1 = i0+1 if i0 % 2 == 0 else i0-1
         c = self._coord_y(psi[i0], psi[i1])
         if i0 % 2 == 0:
             alpha = c
@@ -58,7 +58,9 @@ class OracleDeSomme:
         b_inv = beta.inverse()
         return [b_inv * psi[2*i+1] for i in range(n)]
 
-    def __mul__(self, psi):
+    def __mul__(self, qudit):
+        psi = Qudit.matrice(
+            Matrice.tableau([[abs(qudit[i])] for i in range(qudit.dim)]))
         alpha, beta = self._trouve_alpha_beta(psi)
         coord_x = self._trouve_coord_x(alpha, beta, psi)
         res = Qudit(psi.dim)
