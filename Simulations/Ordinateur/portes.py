@@ -93,3 +93,11 @@ cX = CNOT = Porte(Matrice.tableau([
     [0, 0, 0, 1],
     [0, 0, 1, 0]
 ]))
+
+def QFT(N: int):
+    omega = Expi(pi * 2 / N)
+    t = [[None] * N for i in range(N)]
+    for k in range(N):
+        for j in range(N):
+            t[k][j] = (omega ** (k * j)).sous()
+    return Porte(sqrt(un / N) * Matrice.tableau(t))

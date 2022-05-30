@@ -89,6 +89,16 @@ class TestPortesRemarquables(TestCase):
         assert ket(0, 0, 0) >> pc == ket(0, 0, 0)
         assert ket(1, 1, 0) >> pc == (- ket(1, 1, 0))
 
+    def test_qft(self):
+        m = un / 2 * Matrice.tableau([
+            [1, 1, 1, 1],
+            [1, i, -1, -i],
+            [1, -1, 1, -1],
+            [1, -i, -1, i]
+        ])
+        assert QFT(2) == H
+        assert QFT(4) == Porte(m)
+
 
 if __name__ == '__main__':
     main()
