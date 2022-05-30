@@ -397,7 +397,20 @@ class Complexe(Nombre):
         return sqrt(self.x * self.x + self.y * self.y)
 
     def __str__(self):
-        return str(self.x) + '+ i * (' + str(self.y) + ')'
+        sx = str(self.x)
+        sy = str(self.y) if self.y.signe() == 1 else '-' + str(abs(self.y))
+        sy += 'i'
+        if self.y == un:
+            sy = 'i'
+        if self.y == -un:
+            sy = '-i'
+        if self.x == self.y == zero:
+            return '0'
+        if self.x == zero:
+            return sy
+        if self.y == zero:
+            return sx
+        return sx + ' + ' + sy
 
 
 i = Complexe(zero, un)
@@ -713,8 +726,15 @@ class Expi(Nombre):  # module * exp(i * arg)
     def sous(self):
         if self.arg() == zero:
             return un
-        if self.arg().appartient(VectPi) and self.arg().t.appartient(Relatif):
-            return abs(self) * ((-un) ** self.arg().t)
+        if self.arg().appartient(VectPi):
+            if self.arg().t.appartient(Relatif):
+                return abs(self) * ((-un) ** self.arg().t)
+            if self.arg().t.appartient(Rationnel):
+                t = self.arg().t.sur(Rationnel)
+                if t.denom == 2:
+                    if (t.num // 2) % 2 == 0:
+                        return abs(self) * i
+                    return abs(self) * (-i)
         return self
 
     def sur(self, E: type):
@@ -732,12 +752,18 @@ class Expi(Nombre):  # module * exp(i * arg)
             return Expi(self.arg() + autre.arg(),
                         module=abs(self) * abs(autre)).sous()
 
+    def __pow__(self, n):
+        n = Nombre.ou_int(n)
+        return Expi(self.arg() * n, module = abs(self) ** n).sous()
+
     def __add__(self, autre):
         if autre.sous() == zero:
             return self
 
     def __str__(self):
-        return f'exp(i*({self.arg()}))'
+        if abs(self) == un:
+            return f'exp(i*({self.arg()}))'
+        return f'{abs(self)}*exp(i*({self.arg()}))'
 
 
 def expi(theta): return Expi(theta).sous()

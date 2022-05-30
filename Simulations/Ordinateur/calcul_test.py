@@ -475,6 +475,10 @@ class TestVectPi(TestCase):
         assert un * pi == pi * un == pi
         assert pi * 2 == pi * Naturel(2) == deux_pi
 
+    def test_div(self):
+        assert pi / 2 == VectPi(Rationnel(1, 2))
+        assert pi * 3 / 2 == VectPi(Rationnel(3, 2))
+
     def test_neg(self):
         assert (- VectPi(2)) == VectPi(-2)
 
@@ -500,7 +504,18 @@ class TestExpi(TestCase):
     def test_mul(self):
         z1 = expi(pi / 2)
         assert z1 * z1 == (-un)
-        assert z1 * 3 == Expi(pi / 2, module = 3)
+        assert z1 * 3 == i * 3
+
+    def test_pow(self):
+        z1 = expi(pi / 6)
+        z2 = expi(pi / 2)
+        assert z1 ** 3 == z1 ** Naturel(3) == z2
+
+    def test_sous(self):
+        assert Expi(pi * 2).sous() == Expi(0).sous() == un
+        assert Expi(pi).sous() == Expi(pi * 3).sous() == -un
+        assert Expi(pi / 2).sous() == Expi(pi * (-3) / 2).sous() == i
+        assert Expi(- pi / 2).sous() == Expi(pi * 3 / 2).sous() == -i
 
 
 if __name__ == '__main__':
