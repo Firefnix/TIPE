@@ -1,4 +1,4 @@
-from calcul import un, zero, i, sqrt, Matrice, expi
+from calcul import un, i, sqrt, Matrice, expi, Expi, pi
 from qubit import Qudit, bra, ket
 
 class Porte:
@@ -12,7 +12,7 @@ class Porte:
 
     @staticmethod
     def neutre():
-        return Porte(Matrice.identite(1))
+        return _neutre
 
     def __eq__(self, autre):
         return isinstance(autre, Porte) and self.matrice == autre.matrice
@@ -23,11 +23,10 @@ class Porte:
         if autre == Porte.neutre():
             return self
         if isinstance(autre, Qudit):
-            q = Qudit(autre.dim)
-            q.matrice = self.matrice * autre.matrice
-            return q
+            return Qudit.matrice(self.matrice * autre.matrice)
         elif isinstance(autre, Porte):
             return Porte(self.matrice * autre.matrice)
+        raise TypeError(f'{autre} n\'est ni une porte chaînable ni un qudit')
 
     def __rshift__(self, autre):
         return autre * self
@@ -63,30 +62,32 @@ class Porte:
         return str(self)
 
 
-I = Identite = Porte(Matrice.int_tableau([[1, 0], [0, 1]]))
+_neutre = Porte(Matrice.identite(1))
 
-H = Hadamard = Porte(sqrt(un / 2) * Matrice.int_tableau([[1, 1], [1, -1]]))
+I = Identite = Porte(Matrice.tableau([[1, 0], [0, 1]]))
 
-X = PauliX = Porte(Matrice.int_tableau([[0, 1], [1, 0]]))
+H = Hadamard = Porte(sqrt(un / 2) * Matrice.tableau([[1, 1], [1, -1]]))
 
-Y = PauliY = Porte(Matrice.tableau([[zero, -i], [i, zero]]))
+X = PauliX = Porte(Matrice.tableau([[0, 1], [1, 0]]))
 
-iY = iPauliY = Porte(Matrice.int_tableau([[0, 1], [-1, 0]]))
+Y = PauliY = Porte(Matrice.tableau([[0, -i], [i, 0]]))
 
-Z = PauliZ = Porte(Matrice.int_tableau([[1, 0], [0, -1]]))
+iY = iPauliY = Porte(Matrice.tableau([[0, 1], [-1, 0]]))
 
-R = lambda phi: Porte(Matrice.tableau([[un, zero], [zero, expi(phi)]]))
+Z = PauliZ = Porte(Matrice.tableau([[1, 0], [0, -1]]))
+
+R = lambda phi: Porte(Matrice.tableau([[1, 0], [0, expi(phi)]]))
 
 PhaseCond = lambda n: Porte((ket(0) ** n) * (bra(0) ** n) * 2 - (Matrice.identite(2**n)))
 
-S = SWAP = Porte(Matrice.int_tableau([
+S = SWAP = Porte(Matrice.tableau([
     [1, 0, 0, 0],
     [0, 0, 1, 0],
     [0, 1, 0, 0],
     [0, 0, 0, 1]
 ]))
 
-cX = CNOT = Porte(Matrice.int_tableau([
+cX = CNOT = Porte(Matrice.tableau([
     [1, 0, 0, 0],
     [0, 1, 0, 0],
     [0, 0, 0, 1],

@@ -69,7 +69,7 @@ class TestQubit:
 
     def test_neg(self):
         e0 = ket(1, 0)
-        e1 = Qubit.matrice(Matrice.int_tableau([[0], [0], [-1], [0]]))
+        e1 = Qubit.matrice(Matrice.colonne(0, 0, -1, 0))
         assert e1 == -e0
         assert e0 == -e1
 

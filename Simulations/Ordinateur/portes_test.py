@@ -1,16 +1,16 @@
 from unittest import TestCase, main
 from calcul import Matrice, sqrt, un, zero, i
-from portes import H, I, X, Y, Z, CNOT, S, Porte, PhaseCond
+from portes import H, I, X, Y, Z, CNOT, S, Porte, PhaseCond, QFT
 from qubit import Qubit, ket
 
 class TestPortes(TestCase):
     def test_eq(self):
         assert H == H
-        assert I == Porte(Matrice.int_tableau([[1, 0], [0, 1]]))
+        assert I == Porte(Matrice.tableau([[1, 0], [0, 1]]))
         assert I != X
 
     def test_produit_tensoriel(self):
-        M = Porte(un / 2 * Matrice.int_tableau([
+        M = Porte(un / 2 * Matrice.tableau([
             [1,  1,  1,  1],
             [1, -1,  1, -1],
             [1,  1, -1, -1],

@@ -364,6 +364,68 @@ class TestMatrice(TestCase):
         m[0, 1] = 2
         assert m[0, 1] == Naturel(2)
 
+    def test_tableau(self):
+        m1 = Matrice.tableau([[un, zero], [un, zero]])
+        m2 = Matrice.tableau([[1, zero], [1, 0]])
+        assert m1[0, 0] == un
+        assert m1[0, 1] == zero
+        assert m1[1, 0] == un
+        assert m1[1, 1] == zero
+        assert m1 == m2
+
+    def test_eq(self):
+        m1 = Matrice.tableau([[1, 0], [0, 1]])
+        m2 = Matrice.tableau([[1, 0], [0, 1]])
+        assert m1 == m2
+        assert m1 != Matrice(2)
+        assert m1 != Matrice(2, 3)
+
+    def test_fois(self):
+        m1 = Matrice.tableau([[1, 2], [3, 4]])
+        m2 = Matrice.tableau([[4, 5], [6, 7]])
+        m3 = Matrice.tableau([[16, 19], [36, 43]])
+        m4 = Matrice.tableau([[19, 28], [27, 40]])
+        assert m1 * m2 == m3
+        assert m2 * m1 ==  m4
+        m5 = Matrice.tableau([[5], [6]])
+        m6 = Matrice.tableau([[17], [39]])
+        assert m1 * m5 == m6
+
+    def test_fois_scalaire(self):
+        m1 = Matrice.tableau([[2, 4], [6, 8]])
+        m2 = Matrice.tableau([[1, 2], [3, 4]])
+        assert Rationnel(1, 2) * m1 == m1 * Rationnel(1, 2) == m2
+        assert m2 * Naturel(2) == m2 * 2 == m1
+
+    def test_acces_rapide(self):
+        l = Matrice.tableau([[1, 2]])
+        c = Matrice.tableau([[1], [2]])
+        assert l[1] == Naturel(2)
+        assert c[1] == Naturel(2)
+        l[1] = zero
+        c[1] = un
+        assert l[1] == zero
+        assert c[1] == un
+
+    def test_produit_tensoriel(self):
+        m1 = Matrice.tableau([[1, 2], [3, 4]])
+        m2 = Matrice.tableau([[5, 6], [7, 8]])
+        m3 = Matrice.tableau([
+            [5, 6, 10, 12],
+            [7, 8, 14, 16],
+            [15, 18, 20, 24],
+            [21, 24, 28, 32]
+        ])
+        assert m1 @ m2 == m3
+        m4 = sqrt(Rationnel(1, 2)) * Matrice.tableau([[1, 1], [1, -1]])
+        m5 = Rationnel(1, 2) * Matrice.tableau([
+            [1,  1,  1,  1],
+            [1, -1,  1, -1],
+            [1,  1, -1, -1],
+            [1, -1, -1,  1]
+        ])
+        assert m4 @ m4 == m5
+
     def test_identite(self):
         m = Matrice.identite(3)
         for i in range(3):
@@ -373,65 +435,19 @@ class TestMatrice(TestCase):
                 else:
                     assert m[i, j] == zero
 
-    def test_tableau(self):
-        m = Matrice.tableau([[un, zero], [un, zero]])
-        assert m[0, 0] == un
-        assert m[0, 1] == zero
-        assert m[1, 0] == un
-        assert m[1, 1] == zero
+    def test_scalaire(self):
+        assert Matrice.scalaire(un, 3) == Matrice.identite(3)
+        assert Matrice.scalaire(-2, 3) == Matrice.identite(3) * (-2)
 
-    def test_eq(self):
-        m1 = Matrice.int_tableau([[1, 0], [0, 1]])
-        m2 = Matrice.int_tableau([[1, 0], [0, 1]])
-        assert m1 == m2
-        assert m1 != Matrice(2)
-        assert m1 != Matrice(2, 3)
+    def test_ligne(self):
+        m = Matrice.tableau([[1, 2, 3]])
+        assert Matrice.ligne(1, 2, 3) == m
+        assert Matrice.ligne([1, 2, 3]) == m
 
-    def test_fois(self):
-        m1 = Matrice.int_tableau([[1, 2], [3, 4]])
-        m2 = Matrice.int_tableau([[4, 5], [6, 7]])
-        m3 = Matrice.int_tableau([[16, 19], [36, 43]])
-        m4 = Matrice.int_tableau([[19, 28], [27, 40]])
-        assert m1 * m2 == m3
-        assert m2 * m1 ==  m4
-        m5 = Matrice.int_tableau([[5], [6]])
-        m6 = Matrice.int_tableau([[17], [39]])
-        assert m1 * m5 == m6
-
-    def test_fois_scalaire(self):
-        m1 = Matrice.int_tableau([[2, 4], [6, 8]])
-        m2 = Matrice.int_tableau([[1, 2], [3, 4]])
-        assert Rationnel(1, 2) * m1 == m1 * Rationnel(1, 2) == m2
-        assert m2 * Naturel(2) == m2 * 2 == m1
-
-    def test_acces_rapide(self):
-        l = Matrice.int_tableau([[1, 2]])
-        c = Matrice.int_tableau([[1], [2]])
-        assert l[1] == Naturel(2)
-        assert c[1] == Naturel(2)
-        l[1] = zero
-        c[1] = un
-        assert l[1] == zero
-        assert c[1] == un
-
-    def test_produit_tensoriel(self):
-        m1 = Matrice.int_tableau([[1, 2], [3, 4]])
-        m2 = Matrice.int_tableau([[5, 6], [7, 8]])
-        m3 = Matrice.int_tableau([
-            [5, 6, 10, 12],
-            [7, 8, 14, 16],
-            [15, 18, 20, 24],
-            [21, 24, 28, 32]
-        ])
-        assert m1 @ m2 == m3
-        m4 = sqrt(Rationnel(1, 2)) * Matrice.int_tableau([[1, 1], [1, -1]])
-        m5 = Rationnel(1, 2) * Matrice.int_tableau([
-            [1,  1,  1,  1],
-            [1, -1,  1, -1],
-            [1,  1, -1, -1],
-            [1, -1, -1,  1]
-        ])
-        assert m4 @ m4 == m5
+    def test_colonne(self):
+        m = Matrice.tableau([[1], [2], [3]])
+        assert Matrice.colonne(1, 2, 3) == m
+        assert Matrice.colonne([1, 2, 3]) == m
 
 
 class TestVectPi(TestCase):

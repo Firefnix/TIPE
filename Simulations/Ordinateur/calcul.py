@@ -518,16 +518,9 @@ class Matrice(Nombre):
     def tableau(t):
         assert all([len(i) == len(t[0]) for i in t])
         m = Matrice(len(t), len(t[0]))
-        m._c = t
-        return m
-
-    @staticmethod
-    def int_tableau(t):
-        assert all([len(i) == len(t[0]) for i in t])
-        m = Matrice(len(t), len(t[0]))
         for i in range(len(t)):
             for j in range(len(t[0])):
-                m[i, j] = Relatif(t[i][j]).sous()
+                m[i, j] = Nombre.ou_int(t[i][j])
         return m
 
     def est_carree(self):
@@ -603,6 +596,7 @@ class Matrice(Nombre):
 
     @staticmethod
     def scalaire(k, n):
+        k = Nombre.ou_int(k)
         m = Matrice(n)
         for i in range(n):
             m[i, i] = k
@@ -611,6 +605,26 @@ class Matrice(Nombre):
     @staticmethod
     def identite(n):
         return Matrice.scalaire(un, n)
+
+    @staticmethod
+    def ligne(*args):
+        l = []
+        for i in args:
+            if isinstance(i, list):
+                l += i
+            else:
+                l.append(i)
+        return Matrice.tableau([l])
+
+    @staticmethod
+    def colonne(*args):
+        c = []
+        for i in args:
+            if isinstance(i, list):
+                c += i
+            else:
+                c.append(i)
+        return Matrice.tableau([[i] for i in c])
 
     # Correspond au produit tensoriel pour deux matrices (prod. de Kronecker)
     # S'utilise pour deux matrices A et B en écrivant A @ B.

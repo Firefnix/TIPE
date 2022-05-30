@@ -37,6 +37,3 @@ def H_option(total, *, debut, fin):
 def qubits_intriques(n, valeur = 0):
     assert isinstance(n, int) and isinstance(valeur, int)
     return (ket(valeur)**n) >> (H**n)
-
-
-p = print
