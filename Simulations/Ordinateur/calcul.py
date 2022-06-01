@@ -5,8 +5,27 @@ class Nombre:
             return Relatif(x).sous()
         return x
 
+    def sur(self, E: type):
+        if E == type(self):
+            return self
+        if not self.peut_sur(E):
+            return None
+        if hasattr(self, '_sur'):
+            return self._sur(E)
+
     def appartient(self, E):
         return not (self.sur(E) is None)
+
+    def peut_sur(self, E):
+        T = type(self)
+        d = {
+            F2: [Naturel, Relatif, Rationnel, Puissance, Complexe],
+            Naturel: [F2, Relatif, Rationnel, Puissance, Complexe],
+            Relatif: [F2, Rationnel, Puissance, Complexe],
+            Rationnel: [Puissance, Complexe],
+            Puissance: [Complexe],
+        }
+        return E in d[T] if T in d else False
 
     def __add__(self, autre):
         T = type(self)
@@ -65,35 +84,30 @@ class Naturel(Nombre):
         return self.n
 
     def sous(self):
-        if self.n == 0:
-            return zero
         return self
 
-    def sur(self, E: type):
-        if E == Naturel:
-            return self
+    def _sur(self, E: type):
         if E == F2:
             return F2(self.n)
-        return Relatif(self.n).sur(E)
+        return self._rel.sur(E)
 
     def plus(self, autre):
         return Naturel(self.n + autre.n)
 
     def fois(self, autre):
-        a = Naturel(self.n * autre.n)
-        return a
+        return Naturel(self.n * autre.n)
 
     def inverse(self):
-        return self.sur(Relatif).inverse()
+        return self._rel.inverse()
 
     def __mod__(self, autre):
-        return self.sur(Relatif) % autre
+        return self._rel % autre
 
     def __floordiv__(self, autre):
-        return self.sur(Relatif) // autre
+        return self._rel // autre
 
     def __pow__(self, exposant):
-        return self.sur(Relatif) ** exposant
+        return self._rel ** exposant
 
     def __neg__(self):
         return Relatif(- self.n).sous()
@@ -117,12 +131,10 @@ class Relatif(Nombre):
 
     def sous(self):
         if self.z >= 0:
-            return Naturel(self.z).sous()
+            return Naturel(self.z)
         return self
 
-    def sur(self, E: type):
-        if E == Relatif:
-            return self
+    def _sur(self, E):
         return Rationnel(self.z, 1).sur(E)
 
     def plus(self, autre):
@@ -144,13 +156,12 @@ class Relatif(Nombre):
         return Relatif(- self.z).sous()
 
     def __abs__(self):
-        return Relatif(abs(self.z)).sous()
+        return Naturel(abs(self.z))
 
     def __pow__(self, exposant):
-        if isinstance(exposant, int):
-            exposant = Relatif(exposant).sous()
+        exposant = Nombre.ou_int(exposant)
         if exposant.appartient(Naturel):
-            return Relatif(self.z ** exposant.n).sous()
+            return Relatif(self.z ** int(exposant)).sous()
         if exposant.appartient(Relatif):
             return Rationnel(
                 un,
@@ -192,9 +203,7 @@ class Rationnel(Nombre):
             return Relatif(self.num).sous()
         return self
 
-    def sur(self, E: type):
-        if E == Rationnel:
-            return self
+    def _sur(self, E):
         sigma = 1 if self.num >= 0 else -1
         return Puissance(
             Rationnel(abs(self.num), self.denom),
@@ -272,9 +281,7 @@ class Puissance(Nombre):
                     return Rationnel(nr, dr)
         return None
 
-    def sur(self, E: type):
-        if E == Puissance:
-            return self
+    def _sur(self, E: type):
         if E == Complexe:
             return Complexe(self.sous(), zero)
 
@@ -336,10 +343,6 @@ class Complexe(Nombre):
         if self.y == zero:
             return self.x
         return self
-
-    def sur(self, E):
-        if E == Complexe:
-            return self
 
     def plus(self, autre):
         return Complexe(
@@ -428,9 +431,7 @@ class F2(Nombre):
     def fois(self, autre):
         return F2(self.n * autre.n)
 
-    def sur(self, E):
-        if E == F2:
-            return self
+    def _sur(self, E):
         return Naturel(self.n).sur(E)
 
     @staticmethod
@@ -485,9 +486,6 @@ class Matrice(Nombre):
                 if self[i, j] != autre[i, j]:
                     return False
         return True
-
-    def sur(self, E):
-        return None
 
     def sous(self):
         return self
@@ -646,10 +644,6 @@ class VectPi(Nombre):  # pi * t avec t.appartient(Puissance)
             return zero
         return self
 
-    def sur(self, E: type):
-        if E == VectPi:
-            return self
-
     def __add__(self, autre):
         autre = Nombre.ou_int(autre)
         if autre == zero:
@@ -701,10 +695,6 @@ class Expi(Nombre):  # module * exp(i * arg)
                         return abs(self) * i
                     return abs(self) * (-i)
         return self
-
-    def sur(self, E: type):
-        if E == Expi:
-            return self
 
     def __abs__(self):
         return self._module
