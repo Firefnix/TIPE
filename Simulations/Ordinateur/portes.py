@@ -64,30 +64,30 @@ class Porte:
 
 _neutre = Porte(Matrice.identite(1))
 
-I = Identite = Porte(Matrice.tableau([[1, 0], [0, 1]]))
+I = Identite = Porte(Matrice([[1, 0], [0, 1]]))
 
-H = Hadamard = Porte(sqrt(un / 2) * Matrice.tableau([[1, 1], [1, -1]]))
+H = Hadamard = Porte(sqrt(un / 2) * Matrice([[1, 1], [1, -1]]))
 
-X = PauliX = Porte(Matrice.tableau([[0, 1], [1, 0]]))
+X = PauliX = Porte(Matrice([[0, 1], [1, 0]]))
 
-Y = PauliY = Porte(Matrice.tableau([[0, -i], [i, 0]]))
+Y = PauliY = Porte(Matrice([[0, -i], [i, 0]]))
 
-iY = iPauliY = Porte(Matrice.tableau([[0, 1], [-1, 0]]))
+iY = iPauliY = Porte(Matrice([[0, 1], [-1, 0]]))
 
-Z = PauliZ = Porte(Matrice.tableau([[1, 0], [0, -1]]))
+Z = PauliZ = Porte(Matrice([[1, 0], [0, -1]]))
 
-R = lambda phi: Porte(Matrice.tableau([[1, 0], [0, expi(phi)]]))
+R = lambda phi: Porte(Matrice([[1, 0], [0, expi(phi)]]))
 
 PhaseCond = lambda n: Porte((ket(0) ** n) * (bra(0) ** n) * 2 - (Matrice.identite(2**n)))
 
-S = SWAP = Porte(Matrice.tableau([
+S = SWAP = Porte(Matrice([
     [1, 0, 0, 0],
     [0, 0, 1, 0],
     [0, 1, 0, 0],
     [0, 0, 0, 1]
 ]))
 
-cX = CNOT = Porte(Matrice.tableau([
+cX = CNOT = Porte(Matrice([
     [1, 0, 0, 0],
     [0, 1, 0, 0],
     [0, 0, 0, 1],
@@ -100,4 +100,4 @@ def QFT(N: int):
     for k in range(N):
         for j in range(N):
             t[k][j] = (omega ** (k * j)).sous()
-    return Porte(sqrt(un / N) * Matrice.tableau(t))
+    return Porte(sqrt(un / N) * Matrice(t))

@@ -30,7 +30,7 @@ class Qudit:
         self.dim = dim
         nom = lambda i: int_vers_strbin(i, taille = int_log2(dim)-1)
         self.base = [EtatPropre(nom(i)) for i in range(dim)]  # vecteurs propres
-        self.matrice = Matrice(dim, 1)
+        self.matrice = Matrice.zeros(dim, 1)
         self.matrice[0] = un
 
     @staticmethod
@@ -161,7 +161,7 @@ class Bra:
         self.composante = ()
         for i in composante:
             self.composante += tuple(int_vers_bin(int(i)))
-        self.matrice = Matrice(1, 2 ** len(self.composante))
+        self.matrice = Matrice.zeros(1, 2 ** len(self.composante))
         self.matrice[bin_vers_int(*self.composante)] = un
 
     def __eq__(self, autre):

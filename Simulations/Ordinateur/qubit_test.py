@@ -117,7 +117,7 @@ class TestBra(TestCase):
         assert bra(0, 1) == bra(zero, un)
 
     def test_produit(self):
-        mx, my = Matrice(8, 1), Matrice(4, 1)
+        mx, my = Matrice.zeros(8, 1), Matrice.zeros(4, 1)
         mx[7] = un
         my[3] = un
         x, y = Qudit.matrice(mx), Qudit.matrice(my)
@@ -131,7 +131,7 @@ class TestBra(TestCase):
     def test_ket_bra(self):
         k = ket(0, 1)
         b = bra(1, 1)
-        m = Matrice(4)
+        m = Matrice.zeros(4)
         m[1, 3] = un
         assert k * b == m
 

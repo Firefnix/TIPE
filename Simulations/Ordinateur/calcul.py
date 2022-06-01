@@ -465,18 +465,15 @@ class F2Uplet:
 
 
 class Matrice(Nombre):
-    # Renvoie une matrice remplie de zéros
-    # p est la longueur de la matrice (nombre de lignes)
-    # q est la largeur de la matrice (nombre de colonnes)
-    def __init__(self, p, q=None):
-        if q is None:
-            q = p
-        assert isinstance(p, int)
-        assert isinstance(q, int)
-        self.p = p
-        self.q = q
-        self.forme = (p, q)
-        self._c = [[zero for _ in range(q)] for _ in range(p)]
+    def __init__(self, t):
+        assert all([len(i) == len(t[0]) for i in t])
+        self.p = len(t)
+        self.q = len(t[0])
+        self.forme = (self.p, self.q)
+        self._c = [
+            [Nombre.ou_int(t[i][j]) for j in range(self.q)]
+            for i in range(self.p)
+        ]
 
     def __eq__(self, autre):
         if (not isinstance(autre, Matrice)) or self.p != autre.p or self.q != autre.q:
@@ -490,14 +487,15 @@ class Matrice(Nombre):
     def sous(self):
         return self
 
+    # Renvoie une matrice remplie de zéros
+    # p est la longueur de la matrice (nombre de lignes)
+    # q est la largeur de la matrice (nombre de colonnes)
     @staticmethod
-    def tableau(t):
-        assert all([len(i) == len(t[0]) for i in t])
-        m = Matrice(len(t), len(t[0]))
-        for i in range(len(t)):
-            for j in range(len(t[0])):
-                m[i, j] = Nombre.ou_int(t[i][j])
-        return m
+    def zeros(p, q = None):
+        if q is None:
+            q = p
+        assert isinstance(p, int) and isinstance(q, int)
+        return Matrice([[zero for _ in range(q)] for _ in range(p)])
 
     def est_carree(self):
         return self.p == self.q
@@ -533,7 +531,7 @@ class Matrice(Nombre):
     def __add__(self, autre):
         assert self.p == autre.p
         assert self.q == autre.q
-        m = Matrice(self.p, self.q)
+        m = Matrice.zeros(self.p, self.q)
         for i in range(self.p):
             for j in range(self.q):
                 m[i, j] = self[i, j] + autre[i, j]
@@ -542,29 +540,33 @@ class Matrice(Nombre):
     def __mul__(self, autre):
         if isinstance(autre, Matrice):
             assert self.q == autre.p
-            m = Matrice(self.p, autre.q)
+            m = Matrice.zeros(self.p, autre.q)
             for i in range(self.p):
                 for j in range(autre.q):
                     m[i, j] = zero
                     for k in range(self.q):
                         m[i, j] += self[i, k] * autre[k, j]
             return m
-        m = Matrice(self.p, self.q)
+        m = Matrice.zeros(self.p, self.q)
         autre = Nombre.ou_int(autre)
+        if autre == zero:
+            return Matrice(self.p, self.q)
+        if autre == un:
+            return self
         for i in range(self.p):
             for j in range(self.q):
                 m[i, j] = autre * self[i, j]
         return m
 
     def transposee(self):
-        m = Matrice(self.q, self.p)
+        m = Matrice.zeros(self.q, self.p)
         for i in range(self.q):
             for j in range(self.p):
                 m[i, j] = self[j, i]
         return m
 
     def conjuguee(self):
-        m = Matrice(self.p, self.q)
+        m = Matrice.zeros(self.p, self.q)
         for i in range(self.p):
             for j in range(self.q):
                 m[i, j] = self[i, j].sur(Complexe).conjugue()
@@ -573,7 +575,7 @@ class Matrice(Nombre):
     @staticmethod
     def scalaire(k, n):
         k = Nombre.ou_int(k)
-        m = Matrice(n)
+        m = Matrice.zeros(n)
         for i in range(n):
             m[i, i] = k
         return m
@@ -590,7 +592,7 @@ class Matrice(Nombre):
                 l += i
             else:
                 l.append(i)
-        return Matrice.tableau([l])
+        return Matrice([l])
 
     @staticmethod
     def colonne(*args):
@@ -600,13 +602,13 @@ class Matrice(Nombre):
                 c += i
             else:
                 c.append(i)
-        return Matrice.tableau([[i] for i in c])
+        return Matrice([[i] for i in c])
 
     # Correspond au produit tensoriel pour deux matrices (prod. de Kronecker)
     # S'utilise pour deux matrices A et B en écrivant A @ B.
     def __matmul__(self, autre):
         assert isinstance(autre, Matrice)
-        m = Matrice(self.p * autre.p, self.q * autre.q)
+        m = Matrice.zeros(self.p * autre.p, self.q * autre.q)
         for i in range(self.p * autre.p):
             for j in range(self.q * autre.q):
                 m[i, j] = self[i // autre.p, j // autre.q] * autre[i % autre.p, j % autre.q]

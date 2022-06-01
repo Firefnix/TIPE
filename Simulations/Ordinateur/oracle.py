@@ -60,7 +60,7 @@ class OracleDeSomme:
 
     def __mul__(self, qudit):
         psi = Qudit.matrice(
-            Matrice.tableau([[abs(qudit[i])] for i in range(qudit.dim)]))
+            Matrice([[abs(qudit[i])] for i in range(qudit.dim)]))
         alpha, beta = self._trouve_alpha_beta(psi)
         coord_x = self._trouve_coord_x(alpha, beta, psi)
         res = Qudit(psi.dim)

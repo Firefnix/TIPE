@@ -20,7 +20,7 @@ class TestOracles(TestCase):
         Uf = OracleDePhase(self.f)
         e1 = ket(1, 0) >> (H**2)
         e2 = Qudit.matrice(
-            (un / 2) * Matrice.tableau([[1], [-1], [1], [-1]])
+            (un / 2) * Matrice([[1], [-1], [1], [-1]])
         )
         assert e1 >> Uf == e2
 

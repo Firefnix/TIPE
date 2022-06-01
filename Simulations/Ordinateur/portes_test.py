@@ -6,11 +6,11 @@ from qubit import Qubit, ket
 class TestPortes(TestCase):
     def test_eq(self):
         assert H == H
-        assert I == Porte(Matrice.tableau([[1, 0], [0, 1]]))
+        assert I == Porte(Matrice([[1, 0], [0, 1]]))
         assert I != X
 
     def test_produit_tensoriel(self):
-        M = Porte(un / 2 * Matrice.tableau([
+        M = Porte(un / 2 * Matrice([
             [1,  1,  1,  1],
             [1, -1,  1, -1],
             [1,  1, -1, -1],
@@ -90,7 +90,7 @@ class TestPortesRemarquables(TestCase):
         assert ket(1, 1, 0) >> pc == (- ket(1, 1, 0))
 
     def test_qft(self):
-        m = un / 2 * Matrice.tableau([
+        m = un / 2 * Matrice([
             [1, 1, 1, 1],
             [1, i, -1, -i],
             [1, -1, 1, -1],
