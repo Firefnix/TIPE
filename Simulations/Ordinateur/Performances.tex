@@ -1,0 +1,175 @@
+\documentclass[french]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{babel}
+\usepackage{physics} % \bra et \ket
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage{stmaryrd} % intervalles d'entiers
+\usepackage{mleftright} % grandes barres dans les ensembles
+\usepackage{tikz-cd} % diagrammes, voir aussi: https://tikzcd.yichuanshen.de/
+
+
+\newcommand{\somme}{\displaystyle\sum}
+\newcommand{\tab}{\hspace*{5mm}}
+\newcommand{\floor}[1]{\lfloor #1 \rfloor} % Partie entière
+\newcommand{\exemple}{\textbf{\underline{Exemple :} }}
+\newcommand{\entiers}[2]{\llbracket #1,\ #2\rrbracket} % intervalle d'entiers
+
+% Pour le calcul formel
+\newcommand{\mat}[3]{\mathcal{M}_{#1,#2} (#3)}
+\newcommand{\matc}[2]{\mathcal{M}_{#1} (#2)}
+\newcommand{\nat}{\mathbb{N}}
+\newcommand{\rel}{\mathbb{Z}}
+\newcommand{\rat}{\mathbb{Q}}
+\newcommand{\puis}{\mathbb{P}}
+\newcommand{\cplx}{\mathbb{C}}
+\newcommand{\corps}{\mathbb{K}}
+\newcommand{\mc}[1]{\text{\texttt{#1}}}
+\newcommand{\sur}{\uparrow}
+\newcommand{\sous}{\downarrow}
+
+% Fonctions
+\newcommand{\fonction}[5]{\begin{array}{l|rcl}
+#1: & #2 & \longrightarrow & #3 \\
+    & #4 & \longmapsto & #5 \end{array}}
+% source : https://www.mathematex.fr/viewtopic.php?t=1447
+% utilisation : \fonction{f}{E}{F}{x}{f(x)}
+
+\usepackage{stackengine}
+\usepackage{scalerel}
+\usepackage{xcolor}
+\newcommand\danger[1][2.7ex]{%
+    \renewcommand\stacktype{L}%
+    \scaleto{\stackon[1.3pt]{\color{red}$\triangle$}{\tiny !}}{#1}%
+}
+\title{Performances}
+\author{Groupe EMY}
+
+\title{Groupe EMY}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Le but de ce document est d'aider à la mise en œuvre d'améliorations de performances. Ce travail se décline en trois parties : l'\textbf{analyse} (de la complexité temporelle C.T. et spatiale C.S.), les \textbf{propositions} (idées pour rendre les algorithmes plus efficaces), et l'\textbf{implémentation} (qui ne se trouve pas dans ce document mais directement dans des fichiers Python).
+
+
+\section{Analyse}
+
+On note une \textit{opération} comme on le ferait avec des variables (avec $\cdot$ et $+$), mais en remplaçant la variable par l'ensemble auquel elle appartient : par exemple $\mat{n}{p}{\rel} \cdot \mat{p}{r}{\rel}$ désigne la multiplication de deux matrices. La \textit{complexité temporelle} d'une opération $\mathcal{O}$ est notée $T(\mathcal{O})$, et sa \textit{complexité spatiale} est notée $S(\mathcal{O})$. Le signe \danger\ signale opérations qui sont jugées sous-optimales.
+
+\subsection{Calcul formel}
+
+
+\subsubsection{C.T. d'instanciation}
+
+\noindent L'opération d'instanciation de $E$ est notée $\tilde E$, celle d'égalité $=E$, la fonction \texttt{sous} est notée $\sous$ et \texttt{sur}$(E)$ est notée $\sur E$.
+
+\begin{itemize}
+    \item $T(\tilde \nat) = T(\tilde \rel) = O(1)$
+    \item $T(\tilde 0) = T(\tilde 1) = O(0)$
+    \item $T (\tilde \rat(a, b)) = O(\log_2(\min (|a|, |b|)))$
+    \item $T(\tilde \puis(x, p)) = T(\tilde \rat(x)) + T(\tilde \rat(p))$
+    \item $T(\mathbb{C}(x, y)) = T(\sous x) + T(\sous y)$
+    \item $T(\mc{Matrice}(p, q)) = O(pq)$ (zéros) \danger
+    \item $T(E_1 + E_2) = O(T(E_1 \sur E_2) + T(E_2 \sur E_1))$ \danger
+    \item $T(E_1 \cdot E_2) = O(T(E_1 \sur E_2) + T(E_2 \sur E_1))$ \danger
+\end{itemize}
+
+
+\subsubsection{C.T. d'opérations algébriques}
+
+
+\noindent Pour les opérations sur les matrices :
+\begin{itemize}
+    \item $T(\mat{p}{q}{E_1} + \mat{p}{q}{E_2}) = O(pq \cdot T(E_1 + E_2))$
+    \item $T(\mat{p}{q}{E_1} \cdot \mat{q}{r}{E_2}) = O(pqr \cdot T(E_1 \cdot E_2))$ \danger
+    \item $T(\mat{a}{b}{E_1} \otimes \mat{c}{d}{E_2}) = O(abcd \cdot T(E_1 \cdot E_2))$ \danger
+    \item $T(\mat{p}{q}{E}^{\otimes n}) = O(n \log_2 n \cdot T(E \cdot E))$
+\end{itemize}
+
+\subsection{Circuit quantique}
+
+Dans cette partie, on considère que les opérations sur les scalaires, appartenant au corps $\corps$, se font en $O(1)$. On considère un circuit quantique $C$ de $n$ qubits, non nécessairement états propres au cours du calcul, et on dispose d'un circuit de $m$ étapes, c'est-à-dire que chaque qubit passe à travers $m$ portes. On suppose que l'état initial est propre et que chaque étape est composée de $n$ portes prenant un qubit en entrée chacune.
+
+
+\begin{align*}
+T(C)
+&= T(\mc{création qudit}) + m \cdot T(\mc{cr. étape}) + m \cdot T(\mc{passage étape}) \\
+&= O(2^n) + O(m2^{n^2 + n}) + O(m4^n) \quad \text{(cf. ci-dessous)} \\
+&= O(m2^{n^2 + n})
+\end{align*}
+
+
+\subsubsection{C.T. de la création du qudit}
+
+\begin{align*}
+    T(\mc{cr. qudit})
+&= \somme^{n}_{i=1} T(\mc{cr. qubit}) + T(\mat{2^i}{1}{\corps} \otimes \mat{2}{1}{\corps}) \\
+&= \somme^{n}_{i=1} O(1) + O(2^i \cdot 1 \cdot 2 \cdot 1) \\
+&= O((4 \cdot 2^n - 3) \\
+&= O(2^n)
+\end{align*}
+
+
+\subsubsection{C.T. de la création des étapes}
+
+\begin{align*}
+T(\mc{cr. étape})
+&= \somme^{n}_{i=1} T(\matc{(2^n)^i}{\corps} \otimes \matc{2^n}{\corps}) \\
+&= \somme^{n}_{i=1} O(2^{n(i+1)}) \\
+&= O\left(2^n \somme^{n}_{i=1} (2^n)^i\right) \\
+&= O\left(2^n\left(2^{n^2} - 1\right)\left(1 + \frac{1}{2^n - 1}\right)\right) \\
+&= O(2^{n^2 + n}) \quad (?)
+\end{align*}
+
+\subsubsection{C.T du passage des étapes}
+
+
+On travaille d'abord sans chaînage : le qudit d'état passe successivement dans chaque porte :
+\begin{align*}
+m \cdot T(\mc{pass. étape})
+&= m \cdot T(\matc{2^n}{\corps} \cdot \mat{2^n}{1}{\corps}) \\
+&= m \cdot O(2^n \cdot 2^n \cdot 1) \\
+&= O(m 4^n)
+\end{align*}
+Comparons avec un travail en chaînage total. On suppose que toutes les portes sont chaînables, et on les multiplie entre elles :
+\begin{align*}
+m \cdot T(\mc{pass. étape})
+&= T(\mc{chaînage}) + T(\mc{pass. qudit}) \\
+&= m \cdot T(\matc{2^n}{\corps} \cdot \matc{2^n}{\corps}) + T(\matc{2^n}{\corps} \cdot \mat{2^n}{1}{\corps})\\
+&= m \cdot O((2^n)^3) + O(4^n)\\
+&= O(m 8^n)
+\end{align*}
+On observe une complexité bien plus importante que pour un calcul sans chaînage : on limitera donc le chaînage à de petits circuits.
+
+\section{Propositions}
+
+\subsection{Calcul formel}
+
+\noindent Pour les matrices :
+\begin{itemize}
+    \item Le constructeur \texttt{Matrice} se comporte comme \texttt{Matrice.tableau} (qui est supprimé), et on implémente \texttt{Matrice.zeros}
+    \item Multiplication de matrices avec 0 et 1
+    \item Matrice tensorielle identité
+    \item Matrices avec entiers de Gauss $\mathbb{P} \times \mathcal{M}(\mathbb{Z}[i])$)
+    \item Strassen (pour de grandes matrices)
+\end{itemize}
+
+\noindent Pour le typage :
+\begin{itemize}
+    \item Simplification dans la fonction \texttt{Nombre.sur} (pour les cas où on retourne \texttt{None})
+    \item Supprimer le type \texttt{Zero}
+\end{itemize}
+
+\subsection{Portes et qudits}
+
+\begin{itemize}
+    \item Formule générale pour $H^{\otimes n}$
+\end{itemize}
+
+\end{document}
