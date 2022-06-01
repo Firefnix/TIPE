@@ -1,27 +1,24 @@
 from unittest import TestCase, main
-from calcul import Zero, zero, un, Naturel, Relatif, Rationnel, Puissance, \
+from calcul import zero, un, Naturel, Relatif, Rationnel, Puissance, \
     sqrt, Complexe, i, F2, F2Uplet, int_log2, int_vers_bin, bin_vers_int, \
     strbin_vers_int, int_vers_strbin, Matrice, VectPi, pi, Expi, expi
 
 class TestZero(TestCase):
     def test_sous(self):
-        assert Zero().sous() == Zero() == zero
+        assert zero.sous() == zero
 
     def test_sur(self):
-        z = Zero()
-        assert z.sur(Naturel) == Naturel(0)
-        assert z.sur(Relatif) == Relatif(0)
-        assert z.sur(Rationnel) == Rationnel(0, 1)
+        assert zero.sur(Naturel) == Naturel(0)
+        assert zero.sur(Relatif) == Relatif(0)
+        assert zero.sur(Rationnel) == Rationnel(0, 1)
 
     def test_plus(self):
-        zero = Zero()
         trois = Naturel(3)
         assert zero + zero == zero
         assert trois + zero == trois
         assert zero + trois == trois
 
     def test_fois(self):
-        zero = Zero()
         trois = Naturel(3)
         moins_trois = Relatif(-3)
         un_tiers = Rationnel(1, 3)

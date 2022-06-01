@@ -52,47 +52,10 @@ class Nombre:
         return str(self)
 
 
-class Zero(Nombre):
-    def __init__(self):
-        self.n = 0  # par assimilation aux naturels
-
-    def __int__(self):
-        return 0
-
-    def __eq__(self, autre):
-        return isinstance(autre, Zero)
-
-    def __add__(self, autre):
-        return autre
-
-    def __mul__(self, autre):
-        return self
-
-    def sous(self):
-        return self
-
-    def sur(self, E: type):
-        return Naturel(0).sur(E)
-
-    def __abs__(self):
-        return self
-
-    def __neg__(self):
-        return self
-
-    def __str__(self):
-        return '0'
-
-    def __pow__(self, autre):
-        return Naturel(0) ** autre
-
-
-zero = Zero()
-
-
 class Naturel(Nombre):
     def __init__(self, n: int):
         assert n >= 0
+        self._rel = Relatif(n)
         self.n = n
 
     def __eq__(self, autre):
@@ -140,9 +103,6 @@ class Naturel(Nombre):
 
     def __str__(self):
         return str(self.n)
-
-
-un = Naturel(1)
 
 
 class Relatif(Nombre):
@@ -202,11 +162,22 @@ class Relatif(Nombre):
         return str(self.z)
 
 
+zero = Naturel(0)
+un = Naturel(1)
+
+
+def pgcd(a, b) -> int:
+    a, b = abs(int(a)), abs(int(b))
+    if b == 0:
+        return a
+    return pgcd(b, a % b)
+
+
 class Rationnel(Nombre):
     def __init__(self, num: int, denom: int):
         assert denom != 0
         num, denom = int(num), int(denom)
-        d = Rationnel._pgcd(abs(num), abs(denom))
+        d = pgcd(abs(num), abs(denom))
         signe = 1 if num * denom >= 0 else -1
         self.num = signe * abs(num) // d
         self.denom = abs(denom) // d
@@ -260,12 +231,6 @@ class Rationnel(Nombre):
     def inverse(self):
         assert self.num != 0
         return Rationnel(self.denom, self.num)
-
-    @staticmethod
-    def _pgcd(a: int, b: int):
-        if b == 0:
-            return a
-        return Rationnel._pgcd(b, a % b)
 
     def __str__(self):
         return f'{self.num}/{self.denom}'
