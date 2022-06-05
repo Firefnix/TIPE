@@ -1,17 +1,4 @@
-//Certains des divs n'ont pas de texte intérieur 
-//
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-
+// Certains des divs n'ont pas de texte intérieur
 
 function drag(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
@@ -25,12 +12,11 @@ function drop(ev) {
     ev.preventDefault();
     let data = ev.dataTransfer.getData("text", ev.innerText);
     ev.target.innerText = data;
-
 }
 
 function clearGrid() {
     let grid = document.getElementById("container_circuit");
-    var child = grid.lastElementChild; 
+    var child = grid.lastElementChild;
 
     while (child) {
         grid.removeChild(child);
@@ -55,42 +41,47 @@ function fill(grid, columns, rows) {
             rectangle.style.gridRow = j.toString() + "/" + (j+1).toString();
 
             grid.appendChild(rectangle);
-
         }
     }
 
-    setStates(Math.max(columns, rows));
+    setStates(rows);
 }
 
-function setStates(columns) {
-    for (let j = 1; j <= columns; j++) {
+function ketToString(n) {
+    if (n == 0) {
+        return "|0⟩";
+    }
+    return "|1⟩";
+}
+
+function setStates(rows) {
+    for (let j = 1; j <= rows; j++) {
         let rect = document.getElementById("1/" + j.toString());
-        rect.innerText = "1";
+        rect.innerText = ketToString(0);
         rect.setAttribute("onclick", "switchStates(event.target)");
-        rect.setAttribute("ondrop", "")
-        rect.setAttribute("ondragover", "")
+        rect.setAttribute("ondrop", "");
+        rect.setAttribute("ondragover", "");
     }
 }
 
 function switchStates(rect) {
     let txt = rect.innerText;
 
-    if (txt == "1") {
-        rect.innerText = "0";
+    if (txt == ketToString(1)) {
+        rect.innerText = ketToString(0);
     } else {
-        rect.innerText = "1";
+        rect.innerText = ketToString(1);
     }
-
 }
 
 function submit() {
-    console.log("submited")
+    console.log("submitted")
 
     //clearGrid();
 
     let columnsField = document.getElementById("columns_btn");
     let rowsField = document.getElementById("rows_btn");
-    let grid = document.getElementById("container_circuit");    
+    let grid = document.getElementById("container_circuit");
 
     let columns = columnsField.value;
     let rows = rowsField.value;
