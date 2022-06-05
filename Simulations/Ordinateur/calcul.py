@@ -306,6 +306,8 @@ class Puissance(Nombre):
     def plus(self, autre):
         if autre.sous() == zero:
             return self
+        if autre == -self:
+            return zero
         raise ArithmeticError(f'Addition impossible: {self}, {autre}')
 
     def __neg__(self):
@@ -549,10 +551,9 @@ class Matrice(Nombre):
             return m
         m = Matrice.zeros(self.p, self.q)
         autre = Nombre.ou_int(autre)
-        if autre == zero:
-            return Matrice(self.p, self.q)
-        if autre == un:
-            return self
+        if autre == zero: return Matrice.zeros(self.p, self.q)
+        if autre == un: return self
+        if autre == -un: return -self
         for i in range(self.p):
             for j in range(self.q):
                 m[i, j] = autre * self[i, j]
@@ -606,13 +607,11 @@ class Matrice(Nombre):
 
     # Correspond au produit tensoriel pour deux matrices (prod. de Kronecker)
     # S'utilise pour deux matrices A et B en écrivant A @ B.
+    # se fait en complexité O(self.p * self.q * autre.p * autre.q)
     def __matmul__(self, autre):
         assert isinstance(autre, Matrice)
-        m = Matrice.zeros(self.p * autre.p, self.q * autre.q)
-        for i in range(self.p * autre.p):
-            for j in range(self.q * autre.q):
-                m[i, j] = self[i // autre.p, j // autre.q] * autre[i % autre.p, j % autre.q]
-        return m
+        c = lambda i, j: self[i // autre.p, j // autre.q] * autre[i % autre.p, j % autre.q]
+        return Matrice([[c(i, j) for j in range(self.q * autre.q)] for i in range(self.p * autre.p)])
 
     def __str__(self):
         n = max([len(str(self[i, j])) for i in range(self.p) for j in range(self.q)])
@@ -624,7 +623,9 @@ class Matrice(Nombre):
         ])
 
     def __neg__(self):
-        return (-un) * self
+        return Matrice([
+            [-self[i, j] for j in range(self.q)] for i in range(self.p)
+        ])
 
 
 class VectPi(Nombre):  # pi * t avec t.appartient(Puissance)
