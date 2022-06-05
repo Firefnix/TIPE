@@ -1,5 +1,5 @@
-from qubit import bra, Qudit
-from calcul import zero, un, F2, int_vers_bin, sqrt, int_log2, Matrice
+from qubit import bra, Qudit, Qubit
+from calcul import zero, un, F2, int_vers_bin, sqrt, int_log2, Matrice, F2Uplet, bin_vers_int
 
 class Oracle:
     @staticmethod
@@ -17,17 +17,20 @@ class OracleDePhase:
         self.f = f
 
     def __mul__(self, qudit):
-        n = int_log2(qudit.dim)-1
+        n = int_log2(qudit.dim) - 1
         r = Qudit(qudit.dim)
         for i in range(qudit.dim):
             r |= bra(i) | (bra(i) | qudit) * (-un) ** self.f(
                 *[F2(i) for i in int_vers_bin(i, taille=n)])
         return r
 
+
 class OracleDeSomme:
-    # f est une fonction de (F2)^n dans F2
-    def __init__(self, f):
+    # f est une fonction de (F2)^n dans (F2)^m
+    # par défaut, la taille de y est 1 (f va de (F2)^n dans F2)
+    def __init__(self, f, *, m = 1):
         self.f = f
+        self.m = m
 
     def _trouve_i0(self, psi):
         for i in range(psi.dim):
@@ -58,15 +61,32 @@ class OracleDeSomme:
         b_inv = beta.inverse()
         return [b_inv * psi[2*i+1] for i in range(n)]
 
+    def _trouve_x_y(self, psi):
+        x, y = psi, None
+        for i in range(self.m):
+            alpha, beta = self._trouve_alpha_beta(x)
+            coord_x = self._trouve_coord_x(alpha, beta, x)
+            x = Qudit.matrice(Matrice.colonne(coord_x))
+            if y is None:
+                y = Qubit(alpha, beta)
+            else:
+                y = y @ Qubit(alpha, beta)
+        return x, y
+
+
     def __mul__(self, qudit):
         psi = Qudit.matrice(
             Matrice([[abs(qudit[i])] for i in range(qudit.dim)]))
-        alpha, beta = self._trouve_alpha_beta(psi)
-        coord_x = self._trouve_coord_x(alpha, beta, psi)
+        n = int_log2(psi.dim // 2) - self.m
+        x, y = self._trouve_x_y(psi)
         res = Qudit(psi.dim)
-        n = int_log2(psi.dim // 2)-1
-        for j in range(2**n):
-            fx = self.f(*[F2(i) for i in int_vers_bin(j, taille=n)])
-            res |= bra(j, int(fx)) | alpha * coord_x[j]
-            res |= bra(j, int(fx + 1)) | beta * coord_x[j]
+        res[0] = zero
+        for i in range(2**n):
+            fx = self.f(*[F2(k) for k in int_vers_bin(i, taille=n)])
+            if isinstance(fx, F2): fx = (fx,)
+            u = F2Uplet(*fx)
+            for j in range(2**self.m):
+                v = F2Uplet(*int_vers_bin(j, taille=self.m))
+                c = tuple(int_vers_bin(i, taille=n)) + tuple(u + v)
+                res[bin_vers_int(*c)] = x[i] * y[j]
         return res

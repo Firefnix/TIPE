@@ -308,6 +308,8 @@ class Puissance(Nombre):
             return self
         if autre == -self:
             return zero
+        if autre == self:
+            return self * 2
         raise ArithmeticError(f'Addition impossible: {self}, {autre}')
 
     def __neg__(self):
@@ -464,6 +466,12 @@ class F2Uplet:
     def __setitem__(self, indice, valeur):
         assert isinstance(valeur, F2)
         self._valeurs[indice] = valeur
+
+    def __int__(self):
+        return bin_vers_int(*self._valeurs)
+
+    def __str__(self):
+        return '(' + ', '.join(str(i) for i in self._valeurs) + ')'
 
 
 class Matrice(Nombre):
