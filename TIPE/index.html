@@ -1,0 +1,38 @@
+<html>
+    <head>
+      <!-- <script defer src="https://pyscript.net/alpha/pyscript.js"></script> -->
+      <script src = "script.js"></script>
+      <link rel="stylesheet" href="stylesheet.css">
+    </head>
+
+    <title>Ordinateur Quantique</title>
+
+  <body>
+
+    <h1 class = titre>Ordinateur Quantique</h1>
+
+    <div id = main class = main_container>
+
+        <div id = container_portes class = container_portes>
+
+            <div class = "porte porte1" draggable = true id = H ondragstart = drag(event)> H </div>
+            <div class = "porte porte2" draggable = true id = U ondragstart = drag(event)> U </div>
+            <div class = "porte porte3" draggable = true id = cX ondragstart = drag(event)> cX </div>
+            <div class = "porte porte4" draggable = true id = I ondragstart = drag(event)> I </div>
+
+        </div>
+        
+        <div id = container_circuit class = container_circuit>
+          <div class="sub_container_portes" id = "notthisone" style="grid-column: 1/2; grid-row: 1/2; border-color: blueviolet; background-color:blueviolet;"></div>
+        </div>
+
+        <div class = container_fields>
+
+          <input type="number" id = 'columns_btn' min="0" step="1" onclick= submit() placeholder="Nombre de Colones">
+          <input type="number" id = 'rows_btn' min="0" step="1" onclick= submit() placeholder="Nombre de Lignes">
+
+        </div>
+      
+    </div>
+
+  </body>
