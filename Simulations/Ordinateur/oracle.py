@@ -1,4 +1,4 @@
-from qubit import bra, Qudit, Qubit
+from qubit import bra, ket, Qudit, Qubit
 from calcul import zero, un, F2, int_vers_bin, sqrt, int_log2, Matrice, F2Uplet, bin_vers_int
 
 class Oracle:
@@ -10,6 +10,19 @@ class Oracle:
     def somme(f):
         return OracleDeSomme(f)
 
+    @staticmethod
+    def brut(f):
+        return OracleBrut(f)
+
+
+class OracleBrut:
+    def __init__(self, f):
+        self.f = f
+
+    def __mul__(self, qudit):
+        assert isinstance(qudit, Qudit)
+        return ket(self.f(qudit))
+
 
 class OracleDePhase:
     # f est une fonction de (F2)^n dans F2
@@ -18,7 +31,7 @@ class OracleDePhase:
 
     def __mul__(self, qudit):
         n = int_log2(qudit.dim) - 1
-        r = Qudit(qudit.dim)
+        r = Qudit.zero(qudit.dim)
         for i in range(qudit.dim):
             r |= bra(i) | (bra(i) | qudit) * (-un) ** self.f(
                 *[F2(i) for i in int_vers_bin(i, taille=n)])
@@ -66,7 +79,7 @@ class OracleDeSomme:
         for i in range(self.m):
             alpha, beta = self._trouve_alpha_beta(x)
             coord_x = self._trouve_coord_x(alpha, beta, x)
-            x = Qudit.matrice(Matrice.colonne(coord_x))
+            x = Qudit(Matrice.colonne(coord_x))
             if y is None:
                 y = Qubit(alpha, beta)
             else:
@@ -75,11 +88,11 @@ class OracleDeSomme:
 
 
     def __mul__(self, qudit):
-        psi = Qudit.matrice(
+        psi = Qudit(
             Matrice([[abs(qudit[i])] for i in range(qudit.dim)]))
         n = int_log2(psi.dim // 2) - self.m
         x, y = self._trouve_x_y(psi)
-        res = Qudit(psi.dim)
+        res = Qudit.zero(psi.dim)
         res[0] = zero
         for i in range(2**n):
             fx = self.f(*[F2(k) for k in int_vers_bin(i, taille=n)])
