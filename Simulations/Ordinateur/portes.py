@@ -23,7 +23,7 @@ class Porte:
         if autre == Porte.neutre():
             return self
         if isinstance(autre, Qudit):
-            return Qudit.matrice(self.matrice * autre.matrice)
+            return Qudit(self.matrice * autre.matrice)
         elif isinstance(autre, Porte):
             return Porte(self.matrice * autre.matrice)
         raise TypeError(f'{autre} n\'est ni une porte chaînable ni un qudit')

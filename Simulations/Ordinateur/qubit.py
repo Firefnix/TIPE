@@ -26,19 +26,16 @@ class EtatPropre:
 # L'équivalent d'un Qubit, mais avec dim états propres différents
 class Qudit:
     # Un Qudit possède dim états possibles
-    def __init__(self, dim):
-        self.dim = dim
-        nom = lambda i: int_vers_strbin(i, taille = int_log2(dim)-1)
-        self.base = [EtatPropre(nom(i)) for i in range(dim)]  # vecteurs propres
-        self.matrice = Matrice.zeros(dim, 1)
-        self.matrice[0] = un
+    def __init__(self, mat: Matrice):
+        assert mat.q == 1
+        self.dim = mat.p
+        nom = lambda i: int_vers_strbin(i, taille = int_log2(self.dim)-1)
+        self.base = [EtatPropre(nom(i)) for i in range(self.dim)]  # vecteurs propres
+        self.matrice = mat
 
     @staticmethod
-    def matrice(mat: Matrice):
-        assert mat.q == 1
-        q = Qudit(mat.p)
-        q.matrice = mat
-        return q
+    def zero(dim: int):
+        return Qudit(Matrice.colonne(*([un] + [zero] * (dim-1))))
 
     def __eq__(self, autre):
         return self.matrice == autre.matrice
@@ -72,9 +69,7 @@ class Qudit:
         return self.matrice * bra.matrice
 
     def __matmul__(self, autre):
-        r = Qudit(self.dim * autre.dim)
-        r.matrice = self.matrice @ autre.matrice
-        return r
+        return Qudit(self.matrice @ autre.matrice)
 
     def mesure(self):
         probs = [float(abs(self[i])*abs(self[i])) for i in range(self.dim)]
@@ -85,10 +80,10 @@ class Qudit:
         return self
 
     def __neg__(self):
-        q = Qudit(self.dim)
-        for i in range(self.dim):
-            q[i] = - self[i]
-        return q
+        print(self.dim)
+        return Qudit(Matrice([
+            [- self[i]] for i in range(self.dim)
+        ]))
 
     def __str__(self):
         return ' + '.join([
@@ -103,7 +98,7 @@ class Qudit:
 
 class Qubit(Qudit):
     def __init__(self, c0 = None, c1 = None):
-        super().__init__(2)
+        super().__init__(Matrice.colonne(un, zero))
         if c0 is not None and c1 is not None:
             assert abs(c0) * abs(c0) + abs(c1) * abs(c1) == un
             self.matrice[0] = c0
@@ -125,11 +120,9 @@ class Qubit(Qudit):
         return Qubit(zero, un)
 
     def _puissance_rapide(self, n : int):
-        q = Qudit(2 ** n)
-        if self == ket(1):
-            q.matrice[0] = zero
-            q.matrice[2**n - 1] = un
-        return q
+        if self == ket(0):
+            return Qudit.zero(2 ** n)
+        return Qudit(Matrice.colonne(*([zero] * (2**n-1) + [un])))
 
     def __pow__(self, n: int):
         if self == ket(0) or self == ket(1):

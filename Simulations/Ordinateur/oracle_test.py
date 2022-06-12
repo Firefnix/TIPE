@@ -23,7 +23,7 @@ class TestOracles(TestCase):
     def test_phase_superposition(self):
         Uf = OracleDePhase(self.f)
         e1 = ket(1, 0) >> (H**2)
-        e2 = Qudit.matrice(
+        e2 = Qudit(
             (un / 2) * Matrice([[1], [-1], [1], [-1]])
         )
         assert e1 >> Uf == e2
@@ -42,7 +42,7 @@ class TestOracles(TestCase):
         e0 = ket(0)**3 >> H**3
         assert e0 >> Uf == e0
 
-    def test_somme_superposition_y2(self):
+    def test_somme_propre_y2(self):
         Uf = OracleDeSomme(self.g, m = 2)
         x = ket(1, 1)
         y = ket(1, 0)
@@ -60,7 +60,7 @@ class TestOracles(TestCase):
         e0 = x @ y
         e1 = e0 >> Uf
         d = un / 2
-        e2 = Qudit.matrice(
+        e2 = Qudit(
             Matrice([[0], [0], [0], [d], [d], [0], [0], [0],
             [0], [d], [0], [0], [0], [0], [d], [0]]
         ))

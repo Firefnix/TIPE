@@ -69,9 +69,13 @@ class TestQubit:
 
     def test_neg(self):
         e0 = ket(1, 0)
-        e1 = Qubit.matrice(Matrice.colonne(0, 0, -1, 0))
+        e1 = Qudit(Matrice.colonne(0, 0, -1, 0))
         assert e1 == -e0
         assert e0 == -e1
+
+    def test_dim(self):
+        e1 = Qudit(Matrice.colonne(0, 0, -1, 0))
+        assert e1.dim == 4
 
 
 class TestEtatPropre:
@@ -120,7 +124,7 @@ class TestBra(TestCase):
         mx, my = Matrice.zeros(8, 1), Matrice.zeros(4, 1)
         mx[7] = un
         my[3] = un
-        x, y = Qudit.matrice(mx), Qudit.matrice(my)
+        x, y = Qudit(mx), Qudit(my)
         z = x @ y
         for i in range(8):
             for j in range(4):
