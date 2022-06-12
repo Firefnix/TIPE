@@ -1,7 +1,10 @@
 from unittest import TestCase, main
 from calcul import zero, un
+
 from dj import est_constante, bv
 from fonctions_utiles import ket_vers_liste
+import pair_impair, parite
+
 
 class TestDJ(TestCase):
     def test_constantes(self):
@@ -23,6 +26,16 @@ class TestBV(TestCase):
         b = [zero, zero, un, un]
         assert ket_vers_liste(bv(a)) == [int(i) for i in a]
         assert ket_vers_liste(bv(b)) == [int(i) for i in b]
+
+
+class TestPairImpair(TestCase):
+    def test_pair_impair(self):
+        for n in list(range(15)):
+            assert pair_impair.est_pair(n) == (n % 2 == 0)
+
+    def test_parite(self):
+        for n in list(range(15)):
+            assert parite.est_pair(n) == (n % 2 == 0)
 
 
 if __name__ == '__main__':
