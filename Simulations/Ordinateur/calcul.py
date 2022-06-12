@@ -70,6 +70,11 @@ class Nombre:
     def __repr__(self):
         return str(self)
 
+    def arg(self):
+        if self.signe() == 1:
+            return zero
+        return pi
+
 
 class Naturel(Nombre):
     def __init__(self, n: int):
@@ -368,20 +373,27 @@ class Complexe(Nombre):
     def __abs__(self):
         return sqrt(self.x * self.x + self.y * self.y)
 
+    def arg(self):
+        if self.y == zero: return self.x.arg()
+        if self.x == zero:
+            if self.y.signe() == 1: return pi / 2
+            return -pi / 2
+        if self.y.signe() == 1:
+            if self.x == self.y: return pi / 4
+            if self.x == -self.y: return (pi / 4) * 3
+        if self.x == -self.y: return -pi/4
+        if self.x == self.y: return (-pi / 4) * 3
+        raise ArithmeticError(f'Extraction d\'argument impossible sur {self}')
+
     def __str__(self):
         sx = str(self.x)
         sy = str(self.y) if self.y.signe() == 1 else '-' + str(abs(self.y))
         sy += 'i'
-        if self.y == un:
-            sy = 'i'
-        if self.y == -un:
-            sy = '-i'
-        if self.x == self.y == zero:
-            return '0'
-        if self.x == zero:
-            return sy
-        if self.y == zero:
-            return sx
+        if self.y == un: sy = 'i'
+        if self.y == -un: sy = '-i'
+        if self.x == self.y == zero: return '0'
+        if self.x == zero: return sy
+        if self.y == zero: return sx
         return sx + ' + ' + sy
 
 

@@ -37,6 +37,9 @@ class TestZero(TestCase):
         assert zero ** 3 == zero ** un == zero
         assert zero ** zero == un
 
+    def test_arg(self):
+        assert zero.arg() == zero
+
 
 class TestNaturels(TestCase):
     def test_sous(self):
@@ -96,6 +99,9 @@ class TestNaturels(TestCase):
         assert deux ** 3 == deux ** trois == Naturel(8)
         assert deux ** (-3) == deux ** (-trois) == Rationnel(1, 8)
 
+    def test_arg(self):
+        assert Naturel(2).arg() == zero
+
 
 class TestRelatifs(TestCase):
     def test_sous(self):
@@ -151,6 +157,10 @@ class TestRelatifs(TestCase):
         assert moins_deux ** 3 == moins_deux ** trois == Relatif(-8)
         assert moins_deux ** (-3) == moins_deux ** (-trois) == Rationnel(-1, 8)
 
+    def test_arg(self):
+        assert Relatif(2).arg() == zero
+        assert Relatif(-2).arg() == pi
+
 
 class TestRationnels(TestCase):
     def test_sous(self):
@@ -196,6 +206,10 @@ class TestRationnels(TestCase):
         assert (un / 2).signe() == 1
         assert Rationnel(-1, 2).signe() == -1
 
+    def test_arg(self):
+        assert (un / 2).arg() == zero
+        assert (-un / 2).arg() == pi
+
 
 class TestPuissance(TestCase):
     def test_sous(self):
@@ -237,6 +251,10 @@ class TestPuissance(TestCase):
         assert sqrt(2).signe() == 1
         assert (-sqrt(2)).signe() == -1
 
+    def test_arg(self):
+        assert sqrt(2).arg() == zero
+        assert (-sqrt(2)).arg() == pi
+
 
 class TestComplexe(TestCase):
     def test_plus(self):
@@ -267,6 +285,14 @@ class TestComplexe(TestCase):
         z = Complexe(un, Relatif(-2))
         assert abs(z) == sqrt(5)
         assert abs(i) == un
+
+    def test_arg(self):
+        assert (i * 5).arg() == pi / 2
+        assert (-i * 2).arg() == -pi / 2
+        assert (i - 1).arg() == (pi * 3) / 4
+        assert (-i + 1).arg() == -pi / 4
+        assert Complexe(-6, 0).arg() == pi
+        assert Complexe(6, 0).arg() == zero
 
 
 class TestF2(TestCase):
