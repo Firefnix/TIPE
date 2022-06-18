@@ -97,6 +97,9 @@ class TestPortesRemarquables(TestCase):
             [1, -i, -1, i]
         ])
         assert QFT(2) == H
+        print(QFT(4))
+        print('-'*20)
+        print(m)
         assert QFT(4) == Porte(m)
 
 

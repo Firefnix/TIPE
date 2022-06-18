@@ -7,8 +7,8 @@ class Oracle:
         return OracleDePhase(f)
 
     @staticmethod
-    def somme(f):
-        return OracleDeSomme(f)
+    def somme(f, *, m = 1):
+        return OracleDeSomme(f, m = m)
 
     @staticmethod
     def brut(f):
