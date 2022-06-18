@@ -205,6 +205,7 @@ class TestRationnels(TestCase):
     def test_signe(self):
         assert (un / 2).signe() == 1
         assert Rationnel(-1, 2).signe() == -1
+        assert Rationnel(2, 1).signe() == 1
 
     def test_arg(self):
         assert (un / 2).arg() == zero
@@ -293,6 +294,16 @@ class TestComplexe(TestCase):
         assert (-i + 1).arg() == -pi / 4
         assert Complexe(-6, 0).arg() == pi
         assert Complexe(6, 0).arg() == zero
+
+    def test_sous(self):
+        assert Complexe(2).sous() == Naturel(2)
+        assert Complexe(-6).sous() == Relatif(-6)
+        assert Complexe(un / 2).sous() == (un / 2)
+        assert Complexe(sqrt(2)).sous() == sqrt(2)
+
+    def test_sur(self):
+        assert (i + 1).sur(Expi) == Expi(pi / 4, module=sqrt(2))
+        assert ((-i + 1) / sqrt(2)).sur(Expi) == Expi(- pi / 4)
 
 
 class TestF2(TestCase):
@@ -505,8 +516,23 @@ class TestVectPi(TestCase):
     def test_neg(self):
         assert (- VectPi(2)) == VectPi(-2)
 
+    def test_mod2pi(self):
+        assert (pi * 3).mod2pi() == (pi * -3).mod2pi() == pi
+        assert (pi * 2).mod2pi() == (pi * -4).mod2pi() == zero
+
 
 class TestExpi(TestCase):
+    def test_eq(self):
+        assert expi(-pi / 2) == expi(pi * 3 / 2)
+        assert expi(-pi * 2 / 3) == expi(pi * 4 / 3)
+        assert expi(pi / 2) == i
+
+    def test_type(self):
+        assert expi(pi) == (-un)
+        assert expi(pi / 2) == i
+        assert expi(pi / 3) == Expi(pi / 3)
+        assert expi(pi / 4) == Expi(pi / 4)
+
     def test_exp0(self):
         assert expi(zero) == expi(0) == un
         assert Expi(zero) == Expi(0) != un
@@ -524,10 +550,32 @@ class TestExpi(TestCase):
         assert abs(z1) == Naturel(4)
         assert abs(z2) == un
 
+    def test_neg(self):
+        assert -expi(pi / 3) == expi(pi * 4 / 3)
+
+    def test_inverse(self):
+        z1 = Expi(pi / 5, module=(un / 2))
+        z2 = Expi(-pi / 5, module=2)
+        assert z1.inverse() == z2
+        assert z2.inverse() == z1
+        assert un / expi(pi / 3) == expi(-pi / 3)
+
     def test_mul(self):
         z1 = expi(pi / 2)
         assert z1 * z1 == (-un)
         assert z1 * 3 == i * 3
+        assert expi(pi / 3) * i == expi(pi * 5 / 6)
+        z2 = expi(pi / 4) / 16
+        z3 = i / 16
+        assert z2 * z3 == expi(pi * 3 / 4) / 256
+        assert Expi(pi / 4, module=sqrt(2)) == expi(pi / 4) * sqrt(2)
+
+    def test_add(self):
+        assert expi(pi / 3) + zero == zero + expi(pi / 3) == expi(pi / 3)
+        assert expi(pi / 3) + expi(pi / 3) == expi(pi / 3) * 2
+        assert expi(pi / 3) - expi(pi / 3) == zero
+        assert -expi(pi / 3) + expi(pi / 3) == zero
+        assert (expi(-pi / 4) * sqrt(2) + i) == un
 
     def test_pow(self):
         z1 = expi(pi / 6)
@@ -539,6 +587,9 @@ class TestExpi(TestCase):
         assert Expi(pi).sous() == Expi(pi * 3).sous() == -un
         assert Expi(pi / 2).sous() == Expi(pi * (-3) / 2).sous() == i
         assert Expi(- pi / 2).sous() == Expi(pi * 3 / 2).sous() == -i
+
+    def test_sur(self):
+        assert Expi(pi / 4).sur(Complexe) == sqrt(un / 2) * (i + 1)
 
 
 if __name__ == '__main__':

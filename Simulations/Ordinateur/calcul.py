@@ -24,8 +24,22 @@ class Nombre:
             Relatif: [F2, Rationnel, Puissance, Complexe],
             Rationnel: [Puissance, Complexe],
             Puissance: [Complexe],
+            Complexe: [Expi],
+            Expi: [Complexe]
         }
         return E in d[T] if T in d else False
+
+    def __add__(self, autre):
+        T = type(self)
+        autre = Nombre.ou_int(autre)
+        if self == zero:
+            return autre
+        if autre == zero:
+            return self
+        b = autre.sur(T)
+        if b is None:
+            return (autre + self).sous()
+        return self.plus(b).sous()
 
     def __add__(self, autre):
         T = type(self)
@@ -74,6 +88,18 @@ class Nombre:
         if self.signe() == 1:
             return zero
         return pi
+
+class MultiplicationErreur(ArithmeticError):
+    def __init__(self, n1, n2, message = None):
+        self.message = message or f'Multiplication impossible: {n1} * {n2}'
+        self.message += ' (types: ' + str(type(n1))[8:-2] + ' et ' + str(type(n2))[8:-2] + ')'
+        super().__init__(self.message)
+
+class AdditionErreur(ArithmeticError):
+    def __init__(self, n1, n2, message = None):
+        self.message = message or f'Addition impossible: {n1} + {n2}'
+        self.message += ' (types: ' + str(type(n1))[8:-2] + ' et ' + str(type(n2))[8:-2] + ')'
+        super().__init__(self.message)
 
 
 class Naturel(Nombre):
@@ -230,6 +256,9 @@ class Rationnel(Nombre):
     def __abs__(self):
         return Rationnel(abs(self.num), self.denom)
 
+    def signe(self):
+        return 1 if self.num >= 0 else -1
+
     def __pow__(self, exposant):
         if exposant == zero:
             return un
@@ -244,7 +273,7 @@ class Rationnel(Nombre):
 
     def inverse(self):
         assert self.num != 0
-        return Rationnel(self.denom, self.num)
+        return Rationnel(self.denom, self.num).sous()
 
     def __str__(self):
         return f'{self.num}/{self.denom}'
@@ -302,20 +331,18 @@ class Puissance(Nombre):
             a = Puissance(abs(autre.sous().sur(Rationnel)), self.p.inverse()).sous().sur(Rationnel)
             if a is not None:
                 return Puissance(self.x * a, self.p, self.sigma * autre.signe()).sous()
-        raise ArithmeticError(f'Multiplication impossible: {self}, {autre}')
+        raise MultiplicationErreur(self, autre)
 
     def inverse(self):
         assert self.x != zero
         return Puissance(self.x, - self.p, self.sigma)
 
     def plus(self, autre):
-        if autre.sous() == zero:
-            return self
         if autre == -self:
             return zero
         if autre == self:
             return self * 2
-        raise ArithmeticError(f'Addition impossible: {self}, {autre}')
+        raise AdditionErreur(self, autre)
 
     def __neg__(self):
         return Puissance(self.x, self.p, - self.sigma)
@@ -328,9 +355,11 @@ class Puissance(Nombre):
         if self.p == Rationnel(1, 2):
             return f'{s}sqrt({str(self.x)})'
         x, p = self.x.sous(), self.p.sous()
-        if x.appartient(Naturel) and p.appartient(Naturel):
-            return s + str(x) + '^' + str(p)
-        return f'{s}({str(x)})^({str(p)})'
+        s += str(x) if x.appartient(Naturel) else f'({str(x)})'
+        if p.sous() != un:
+            s += '^'
+            s += str(p) if p.appartient(Naturel) else f'({str(p)})'
+        return s
 
 
 def sqrt(r):
@@ -338,12 +367,16 @@ def sqrt(r):
 
 
 class Complexe(Nombre):
-    def __init__(self, x, y):
+    def __init__(self, x, y = 0):
         x, y = Nombre.ou_int(x), Nombre.ou_int(y)
         self.x = x.sous()
         self.y = y.sous()
 
     def __eq__(self, autre):
+        if isinstance(autre, Expi):
+            s = self.sur(Expi)
+            if s is not None:
+                return s == autre
         return (isinstance(autre, Complexe)
                 and self.x == autre.x
                 and self.y == autre.y)
@@ -352,6 +385,13 @@ class Complexe(Nombre):
         if self.y == zero:
             return self.x
         return self
+
+    def _sur(self, E):
+        try:
+            a = self.arg()
+        except ArithmeticError:
+            return
+        return Expi(a, module=abs(self))
 
     def plus(self, autre):
         return Complexe(
@@ -536,7 +576,7 @@ class Matrice(Nombre):
 
     def __setitem__(self, cle, valeur):
         valeur = Nombre.ou_int(valeur)
-        assert isinstance(valeur, Nombre)
+        assert isinstance(valeur, Nombre), f'Pas un nombre : {valeur}'
         if isinstance(cle, tuple):
             i, j = cle
             assert isinstance(i, int) and 0 <= i < self.p
@@ -553,11 +593,10 @@ class Matrice(Nombre):
     def __add__(self, autre):
         assert self.p == autre.p
         assert self.q == autre.q
-        m = Matrice.zeros(self.p, self.q)
-        for i in range(self.p):
-            for j in range(self.q):
-                m[i, j] = self[i, j] + autre[i, j]
-        return m
+        return Matrice([
+            [self[i, j] + autre[i, j] for j in range(self.q)]
+            for i in range(self.p)
+        ])
 
     def __mul__(self, autre):
         if isinstance(autre, Matrice):
@@ -569,37 +608,31 @@ class Matrice(Nombre):
                     for k in range(self.q):
                         m[i, j] += self[i, k] * autre[k, j]
             return m
-        m = Matrice.zeros(self.p, self.q)
         autre = Nombre.ou_int(autre)
         if autre == zero: return Matrice.zeros(self.p, self.q)
         if autre == un: return self
         if autre == -un: return -self
-        for i in range(self.p):
-            for j in range(self.q):
-                m[i, j] = autre * self[i, j]
-        return m
+        return Matrice([
+            [autre * self[i, j] for j in range(self.q)]
+            for i in range(self.p)
+        ])
 
     def transposee(self):
-        m = Matrice.zeros(self.q, self.p)
-        for i in range(self.q):
-            for j in range(self.p):
-                m[i, j] = self[j, i]
-        return m
+        return Matrice([
+            [self[j, i] for i in range(self.p)] for j in range(self.q)
+        ])
 
     def conjuguee(self):
-        m = Matrice.zeros(self.p, self.q)
-        for i in range(self.p):
-            for j in range(self.q):
-                m[i, j] = self[i, j].sur(Complexe).conjugue()
-        return m
+        return Matrice([
+            [self[i, j].sur(Complexe).conjugue() for j in range(self.q)]
+            for i in range(self.p)
+        ])
 
     @staticmethod
     def scalaire(k, n):
-        k = Nombre.ou_int(k)
-        m = Matrice.zeros(n)
-        for i in range(n):
-            m[i, i] = k
-        return m
+        return Matrice([
+            [k if i == j else zero for j in range(n)] for i in range(n)
+        ])
 
     @staticmethod
     def identite(n):
@@ -659,6 +692,22 @@ class VectPi(Nombre):  # pi * t avec t.appartient(Puissance)
     def __float__(self):
         return VectPi._float_pi * float(self.t)
 
+    def mod2pi(self):
+        t = self.t.sur(Rationnel)
+        if t is None:
+            return self
+        if t.num < 0:
+            s = (self + (pi * 2))
+            if s == zero:
+                return zero
+            return s.mod2pi()
+        if t.num >= 2 * t.denom:
+            s = (self - (pi * 2))
+            if s == zero:
+                return zero
+            return s.mod2pi()
+        return self
+
     def __eq__(self, autre):
         return (isinstance(autre, VectPi) and self.t == autre.t)
 
@@ -673,6 +722,7 @@ class VectPi(Nombre):  # pi * t avec t.appartient(Puissance)
             return self
         if isinstance(autre, VectPi):
             return VectPi(self.t + autre.t).sous()
+        raise AdditionErreur(self, autre)
 
     def __neg__(self):
         return VectPi(- self.t)
@@ -681,12 +731,17 @@ class VectPi(Nombre):  # pi * t avec t.appartient(Puissance)
         autre = Nombre.ou_int(autre)
         if autre.appartient(Puissance):
             return VectPi(self.t * autre).sous()
+        raise MultiplicationErreur(self, autre)
 
     def __str__(self):
-        return f'({str(self.t)})*π'
-
-
-pi = VectPi(1)
+        if self.t == un: return 'π'
+        if self.t == -un: return '-π'
+        if self.t.appartient(Relatif):
+            return f'{self.t}π'
+        r = self.t.sur(Rationnel)
+        if r is not None:
+            return f'{r.num if r.num != 1 else ""}π/{r.denom}'
+        return f'({self.t})*π'
 
 
 class Expi(Nombre):  # module * exp(i * arg)
@@ -694,7 +749,11 @@ class Expi(Nombre):  # module * exp(i * arg)
         arg, module = Nombre.ou_int(arg), Nombre.ou_int(module)
         assert arg.appartient(Puissance) or arg.appartient(VectPi)
         assert module.signe() == 1
-        self._arg = arg
+        a = arg.sur(VectPi)
+        if a is not None:
+            self._arg = a.mod2pi()
+        else:
+            self._arg = arg
         self._module = module
 
     def __eq__(self, autre):
@@ -705,19 +764,35 @@ class Expi(Nombre):  # module * exp(i * arg)
     def arg(self):
         return self._arg
 
-    def sous(self):
-        if self.arg() == zero:
-            return un
-        if self.arg().appartient(VectPi):
-            if self.arg().t.appartient(Relatif):
+    def sous_leger(self):
+        a = self.arg()
+        if a == zero: return un
+        if abs(self) == zero: return zero
+        if a.appartient(VectPi):
+            if a.t.appartient(Relatif):
                 return abs(self) * ((-un) ** self.arg().t)
-            if self.arg().t.appartient(Rationnel):
-                t = self.arg().t.sur(Rationnel)
-                if t.denom == 2:
-                    if (t.num // 2) % 2 == 0:
-                        return abs(self) * i
-                    return abs(self) * (-i)
+            t = a.t.sur(Rationnel)
+            if t is not None and t.denom == 2:
+                if t.num == 1: return i
+                if t.num == 3: return -i
         return self
+
+    def sous(self):
+        s = self.sous_leger()
+        return s
+
+    def _sur(self, E):
+        sl = self.sous_leger()
+        if not isinstance(sl, Expi):
+            return sl.sur(E)
+        sa = self.arg()
+        if sa.appartient(VectPi):
+            t = sa.t.sur(Rationnel)
+            if t is not None and t.denom == 4:
+                re = 1 if t.num in (1, 7) else -1
+                im = 1 if t.num in (1, 3) else -1
+                m = abs(self) * sqrt(un / 2)
+                return Complexe(m * re, m * im).sur(E)
 
     def __abs__(self):
         return self._module
@@ -725,10 +800,16 @@ class Expi(Nombre):  # module * exp(i * arg)
     def __mul__(self, autre):
         autre = Nombre.ou_int(autre)
         if autre.appartient(Puissance):
-            return Expi(self.arg(), module=abs(self) * autre).sous()
+            if autre.signe() == 1:
+                return Expi(self.arg(), module=abs(self) * autre).sous_leger()
+            return Expi(self.arg() + pi, module=abs(self) * (-autre)).sous_leger()
         if isinstance(autre, Expi):
             return Expi(self.arg() + autre.arg(),
-                        module=abs(self) * abs(autre)).sous()
+                        module=abs(self) * abs(autre)).sous_leger()
+        if isinstance(autre, Complexe):
+            s = autre.sur(Expi)
+            if s is not None: return self * s
+        raise MultiplicationErreur(self, autre)
 
     def __pow__(self, n):
         n = Nombre.ou_int(n)
@@ -737,6 +818,27 @@ class Expi(Nombre):  # module * exp(i * arg)
     def __add__(self, autre):
         if autre.sous() == zero:
             return self
+        if isinstance(autre, Expi):
+            if self.arg() == autre.arg():
+                return Expi(self.arg(),
+                            module = abs(self) + abs(autre))
+            if self.arg() + pi == autre.arg():
+                r = abs(self) - abs(autre)
+                if r.signe() == 1:
+                    return Expi(self.arg(), module=r).sous()
+                return Expi(self.arg() + pi, module=-r).sous()
+            if self.arg() == autre.arg() + pi:
+                return autre + self
+        s = self._sur(Complexe)
+        if s is not None and self != s:
+            return s + autre
+        raise AdditionErreur(self, autre)
+
+    def __neg__(self):
+        return Expi(self.arg() + pi, module=abs(self))
+
+    def inverse(self):
+        return Expi(-self.arg(), module=abs(self).inverse())
 
     def __str__(self):
         if abs(self) == un:
@@ -744,4 +846,5 @@ class Expi(Nombre):  # module * exp(i * arg)
         return f'{abs(self)}*exp(i*({self.arg()}))'
 
 
+pi = VectPi(1)
 def expi(theta): return Expi(theta).sous()
