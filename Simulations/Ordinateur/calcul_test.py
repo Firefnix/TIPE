@@ -1,7 +1,8 @@
 from unittest import TestCase, main
 from calcul import zero, un, Naturel, Relatif, Rationnel, Puissance, \
     sqrt, Complexe, i, F2, F2Uplet, int_log2, int_vers_bin, bin_vers_int, \
-    strbin_vers_int, int_vers_strbin, Matrice, VectPi, pi, Expi, expi
+    strbin_vers_int, int_vers_strbin, Matrice, VectPi, pi, Expi, expi, Somme, \
+    somme
 
 class TestZero(TestCase):
     def test_sous(self):
@@ -590,6 +591,50 @@ class TestExpi(TestCase):
 
     def test_sur(self):
         assert Expi(pi / 4).sur(Complexe) == sqrt(un / 2) * (i + 1)
+
+
+class TestSomme:
+    def test_somme(self):
+        assert somme(1, 2, 3) == Naturel(6)
+        assert Somme(1, 2, 3).sous() == Naturel(6)
+        assert Somme(1, 2, 3) != Naturel(6)
+
+    def test_eq(self):
+        assert Somme(1, 2, 3) == Somme(2, 3, 1)
+        assert Somme(1, 2, 3) == Somme(6)
+        assert Somme(1, 2, 3) != Naturel(6)
+        assert Somme(1, sqrt(2)) == Somme(sqrt(2), 1)
+
+    def test_sous(self):
+        assert Somme(sqrt(2)).sous() == sqrt(2)
+        assert Somme(sqrt(2), zero).sous() == sqrt(2)
+        assert Somme(1, 2).sous() == Naturel(3)
+
+    def test_plus_nombre(self):
+        x = somme(1, sqrt(2))
+        y = somme(Rationnel(3, 2), sqrt(2))
+        assert x + Rationnel(1, 2) == y
+
+    def test_plus_somme(self):
+        x = somme(1, sqrt(2))
+        y = somme(sqrt(3), 4)
+        z = somme(sqrt(2), sqrt(3), 5)
+        assert x + y == z
+
+    def test_creation(self):
+        assert sqrt(2) + 1 == Somme(sqrt(2), 1)
+        assert sqrt(2) + 1 + 2 == Somme(sqrt(2), 3)
+
+    def test_mul(self):
+        assert sqrt(2) * (sqrt(2) + 1) == sqrt(2) + 2
+        a = sqrt(2) + 1
+        b = sqrt(2) - 1
+        assert a * b == un
+        assert a * a == sqrt(8) + 3
+
+    def test_zeros(self):
+        s = sqrt(2) + 1
+        assert s - 1 == sqrt(2)
 
 
 if __name__ == '__main__':

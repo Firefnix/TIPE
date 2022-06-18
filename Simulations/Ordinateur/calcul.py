@@ -32,6 +32,8 @@ class Nombre:
     def __add__(self, autre):
         T = type(self)
         autre = Nombre.ou_int(autre)
+        if isinstance(autre, Somme):
+            return autre + self
         if self == zero:
             return autre
         if autre == zero:
@@ -57,7 +59,7 @@ class Nombre:
         autre = Nombre.ou_int(autre)
         if self == zero or autre == zero:
             return zero
-        if isinstance(autre, Matrice):
+        if isinstance(autre, Matrice) or isinstance(autre, Somme):
             return autre * self
         T = type(self)
         b = autre.sur(T)
@@ -289,7 +291,7 @@ class Puissance(Nombre):
         self.sigma = sigma
 
     def __eq__(self, autre):
-        autre = autre.sur(Puissance)
+        autre = Nombre.ou_int(autre).sur(Puissance)
         return (autre is not None
                 and self.sigma == autre.sigma
                 and self.x ** Relatif(self.p.num) == autre.x ** Relatif(autre.p.num)
@@ -342,7 +344,7 @@ class Puissance(Nombre):
             return zero
         if autre == self:
             return self * 2
-        raise AdditionErreur(self, autre)
+        return Somme(self.sous(), autre.sous(), feuille=True)
 
     def __neg__(self):
         return Puissance(self.x, self.p, - self.sigma)
@@ -353,7 +355,7 @@ class Puissance(Nombre):
     def __str__(self):
         s = '' if self.sigma == 1 else '-'
         if self.p == Rationnel(1, 2):
-            return f'{s}sqrt({str(self.x)})'
+            return f'{s}sqrt({str(self.x.sous())})'
         x, p = self.x.sous(), self.p.sous()
         s += str(x) if x.appartient(Naturel) else f'({str(x)})'
         if p.sous() != un:
@@ -722,7 +724,7 @@ class VectPi(Nombre):  # pi * t avec t.appartient(Puissance)
             return self
         if isinstance(autre, VectPi):
             return VectPi(self.t + autre.t).sous()
-        raise AdditionErreur(self, autre)
+        raise Somme(self, autre, feuille=True)
 
     def __neg__(self):
         return VectPi(- self.t)
@@ -832,7 +834,7 @@ class Expi(Nombre):  # module * exp(i * arg)
         s = self._sur(Complexe)
         if s is not None and self != s:
             return s + autre
-        raise AdditionErreur(self, autre)
+        return Somme(self, autre, feuille=True)
 
     def __neg__(self):
         return Expi(self.arg() + pi, module=abs(self))
@@ -848,3 +850,94 @@ class Expi(Nombre):  # module * exp(i * arg)
 
 pi = VectPi(1)
 def expi(theta): return Expi(theta).sous()
+
+def somme(*termes):
+    return Somme(*termes).sous()
+
+class Somme(Nombre):
+    # feuille: True si pas de simplifications à faire
+    def __init__(self, *termes, feuille=False):
+        assert isinstance(feuille, bool)
+        self._pos = 0
+        if feuille:
+            self._termes = [Nombre.ou_int(i) for i in termes]
+        else:
+            self._termes = []
+            for i in termes:
+                self._ajoute_nombre(Nombre.ou_int(i))
+
+    def __eq__(self, autre):
+        if not isinstance(autre, Somme) or len(self) != len(autre):
+            return False
+        for i in self:
+            if i not in autre._termes:
+                return False
+        return True
+
+    def __len__(self):
+        return len(self._termes)
+
+    def sous(self):
+        if len(self) == 1:
+            return self._termes[0]
+        return self
+
+    def __add__(self, autre):
+        if isinstance(autre, Somme):
+            return self._plus_somme(autre)
+        return self._plus_nombre(autre)
+
+    def __mul__(self, autre):
+        if isinstance(autre, Somme):
+            return Somme(*[
+                self._termes[i] * autre._termes[j]
+                for i in range(len(self))
+                for j in range(len(autre))
+            ]).sous()
+        return Somme(*[i * autre for i in self]).sous()
+
+    def _plus_somme(self, autre):
+        s = Somme(*[i for i in self])
+        for j in autre:
+            s += j
+        return s.sous()
+
+    def _ajoute_nombre(self, autre):
+        for i in range(len(self)):
+            k = self._termes[i] + autre
+            if not isinstance(k, Somme):
+                self._termes.pop(i)
+                self._ajoute_nombre(k)
+                break
+        else:
+            self._termes.append(autre)
+
+    def _plus_nombre(self, autre):
+        r = Somme(*[i for i in self])
+        r._ajoute_nombre(autre)
+        return r.sous()
+
+    def __iter__(self):
+        self._pos = 0
+        return self
+
+    def __next__(self):
+        if self._pos < len(self):
+            self._pos += 1
+            return self._termes[self._pos-1]
+        raise StopIteration
+
+    def __neg__(self):
+        return Somme(*[-i for i in self])
+
+    def signe(self):
+        return 1
+
+    def __sub__(self, autre):
+        return self + (- autre)
+
+    def __str__(self):
+        return ' + '.join(str(i) for i in self)
+
+    def __repr__(self):
+        return '∑[' + ' + '.join(str(i) for i in self) + ']'
