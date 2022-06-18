@@ -83,9 +83,8 @@ class OracleDeSomme:
             if y is None:
                 y = Qubit(alpha, beta)
             else:
-                y = y @ Qubit(alpha, beta)
+                y = Qubit(alpha, beta) @ y
         return x, y
-
 
     def __mul__(self, qudit):
         psi = Qudit(

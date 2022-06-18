@@ -48,9 +48,9 @@ class TestOracles(TestCase):
         y = ket(1, 0)
         e1 = ket(1, 1, 1, 1)
         e2 = ket(1, 0, 0, 1)
+        print(x @ y)
         assert (x @ y) >> Uf == e1
         assert (y @ x) >> Uf == e2
-
 
     def test_somme_superposition_y2(self):
         # le même exemple que dans le PDF
@@ -61,9 +61,7 @@ class TestOracles(TestCase):
         e1 = e0 >> Uf
         d = un / 2
         e2 = Qudit(
-            Matrice([[0], [0], [0], [d], [d], [0], [0], [0],
-            [0], [d], [0], [0], [0], [0], [d], [0]]
-        ))
+            Matrice.colonne([0, 0, 0, d, d, 0, 0, 0, 0, d, 0, 0, 0, 0, d, 0]))
         assert e1 == e2
 
 
