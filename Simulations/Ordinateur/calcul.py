@@ -262,6 +262,7 @@ class Rationnel(Nombre):
         return 1 if self.num >= 0 else -1
 
     def __pow__(self, exposant):
+        exposant = Nombre.ou_int(exposant)
         if exposant == zero:
             return un
         if self.sous() == zero:
@@ -667,6 +668,19 @@ class Matrice(Nombre):
         assert isinstance(autre, Matrice)
         c = lambda i, j: self[i // autre.p, j // autre.q] * autre[i % autre.p, j % autre.q]
         return Matrice([[c(i, j) for j in range(self.q * autre.q)] for i in range(self.p * autre.p)])
+
+    def __pow__(self, exposant):
+        exposant = int(exposant)
+        if self == Matrice.identite(self.p) or exposant == 0:
+            return Matrice.identite(self.p ** exposant)
+        if self._c == [[un]]:
+            return self
+        if exposant == 1:
+            return self
+        a = self ** (exposant // 2)
+        if exposant % 2 == 1:
+            return self @ (a @ a)
+        return a @ a
 
     def __str__(self):
         n = max([len(str(self[i, j])) for i in range(self.p) for j in range(self.q)])
