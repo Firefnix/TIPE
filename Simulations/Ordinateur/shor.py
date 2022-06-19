@@ -45,3 +45,21 @@ print('Nombre pseudo-aléatoire :', a)
 ef = recherche_periode(a)
 print('L\'état final est :', ef)
 affiche_amplitudes(ef)
+
+
+#♠essaie shor
+
+def list_amplitude(ef):
+    return [float(abs(ef[i])) ** 2 for i in range(ef.dim)]
+
+def aux (l):
+    for i in range (len(l)):
+        if l[i] != 0 : return l[i]
+    return 0
+
+def la_periode(N):
+    a = randint(1 ,(N-1))
+    m = int_log2(N)
+    ef = recherche_periode(a,m)
+    l = list_amplitude(ef)
+    print (int((1 / aux(l)) // 1) , a)
