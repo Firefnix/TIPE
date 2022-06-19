@@ -80,7 +80,6 @@ class Qudit:
         return self
 
     def __neg__(self):
-        print(self.dim)
         return Qudit(Matrice([
             [- self[i]] for i in range(self.dim)
         ]))
