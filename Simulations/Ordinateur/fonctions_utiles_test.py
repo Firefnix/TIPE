@@ -1,7 +1,10 @@
 from unittest import TestCase, main
+
+from calcul import un, sqrt, Matrice
 from qubit import ket
 from portes import H, I
-from fonctions_utiles import H_option, ket_vers_liste, etat_de_base, sequence_egale, qubits_intriques
+from fonctions_utiles import H_option, ket_vers_liste, etat_de_base, \
+    sequence_egale, qubits_intriques, kron_id_mat, kron_id
 
 
 class TestFonctions(TestCase):
@@ -33,6 +36,15 @@ class TestFonctions(TestCase):
     def test_qubits_intriques(self):
         assert qubits_intriques(2) == ket(0, 0) >> H**2
         assert qubits_intriques(2, valeur=1) == ket(1, 1) >> H**2
+
+    def test_kron_id_mat(self):
+        H = sqrt(un / 2) * Matrice([[1, 1], [1, -1]])
+        M = H ** 2
+        assert M @ (Matrice.identite(2**2)) == kron_id_mat(M, 2**2)
+
+    def test_kron_id(self):
+        M = H ** 2
+        assert M @ (I ** 2) == kron_id(M, 2)
 
 
 if __name__ == '__main__':

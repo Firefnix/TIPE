@@ -48,7 +48,6 @@ class TestOracles(TestCase):
         y = ket(1, 0)
         e1 = ket(1, 1, 1, 1)
         e2 = ket(1, 0, 0, 1)
-        print(x @ y)
         assert (x @ y) >> Uf == e1
         assert (y @ x) >> Uf == e2
 
