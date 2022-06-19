@@ -76,8 +76,12 @@ class Nombre:
     def __float__(self):
         if isinstance(self, Complexe):
             return float(self.x) + 1j * float(self.y)
+        if isinstance(self, Expi):
+            return float(abs(self)) ** (1j * float(self.arg()))
         a = self.sur(Puissance)
-        return a.sigma * ((a.x.num / a.x.denom) ** (a.p.num / a.p.denom))
+        if a is not None:
+            return a.sigma * ((a.x.num / a.x.denom) ** (a.p.num / a.p.denom))
+        raise NotImplementedError
 
     def __truediv__(self, autre):
         autre = Nombre.ou_int(autre)
@@ -107,7 +111,6 @@ class AdditionErreur(ArithmeticError):
 class Naturel(Nombre):
     def __init__(self, n: int):
         assert n >= 0
-        self._rel = Relatif(n)
         self.n = n
 
     def __eq__(self, autre):
@@ -122,7 +125,7 @@ class Naturel(Nombre):
     def _sur(self, E: type):
         if E == F2:
             return F2(self.n)
-        return self._rel.sur(E)
+        return Relatif(self.n).sur(E)
 
     def plus(self, autre):
         return Naturel(self.n + autre.n)
@@ -131,16 +134,16 @@ class Naturel(Nombre):
         return Naturel(self.n * autre.n)
 
     def inverse(self):
-        return self._rel.inverse()
+        return Rationnel(un, self.n)
 
     def __mod__(self, autre):
-        return self._rel % autre
+        return Naturel(int(self) % int(autre)).sous()
 
     def __floordiv__(self, autre):
-        return self._rel // autre
+        return Relatif(self.n // int(autre)).sous()
 
     def __pow__(self, exposant):
-        return self._rel ** exposant
+        return self.sur(Relatif) ** exposant
 
     def __neg__(self):
         return Relatif(- self.n).sous()
@@ -183,7 +186,7 @@ class Relatif(Nombre):
         return Relatif(int(self) % int(autre)).sous()
 
     def __floordiv__(self, autre):
-        return Relatif(int(self) // int(autre)).sous()
+        return Relatif(self.z // int(autre)).sous()
 
     def __neg__(self):
         return Relatif(- self.z).sous()
@@ -946,6 +949,9 @@ class Somme(Nombre):
 
     def signe(self):
         return 1
+
+    def __float__(self):
+        return sum(float(i) for i in self)
 
     def __sub__(self, autre):
         return self + (- autre)
