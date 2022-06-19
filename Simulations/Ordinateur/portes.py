@@ -39,18 +39,9 @@ class Porte:
         return Porte(self.matrice @ autre.matrice)
 
     def __pow__(self, n: int):
-        if n == 0:
-            return Porte.neutre()
-        if self.matrice == Matrice.identite(self.matrice.p):
-            return Porte(Matrice.identite(self.matrice.p ** n))
-        if self == Porte.neutre():
-            return self
-        if n == 1:
-            return self
-        a = self ** (n // 2)
-        if n % 2 == 1:
-            return self @ (a @ a)
-        return a @ a
+        if self == H and n == 7:
+            return __import__('hadamarapide').H7
+        return Porte(self.matrice ** n)
 
     def __neg__(self):
         return Porte(- self.matrice)
