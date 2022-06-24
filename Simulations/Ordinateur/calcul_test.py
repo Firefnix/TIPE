@@ -387,9 +387,9 @@ class TestF2Uplet(TestCase):
 class TestMatrice(TestCase):
     def test_zero(self):
         m = Matrice.zeros(2, 3)
-        for i in range(2):
+        for k in range(2):
             for j in range(3):
-                assert m[i, j] == zero
+                assert m[k, j] == zero
 
     def test_setitem(self):
         m = Matrice.zeros(2)
@@ -463,12 +463,12 @@ class TestMatrice(TestCase):
 
     def test_identite(self):
         m = Matrice.identite(3)
-        for i in range(3):
+        for k in range(3):
             for j in range(3):
-                if i == j:
-                    assert m[i, j] == un
+                if k == j:
+                    assert m[k, j] == un
                 else:
-                    assert m[i, j] == zero
+                    assert m[k, j] == zero
 
     def test_scalaire(self):
         assert Matrice.scalaire(un, 3) == Matrice.identite(3)
@@ -635,6 +635,19 @@ class TestSomme:
     def test_zeros(self):
         s = sqrt(2) + 1
         assert s - 1 == sqrt(2)
+
+    def test_conjugue(self):
+        s1 = i * sqrt(2) + 1
+        s2 = -i * sqrt(2) + 1
+        assert s1.conjugue() == s2
+        assert s2.conjugue() == s1
+
+    def test_abs(self):
+        s1 = sqrt(2) + 1
+        assert abs(s1) == s1
+        assert abs(-s1) == s1
+        s2 = Somme(expi(pi / 4), expi(-pi / 4))
+        assert abs(s2) == sqrt(2)
 
 
 if __name__ == '__main__':

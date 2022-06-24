@@ -43,18 +43,6 @@ class Nombre:
             return (autre + self).sous()
         return self.plus(b).sous()
 
-    def __add__(self, autre):
-        T = type(self)
-        autre = Nombre.ou_int(autre)
-        if self == zero:
-            return autre
-        if autre == zero:
-            return self
-        b = autre.sur(T)
-        if b is None:
-            return (autre + self).sous()
-        return self.plus(b).sous()
-
     def __mul__(self, autre):
         autre = Nombre.ou_int(autre)
         if self == zero or autre == zero:
@@ -94,6 +82,12 @@ class Nombre:
         if self.signe() == 1:
             return zero
         return pi
+
+    def conjugue(self):
+        return self
+
+    def abs_carre(self):
+        return abs(self) ** 2
 
 class MultiplicationErreur(ArithmeticError):
     def __init__(self, n1, n2, message = None):
@@ -342,6 +336,15 @@ class Puissance(Nombre):
     def inverse(self):
         assert self.x != zero
         return Puissance(self.x, - self.p, self.sigma)
+
+    def __pow__(self, autre):
+        s = Nombre.ou_int(autre).sous()
+        if isinstance(s, Naturel):
+            return Puissance(self.x, self.p * s,
+                             sigma=1 if s.n % 2 == 0 else self.sigma)
+        if isinstance(s, Relatif):
+            return self.inverse() ** (-s)
+        raise NotImplementedError
 
     def plus(self, autre):
         if autre == -self:
@@ -835,7 +838,8 @@ class Expi(Nombre):  # module * exp(i * arg)
         return Expi(self.arg() * n, module = abs(self) ** n).sous()
 
     def __add__(self, autre):
-        if autre.sous() == zero:
+        autre = Nombre.ou_int(autre).sous()
+        if autre == zero:
             return self
         if isinstance(autre, Expi):
             if self.arg() == autre.arg():
@@ -858,6 +862,9 @@ class Expi(Nombre):  # module * exp(i * arg)
 
     def inverse(self):
         return Expi(-self.arg(), module=abs(self).inverse())
+
+    def conjugue(self):
+        return Expi(-self.arg(), module=abs(self))
 
     def __str__(self):
         if abs(self) == un:
@@ -949,6 +956,19 @@ class Somme(Nombre):
 
     def signe(self):
         return 1
+
+    def __abs__(self):
+        if all(hasattr(i, 'signe') and i.signe() == 1 for i in self):
+            return self
+        if all(hasattr(i, 'signe') and i.signe() == -1 for i in self):
+            return -self
+        return sqrt(self.abs_carre())
+
+    def abs_carre(self): # renvoie le module au carré de la somme
+        return self * self.conjugue()
+
+    def conjugue(self):
+        return Somme(*[i.conjugue() for i in self]).sous()
 
     def __float__(self):
         return sum(float(i) for i in self)
