@@ -41,6 +41,9 @@ class TestZero(TestCase):
     def test_arg(self):
         assert zero.arg() == zero
 
+    def test_conjugue(self):
+        assert zero.conjugue() == zero
+
 
 class TestNaturels(TestCase):
     def test_sous(self):
@@ -103,6 +106,9 @@ class TestNaturels(TestCase):
     def test_arg(self):
         assert Naturel(2).arg() == zero
 
+    def test_conjugue(self):
+        assert Naturel(3).conjugue() == Naturel(3)
+
 
 class TestRelatifs(TestCase):
     def test_sous(self):
@@ -162,6 +168,9 @@ class TestRelatifs(TestCase):
         assert Relatif(2).arg() == zero
         assert Relatif(-2).arg() == pi
 
+    def test_conjugue(self):
+        assert Relatif(-2).conjugue() == Relatif(-2)
+
 
 class TestRationnels(TestCase):
     def test_sous(self):
@@ -212,6 +221,9 @@ class TestRationnels(TestCase):
         assert (un / 2).arg() == zero
         assert (-un / 2).arg() == pi
 
+    def test_conjugue(self):
+        assert (un / 2).conjugue() == (un / 2)
+
 
 class TestPuissance(TestCase):
     def test_sous(self):
@@ -239,6 +251,10 @@ class TestPuissance(TestCase):
         assert Relatif(-1) * sqrt(un_demi) == sqrt(un_demi) * Relatif(-1) == x
         assert y * (-2) == -sqrt(un_demi)
 
+    def test_pow(self):
+        assert sqrt(2) ** 2 == Naturel(2)
+        assert sqrt(un / 2) ** (-2) == Naturel(2)
+
     def test_neg(self):
         assert - Puissance(5, Rationnel(1, 2)) == Puissance(5, Rationnel(1, 2), -1)
         assert - Puissance(5, Rationnel(1, 2), -1) == Puissance(5, Rationnel(1, 2))
@@ -256,6 +272,9 @@ class TestPuissance(TestCase):
     def test_arg(self):
         assert sqrt(2).arg() == zero
         assert (-sqrt(2)).arg() == pi
+
+    def test_conjugue(self):
+        assert sqrt(3).conjugue() == sqrt(3)
 
 
 class TestComplexe(TestCase):
@@ -277,24 +296,10 @@ class TestComplexe(TestCase):
         moins_z = Complexe(Relatif(-1), Naturel(2))
         assert (- z) == moins_z
 
-    def test_conjugue(self):
-        z = Complexe(un, Relatif(-2))
-        z_barre = Complexe(un, Naturel(2))
-        assert z.conjugue() == z_barre
-        assert sqrt(2).sur(Complexe).conjugue() == sqrt(2)
-
     def test_abs(self):
         z = Complexe(un, Relatif(-2))
         assert abs(z) == sqrt(5)
         assert abs(i) == un
-
-    def test_arg(self):
-        assert (i * 5).arg() == pi / 2
-        assert (-i * 2).arg() == -pi / 2
-        assert (i - 1).arg() == (pi * 3) / 4
-        assert (-i + 1).arg() == -pi / 4
-        assert Complexe(-6, 0).arg() == pi
-        assert Complexe(6, 0).arg() == zero
 
     def test_sous(self):
         assert Complexe(2).sous() == Naturel(2)
@@ -305,6 +310,20 @@ class TestComplexe(TestCase):
     def test_sur(self):
         assert (i + 1).sur(Expi) == Expi(pi / 4, module=sqrt(2))
         assert ((-i + 1) / sqrt(2)).sur(Expi) == Expi(- pi / 4)
+
+    def test_arg(self):
+        assert (i * 5).arg() == pi / 2
+        assert (-i * 2).arg() == -pi / 2
+        assert (i - 1).arg() == (pi * 3) / 4
+        assert (-i + 1).arg() == -pi / 4
+        assert Complexe(-6, 0).arg() == pi
+        assert Complexe(6, 0).arg() == zero
+
+    def test_conjugue(self):
+        z = Complexe(un, Relatif(-2))
+        z_barre = Complexe(un, Naturel(2))
+        assert z.conjugue() == z_barre
+        assert sqrt(2).sur(Complexe).conjugue() == sqrt(2)
 
 
 class TestF2(TestCase):
@@ -366,6 +385,10 @@ class TestF2(TestCase):
     def strbin_vers_int(self):
         assert strbin_vers_int('1011') == 11
         assert strbin_vers_int('0010') == 2
+
+    def test_conjugue(self):
+        assert F2(0).conjugue() == F2(0)
+        assert F2(1).conjugue() == F2(1)
 
 
 class TestF2Uplet(TestCase):
@@ -544,6 +567,10 @@ class TestExpi(TestCase):
         eipi_sur_4 = expi(pi_sur_4)
         assert e3i.arg() == Naturel(3)
         assert eipi_sur_4.arg() == pi_sur_4
+
+    def test_conjugue(self):
+        assert expi(3).conjugue() == expi(-3)
+        assert expi(pi * -3).conjugue() == expi(pi * 3)
 
     def test_abs(self): # le module
         z1 = Expi(1, module = 4)

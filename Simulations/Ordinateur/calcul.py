@@ -341,7 +341,7 @@ class Puissance(Nombre):
         s = Nombre.ou_int(autre).sous()
         if isinstance(s, Naturel):
             return Puissance(self.x, self.p * s,
-                             sigma=1 if s.n % 2 == 0 else self.sigma)
+                             sigma=1 if s.n % 2 == 0 else self.sigma).sous()
         if isinstance(s, Relatif):
             return self.inverse() ** (-s)
         raise NotImplementedError
