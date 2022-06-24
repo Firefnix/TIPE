@@ -1,65 +1,103 @@
 from random import randint
+from time import time
 import matplotlib.pyplot as plt
 
-from calcul import pgcd, bin_vers_int, int_vers_bin
-from qubit import ket
-from portes import H, I, QFT
+from calcul import zero, pgcd, bin_vers_int, int_vers_bin, Naturel
+from portes import QFT
 from oracle import Oracle
 from fonctions_utiles import etat_de_base, H_option, kron_id
 
-N = int(input('Entrez un nombre : '))
-
 m = 4
 
-def cree_f(a):
+def main():
+    N = int(input('Entrez un nombre : '))
+    t0 = time()
+    f = facteurs(N, deux_facteurs_shor)
+    print('-' * 20)
+    print(f"{N} = {' × '.join([str(i) for i in f])}")
+    print(f'(calcul effectué en {(time() - t0):.2f} s)')
+
+def facteurs(N, deux_facteurs):
+    n, p = deux_facteurs(N)
+    if n == 1:
+        print(f'| {N} est premier')
+        return [N]
+    return facteurs(n, deux_facteurs) + facteurs(p, deux_facteurs)
+
+def deux_facteurs_shor(N):
+    if N == 2:
+        return 1, 2
+    print('Décomposition en deux facteurs de', N)
+    deja_vus = []
+    while True:
+        # a = randint(2, N-1)
+        a = int(input('NPA : '))
+        if a in deja_vus:
+            continue
+        else:
+            deja_vus.append(a)
+        d = pgcd(a, N)
+        if d != 1:
+            print(f'Coup de bol ! {d} divise le NPA {a} et {N}')
+            n, p = d, N // d
+            return min(n, p), max(n, p)
+        print(f'Recherche de période [NPA={a}, N={N}] ...')
+        r = periode(a, N)
+        print(f'\tLa période obtenue avec le NPA {a} est {r}')
+        if r % 2 == 0 and a**(r//2) % N != N-1:
+            n = pgcd(a ** (r // 2) + 1, N)
+            p = pgcd(a ** (r // 2) - 1, N)
+            if n * p == N:
+                print(f'C\'est une période valide, {N} = {n} × {p}')
+                return min(n, p), max(n, p)
+        print('Période invalide, on recommence')
+
+def periode(a, N):
+    ef = recherche_periode(a, N)
+    demander_affichage(ef)
+    for i in range(ef.dim):
+        x = ef[i].abs_carre()
+        if x != zero:
+            inv = x.inverse()
+            if not inv.appartient(Naturel):
+                raise ValueError(f'la période {inv}, de type {type(inv)} n\'est pas un naturel')
+            return int(inv)
+    raise ValueError('État final nul')
+
+def cree_f(a, N):
     def f(*bits):
         x = bin_vers_int(*bits)
         return tuple(int_vers_bin((a ** x) % N, taille=m))
     return f
 
-def recherche_periode(a):
-    U = Oracle.somme(cree_f(a), m = m)
-    print('Création de l\'état initial ...')
+def recherche_periode(a, N):
+    U = Oracle.somme(cree_f(a, N), m = m)
+    print('\tCréation de l\'état initial ...')
     e0 = etat_de_base(m, m , 0)
-    print('Intrication des états ...')
+    print('\tIntrication des états ...')
     e1 = e0 >> H_option(2*m, debut=0, fin=m)
-    print('Passage dans l\'oracle ...')
+    print('\tPassage dans l\'oracle ...')
     e2 = e1 >> U
-    print('Création du circuit QFT ...')
+    print('\tCréation du circuit QFT ...')
     Q = QFT(2**m)
     P = kron_id(Q, m)
-    print('Passage dans le circuit QFT ...')
+    print('\tPassage dans le circuit QFT ...')
     e3 = e2 >> P
     return e3
 
+def demander_affichage(ef):
+    if input('\tAfficher l\'état final ? [y/n] ') == 'y':
+        print('\tL\'état final est :', ef)
+    if input('\tAfficher les amplitudes ? [y/n] ') == 'y':
+        affiche_amplitudes(ef)
+
 def affiche_amplitudes(ef):
-    l = [float(abs(ef[i]) ** 2) for i in range(ef.dim)]
+    l = [float(ef[i].abs_carre()) for i in range(ef.dim)]
     x = list(range(ef.dim))
     plt.bar(x, l)
     plt.xlabel('État propre')
     plt.ylabel('Amplitude (module au carré)')
     plt.show()
 
-a = randint(2, N-1)
-print('Nombre pseudo-aléatoire :', a)
-ef = recherche_periode(a)
-print('L\'état final est :', ef)
-affiche_amplitudes(ef)
-
-
-#♠essaie shor
-
-def list_amplitude(ef):
-    return [float(abs(ef[i])) ** 2 for i in range(ef.dim)]
-
-def aux (l):
-    for i in range (len(l)):
-        if l[i] != 0 : return l[i]
-    return 0
-
-def la_periode(N):
-    a = randint(1 ,(N-1))
-    m = int_log2(N)
-    ef = recherche_periode(a,m)
-    l = list_amplitude(ef)
-    print (int((1 / aux(l)) // 1) , a)
+if __name__ == '__main__':
+    main()
