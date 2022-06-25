@@ -2,33 +2,58 @@
 <html>
   <head>
     <!-- <script defer src="https://pyscript.net/alpha/pyscript.js"></script> -->
-    <script src="script.js"></script>
-    <link rel="stylesheet" href="stylesheet.css">
     <title>Ordinateur Quantique</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="stylesheet.css">
+    <script src="script.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   </head>
   <body>
-    <h1 class="titre">Ordinateur Quantique</h1>
-
+    <div class="title_wrapper">
+      <h1 class="title">Ordinateur Quantique</h1>
+      <button type="button" class="run_button" onclick="runCircuit()"><b>Exécuter</b></button>
+    </div>
+    <br>
     <div class="side_pane">
-      <h3>Dimensions du circuit</h3>
-      <div class="container_fields">
+      <div class="dimensions_form">
+        <h3>Dimensions du circuit</h3>
         <div class="columns_form">
           Nombre d'étapes :
-          <input type="number" id="columns_btn" min="0" step="1" onclick="submit()" placeholder="ex. 2">
+          <input type="number" id="steps_input" min="0" step="1" onclick="updateGridSize()" placeholder="ex. 2">
         </div>
         <br/>
         <div class="rows_form">
           Nombre de qubits :
-          <input type="number" id="rows_btn" min="0" step="1" onclick="submit()" placeholder="ex. 3">
+          <input type="number" id="qubits_input" min="0" step="1" onclick="updateGridSize()" placeholder="ex. 3">
         </div>
       </div>
-
-      <h3>Portes usuelles</h3>
+      <h3>Portes</h3>
       <div id="container_portes" class="container_portes">
-          <div id="H" class="porte porte1" draggable="true" ondragstart="drag(event)"> H </div>
-          <div id="U" class="porte porte2" draggable="true" ondragstart="drag(event)"> U </div>
-          <div id="cX" class="porte porte3" draggable="true" ondragstart="drag(event)"> cX </div>
-          <div id="I" class="porte porte4" draggable="true" ondragstart="drag(event)"> I </div>
+        <div id="H" class="porte" draggable="true" ondragstart="drag(event)"> H </div>
+        <div id="U" class="porte" draggable="true" ondragstart="drag(event)"> U </div>
+        <div id="cX" class="porte" draggable="true" ondragstart="drag(event)"> cX </div>
+        <div id="I" class="porte" draggable="true" ondragstart="drag(event)"> I </div>
+        <div id="S" class="porte" draggable="true" ondragstart="drag(event)"> S </div>
+        <div id="X" class="porte" draggable="true" ondragstart="drag(event)"> X </div>
+      </div>
+      <br>
+      <div class="oracle_form">
+        <fieldset>
+          <legend>Oracle</legend>
+          <div>
+            <input type="radio" name="oracle_type" value="sum" checked>
+            <label for="sum">Somme $$U_f \ket{x, y} = \ket{x, y \oplus f(y)}$$</label>
+          </div>
+          <div>
+            <input type="radio" name="oracle_type" value="phase">
+            <label for="phase">Phase $$U_f \ket{x} = (-1)^{f(x)} \ket{x}$$</label>
+          </div>
+          <div class="function_editor">
+            <u>Éditeur de fonction</u><br>
+            \(f(x) = \) <input type="text" id="function_input">
+          </div>
+      </fieldset>
       </div>
     </div>
 

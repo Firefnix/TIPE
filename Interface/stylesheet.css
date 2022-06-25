@@ -1,19 +1,29 @@
-body {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+body, input, button {
+    font-family: CMU Serif, Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.title_wrapper {
+    float: left;
+    margin-left: 20px;
+}
+
+.title {
+    float: left;
+}
+
+.run_button {
+    margin-top: 30px;
+    margin-left: 30px;
+    width: 100px;
+    height: 30px;
 }
 
 .main_container {
     display: block;
+    margin-left: 20px;
 }
 
-.side_pane {
-    position: fixed;
-    top: 0;
-    right: 0;
-    padding-right: 10px;
-}
-
-input {
+.dimensions_form input {
     width: 70px;
     font-size: 16px;
 }
@@ -22,32 +32,11 @@ input {
     margin-bottom: 30px;
 }
 
-#notthisone {
-    grid-column: 1/2;
-    grid-row: 1/2;
-    border-color: blueviolet;
-    background-color:blueviolet;
-}
-
-.container_portes {
-    border-color: rgb(3, 42, 126);
-    border-radius: 5%;
-    border-style: solid;
-    width: 200px;
-    height: 200px;
-    display: grid;
-    grid-template-columns: repeat(0, 100px [col-start]);
-    grid-template-rows: repeat(0, 100px [col-start]);
-    align-items: center;
-    justify-items: center;
-}
-
 .container_circuit {
     border-style: solid;
-    border-radius: 5%;
-    border-color: rgb(139, 0, 0);
-    width: 300px;
-    height: 300px;
+    border-width: 1px;
+    width: 70%;
+    height: 400px;
     display: grid;
     grid-template-columns: repeat(2, 50%);
     grid-template-rows: repeat(2, 50%);
@@ -56,10 +45,13 @@ input {
     place-self: center;
 }
 
-#container_circuit > div {
-    color: rgb(139, 0, 0);
-    border-radius: 5%;
+.sub_container_portes {
+    grid-column: 1/2;
+    grid-row: 1/2;
+    aspect-ratio: 1;
+    height: 50%;
     border: solid;
+    border-width: 1px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -68,6 +60,41 @@ input {
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
+}
+
+[id^="r0"] {
+    border: none;
+    font-size: 1.2em;
+}
+
+
+/* #notthisone {
+    grid-column: 1/2;
+    grid-row: 1/2;
+    border-color: blueviolet;
+    background-color:blueviolet;
+} */
+
+.side_pane {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding-right: 10px;
+    width: 25%;
+}
+
+.container_portes {
+    /* border-color: rgb(3, 42, 126); */
+    /* border-radius: 5%; */
+    /* border-style: solid; */
+    /* width: 200px; */
+    height: 200px;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    /* grid-template-columns: repeat(0, 100px [col-start]);
+    grid-template-rows: repeat(0, 100px [col-start]); */
+    align-items: center;
+    justify-items: center;
 }
 
 
@@ -84,39 +111,7 @@ input {
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.porte1 {
-    grid-column: 1/2;
-    grid-row: 1/2;
     height: 70%;
     width: 70%;
-}
-
-.porte2 {
-    grid-column: 2/3;
-    grid-row: 1/2;
-    height: 70%;
-    width: 70%;
-}
-
-.porte3 {
-    grid-column: 1/2;
-    grid-row: 2/3;
-    height: 70%;
-    width: 70%;
-}
-
-.porte4 {
-    grid-column: 2/3;
-    grid-row: 2/3;
-    height: 70%;
-    width: 70%;
-}
-
-.sub_container_portes {
-    grid-column: 1/2;
-    grid-row: 1/2;
-    height: 70%;
-    width: 70%;
+    aspect-ratio: 1;
 }
