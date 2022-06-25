@@ -327,6 +327,8 @@ class Puissance(Nombre):
             return Puissance(self.x, self.p - autre.p, s).sous()
         if self.p == autre.p:
             return Puissance(self.x * autre.x, self.p, s).sous()
+        if self.p == - autre.p:
+            return Puissance(self.x / autre.x, self.p, s).sous()
         if autre.sous().sur(Rationnel) is not None:
             a = Puissance(abs(autre.sous().sur(Rationnel)), self.p.inverse()).sous().sur(Rationnel)
             if a is not None:
@@ -633,7 +635,7 @@ class Matrice(Nombre):
 
     def conjuguee(self):
         return Matrice([
-            [self[i, j].sur(Complexe).conjugue() for j in range(self.q)]
+            [self[i, j].conjugue() for j in range(self.q)]
             for i in range(self.p)
         ])
 
@@ -959,9 +961,9 @@ class Somme(Nombre):
 
     def __abs__(self):
         if all(hasattr(i, 'signe') and i.signe() == 1 for i in self):
-            return self
+            return self.sous()
         if all(hasattr(i, 'signe') and i.signe() == -1 for i in self):
-            return -self
+            return (-self).sous()
         return sqrt(self.abs_carre())
 
     def abs_carre(self): # renvoie le module au carré de la somme

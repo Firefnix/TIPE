@@ -233,7 +233,9 @@ class TestPuissance(TestCase):
     def test_eq(self):
         x = Puissance(2, Rationnel(2, 3))
         y = Puissance(4, Rationnel(1, 3))
+        z = Puissance(un / 2, -un / 2)
         assert x == y
+        assert z == sqrt(2)
 
     def test_sqrt(self):
         assert sqrt(2) == Puissance(2, Rationnel(1, 2))
@@ -241,15 +243,20 @@ class TestPuissance(TestCase):
         assert sqrt(4) == Naturel(2)
 
     def test_fois(self):
-        un_demi = Rationnel(1, 2)
-        x = Puissance(un_demi, un_demi, -1)
-        y = Puissance(un_demi, Rationnel(3, 2))
+        d = un / 2
+        x = Puissance(d, d, -1)
+        y = Puissance(d, Rationnel(3, 2))
+        z = Puissance(d, -d)
         assert sqrt(2) * sqrt(2) == Naturel(2)
-        assert sqrt(2) * sqrt(un_demi) == sqrt(un_demi) * sqrt(2) == un
-        assert sqrt(un_demi) * sqrt(un_demi) == un_demi
+        assert sqrt(2) * sqrt(d) == sqrt(d) * sqrt(2) == un
+        assert sqrt(d) * sqrt(d) == d
         assert un * sqrt(2) == sqrt(2) * un == sqrt(2)
-        assert Relatif(-1) * sqrt(un_demi) == sqrt(un_demi) * Relatif(-1) == x
-        assert y * (-2) == -sqrt(un_demi)
+        assert Relatif(-1) * sqrt(d) == sqrt(d) * Relatif(-1) == x
+        assert y * (-2) == -sqrt(d)
+        print(z * sqrt(8))
+        assert z * sqrt(8) == un * 4
+        assert sqrt(8) * z == un * 4
+
 
     def test_pow(self):
         assert sqrt(2) ** 2 == Naturel(2)
@@ -674,6 +681,7 @@ class TestSomme:
         assert abs(s1) == s1
         assert abs(-s1) == s1
         s2 = Somme(expi(pi / 4), expi(-pi / 4))
+        print(abs(s2), type(abs(s2)))
         assert abs(s2) == sqrt(2)
 
 
