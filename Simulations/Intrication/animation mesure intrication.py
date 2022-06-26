@@ -63,7 +63,7 @@ def animate(i):
         if abs(photons[c].get_xdata() - x_pol_2) <= 10**-1 and photons[c].get_color() == 'green':
             photons[c].set_alpha(0.0)
 
-        if abs(photons[c].get_xdata() - 8) <= 10**-1 and photons[c].get_color() != 'white':
+        if abs(photons[c].get_xdata() - 8) <= 10**-1 and photons[c].get_alpha() != 0.0:
             key[c] = '1'
             text[0].set_text(list_to_str(key))
 
