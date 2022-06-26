@@ -8,7 +8,7 @@
 \usepackage{amsfonts}
 \newcommand{\somme}{\displaystyle\sum}
 
-\usetheme{Berlin}
+\usetheme[compress]{Berlin}
 \beamertemplatenavigationsymbolsempty
 \setbeamertemplate{footline}[fame number]
 
@@ -75,7 +75,7 @@ Yun Marcola--da-Cunha Macedo}
         \end{tikzpicture}
     \end{center}
     $$S \cdot (X \otimes I_2) \cdot (I_2 \otimes X) \cdot S = I_4$$
-    % \underline{Application :} test de parité
+    \underline{Application :} tests de parité
 \end{frame}
 
 
@@ -122,8 +122,6 @@ Yun Marcola--da-Cunha Macedo}
                 \draw (hi0.east)   -- (hf0);
                 \draw (hi1.east)   -- (hf1);
                 \node[oracle]      (uf)     [right=of p_hi]    {$U_f$};
-                % \draw (uf)         -- (hf0);
-                % \draw (uf)         -- (hf1);
             \end{tikzpicture}
         \end{column}
         \begin{column}{0.5\textwidth}
@@ -149,8 +147,20 @@ Yun Marcola--da-Cunha Macedo}
 \end{frame}
 
 
-\begin{frame}{Grover}
+\begin{frame}{Grover : circuit}
     % Explication de l'algorithme
+    $$f(x_1, ..., x_n) = 1$$
+    \begin{center}
+        \includegraphics[scale=0.08]{PorteGrover.png}
+        \includegraphics[scale=0.08]{CircuitGrover.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Grover : résultats}
+    \underline{Exemple :} la seule solution est $(0, 1, 0, 1, 1, 0)$ soit 22
+    \begin{center}
+        \includegraphics[scale=0.3]{Grover.png}
+    \end{center}
 \end{frame}
 
 \begin{frame}{Interface graphique}
@@ -166,6 +176,7 @@ Yun Marcola--da-Cunha Macedo}
         \item Expérience
         \item Simulation
     \end{itemize}
+    % \includegraphics[]{}
     \item<2-> Tentative de création d'un protocole
 \end{itemize}
 \end{frame}
