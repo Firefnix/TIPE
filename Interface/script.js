@@ -24,15 +24,20 @@ function drop(ev) {
     ev.preventDefault();
     let dest = ev.target;
     let name = ev.dataTransfer.getData('text', ev.innerText);
-    // dest.innerText = name;
     let x = cellRow(dest);
     let y = cellColumn(dest);
     console.log('Dropping', name, 'at', x, y);
-    circuit[y][x] = name;
-    if (gatesQubits[name] == 2) {
-        circuit[y+1][x] = null;
+    if (isNaN(gatesQubits[name])) {
+        circuit[0][x] = name;
+        for (let i = 1; i < circuitQubits(); i++) {
+            circuit[i][x] = null;
+        }
+    } else {
+        circuit[y][x] = name;
+        if (gatesQubits[name] == 2) {
+            circuit[y+1][x] = null;
+        }
     }
-    console.table(circuit);
     updateGrid();
 }
 
@@ -78,6 +83,40 @@ function idRowColumn(i, j) {
     return `r${i}_${j}`
 }
 
+function circuitQubits() {
+    return circuit.length;
+}
+
+function circuitSteps() {
+    return circuit[0].length;
+}
+
+function gateAspectRatio(gateName) {
+    let q = gatesQubits[gateName];
+    if (q == 2) { return '0.5'; }
+    if (isNaN(q)) { return '0.25'; }
+}
+
+function gateHeight(gateName) {
+    let q = gatesQubits[gateName];
+    if (q == 1) { return '50%'; }
+    if (q == 2) { return '75%'; }
+    if (isNaN(q)) { return '85%'; }
+}
+
+function gateSpan(gateName) {
+    let q = gatesQubits[gateName];
+    if (isNaN(q)) { return circuitQubits().toString() }
+    return q.toString();
+}
+
+function gateInnerHTML(gateName) {
+    if (gateName == 'U') {
+        return '<i>U<sub>f</sub></i>'
+    }
+    return `<i>${gateName}</i>`
+}
+
 function cellRow(element) {
     return parseInt(element.id.slice(1).split('_')[0], 10);
 }
@@ -88,7 +127,7 @@ function cellColumn(element) {
 
 function updateGridSize() {
     let qubits = parseInt(document.getElementById('qubits_input').value);
-    let steps = parseInt(document.getElementById('steps_input').value);
+    let steps = 1 + parseInt(document.getElementById('steps_input').value);
     if (isNaN(qubits) || isNaN(steps)) {
         return;
     }
@@ -102,24 +141,22 @@ function updateGridSize() {
 }
 
 function createCell(i, j, name = '') {
-    let qubits = gatesQubits[name];
     let el = document.createElement('div');
     el.style.gridColumn = `${i+1} / ${i+2}`;
-    el.style.gridRow = `${j+1} / span ${qubits}`;
-    el.style.aspectRatio = (qubits == 2) ? '0.5' : '1';
-    el.style.height = (qubits == 2) ? '75%' : '50%';
+    el.style.gridRow = `${j+1} / span ${gateSpan(name)}`;
+    el.style.aspectRatio = gateAspectRatio(name);
+    el.style.height = gateHeight(name);
     el.setAttribute('class', 'sub_container_portes');
     el.setAttribute('id', idRowColumn(i, j));
     el.setAttribute('ondrop', 'drop(event)');
     el.setAttribute('ondragover', 'allowDrop(event)');
     el.style.zIndex = '10';
-
     return el;
 }
 
 function updateGrid() {
-    let rows = circuit[0].length;
-    let columns = circuit.length;
+    let rows = circuitSteps();
+    let columns = circuitQubits();
     let grid = document.getElementById('container_circuit');
     grid.style.gridTemplateColumns = 'auto '.repeat(rows);
     grid.style.gridTemplateRows = 'auto '.repeat(columns);
@@ -130,7 +167,7 @@ function updateGrid() {
             let name = circuit[j][i];
             if (name != null) {
                 let cell = createCell(i, j, name);
-                cell.innerText = name;
+                cell.innerHTML = gateInnerHTML(name);
                 grid.appendChild(cell);
             }
         }
