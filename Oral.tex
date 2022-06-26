@@ -13,6 +13,7 @@
 \setbeamertemplate{footline}[fame number]
 
 \usepackage{graphicx}
+\usepackage{caption}
 \graphicspath{ {./Images/} }
 
 \usepackage{tikz}
@@ -48,6 +49,18 @@ Yun Marcola--da-Cunha Macedo}
 \subsection{Modèle du cicruit quantique}
 
 
+\begin{frame}{Principes de quantique}
+\begin{itemize}
+    \item<1-> Fonction d'état
+    \item<2-> États propres : $\ket 0, \ket{1011}$, etc.
+    \item<3-> États superposés, amplitudes : $\ket \psi = \frac{1}{\sqrt 2} \ket 0 - \frac{1}{\sqrt 2} \ket 1$
+    % intrication
+    \item<4> Probabilité
+        % Principe des algorithmes: maximiser la probabilité de l'état solution
+        % d'une équation
+\end{itemize}
+\end{frame}
+
 \begin{frame}{Un exemple}
     % Exemple de circuit simple
     % Comparaison avec les circuits électriques
@@ -75,7 +88,14 @@ Yun Marcola--da-Cunha Macedo}
         \end{tikzpicture}
     \end{center}
     $$S \cdot (X \otimes I_2) \cdot (I_2 \otimes X) \cdot S = I_4$$
-    \underline{Application :} tests de parité
+    % \underline{Application :} tests de parité
+\end{frame}
+
+\begin{frame}{Oracles}
+    \begin{itemize}
+        \item Phase : $U_f \ket x = (-1)^{f(x)} \ket x$
+        \item Somme : $U_f \ket{x, y} = \ket{x, y \oplus f(y)}$
+    \end{itemize}
 \end{frame}
 
 
@@ -94,62 +114,76 @@ Yun Marcola--da-Cunha Macedo}
     \end{itemize}
 \end{frame}
 
+
+\subsection{Interface graphique}
+
+
+\begin{frame}{Interface graphique}
+
+\includegraphics[scale=0.23]{I4.png}
+
+\end{frame}
+
+
 \subsection{Algorithmes}
 
 
 \begin{frame}{Deutsch-Jozsa et Bernstein-Vazirani}
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.3cm and 1cm,
+            porte/.style={rectangle, draw=black},
+            oracle/.style={fill=white, rectangle, draw=black, minimum height=2.6cm},]
+            % Nœuds du circuit
+            \node              (e0)                        {$\ket 0$};
+            \node              (p_ei)   [below=of e0]      {$\vdots$};
+            \node              (e1)     [below=of p_ei]    {$\ket 0$};
+            \node[porte]       (hi0)    [right=of e0]      {H};
+            \node              (p_hi)   [right=of p_ei]    {$\vdots$};
+            \node[porte]       (hi1)    [right=of e1]      {H};
+            \node[porte]       (hf0)    [right=2cm of hi0] {H};
+            \node              (p_hf)   [below=of hf0]     {$\vdots$};
+            \node[porte]       (hf1)    [right=2cm of hi1] {H};
+            % Arrêtes
+            \draw (e0.east)    -- (hi0);
+            \draw (e1.east)    -- (hi1);
+            \draw (hi0.east)   -- (hf0);
+            \draw (hi1.east)   -- (hf1);
+            \node[oracle]      (uf)     [right=of p_hi]    {$U_f$};
+        \end{tikzpicture}
+    \end{center}
     % Explication de l'algorithme: pièces
-    % Interface graphique
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-            \begin{tikzpicture}[
-                node distance=0.3cm and 1cm,
-                porte/.style={rectangle, draw=black},
-                oracle/.style={fill=white, rectangle, draw=black, minimum height=2.6cm},]
-                % Nœuds du circuit
-                \node              (e0)                        {$\ket 0$};
-                \node              (p_ei)   [below=of e0]      {$\vdots$};
-                \node              (e1)     [below=of p_ei]    {$\ket 0$};
-                \node[porte]       (hi0)    [right=of e0]      {H};
-                \node              (p_hi)   [right=of p_ei]    {$\vdots$};
-                \node[porte]       (hi1)    [right=of e1]      {H};
-                \node[porte]       (hf0)    [right=2cm of hi0] {H};
-                \node              (p_hf)   [below=of hf0]     {$\vdots$};
-                \node[porte]       (hf1)    [right=2cm of hi1] {H};
-                % Arrêtes
-                \draw (e0.east)    -- (hi0);
-                \draw (e1.east)    -- (hi1);
-                \draw (hi0.east)   -- (hf0);
-                \draw (hi1.east)   -- (hf1);
-                \node[oracle]      (uf)     [right=of p_hi]    {$U_f$};
-            \end{tikzpicture}
-        \end{column}
-        \begin{column}{0.5\textwidth}
-            \underline{Exemples :} oracles
-            \begin{itemize}
-                \item de phase $U_f \ket x = (-1)^{f(x)} \ket x$
-                \item par somme $U_f \ket{x, y} = \ket{x, y \oplus f(y)}$
-            \end{itemize}
-        \end{column}
-    \end{columns}
-    \vspace{1em}
     \underline{Application :} Bernstein-Vazirani,
     $f(x_1, ..., x_n) = \somme_{i=0}^n x_i \cdot a_i \in \mathbb{F}_2$
 \end{frame}
 
 
-\begin{frame}{Shor}
-    % Explication de l'algorithme
-    \begin{center}
-        \includegraphics[scale=0.25]{Fabrice.png}
-    \end{center}
-    \underline{Exemple :} % IBM
+\begin{frame}{Shor : principe}
+    \begin{enumerate}
+        \item $a$ pseudo-aléatoire
+        \item Algorithme d'Euclide
+        \item Recherche de période
+    \end{enumerate}
+    % sinon, on trouve une période, qui si elle est valide nous donne un
 \end{frame}
 
+\begin{frame}{Shor : circuit}
+    % Explication de l'algorithme
+    \begin{center}
+        \includegraphics[scale=0.17]{ShorInterface.png}
+    \end{center}
+    \underline{Fonction d'oracle :} $f(x) = a^x \mod N$
+\end{frame}
+
+\begin{frame}{Grover : principe}
+    \underline{Équation} : $f(x_1, ..., x_n) = 1$, résolution par rotations successives
+    \begin{center}
+        \includegraphics[scale=0.1]{Rotations.png}
+    \end{center}
+\end{frame}
 
 \begin{frame}{Grover : circuit}
     % Explication de l'algorithme
-    $$f(x_1, ..., x_n) = 1$$
     \begin{center}
         \includegraphics[scale=0.08]{PorteGrover.png}
         \includegraphics[scale=0.08]{CircuitGrover.png}
@@ -157,28 +191,41 @@ Yun Marcola--da-Cunha Macedo}
 \end{frame}
 
 \begin{frame}{Grover : résultats}
-    \underline{Exemple :} la seule solution est $(0, 1, 0, 1, 1, 0)$ soit 22
+    \underline{Exemple :} la seule solution est (0, 1, 0, 1, 1, 0) soit 22
     \begin{center}
         \includegraphics[scale=0.3]{Grover.png}
     \end{center}
 \end{frame}
 
-\begin{frame}{Interface graphique}
-    % ...
-\end{frame}
 
 \section{Cryptographie quantique}
 
-\begin{frame}{Cryptographie quantique}
-\begin{itemize}
-    \item<1-> Le protocole E91
+\begin{frame}{Protocoles}
     \begin{itemize}
-        \item Expérience
-        \item Simulation
+        \item<1-> Protocole E91
+        \item<2-> Tentative de création d'un protocole
+        \item<3-> Expérience : loi de Malus
     \end{itemize}
-    % \includegraphics[]{}
-    \item<2-> Tentative de création d'un protocole
-\end{itemize}
 \end{frame}
+
+\begin{frame}{Travaux sur la polarisation}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \captionsetup{labelformat=empty}
+                \includegraphics[scale=0.1]{AvantMesure.png}
+                \caption{\small Avant mesure}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \captionsetup{labelformat=empty}
+                \includegraphics[scale=0.1]{ApresMesure.png}
+                \caption{\small Après mesure}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
 
 \end{document}
