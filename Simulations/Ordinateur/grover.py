@@ -36,7 +36,7 @@ def affiche_amplitudes(ef):
     x = list(range(ef.dim))
     plt.bar(x, l)
     plt.xlabel('État propre')
-    plt.ylabel('Amplitude (module au carré)')
+    plt.ylabel('Probabilité (module au carré de l\'amplitude)')
     plt.show()
 
 def indicatrice(*solution):
