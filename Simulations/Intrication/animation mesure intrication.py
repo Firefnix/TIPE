@@ -9,7 +9,7 @@ plt.axis('square')
 
 N_item = 5 #nombre de photons à animer
 
-photons = {} 
+photons = {}
 for i in range(N_item):
     photons[i], = ax.plot([], [], ls = 'none', marker = 'o', color = 'purple')
 
@@ -21,7 +21,7 @@ disp = 20 #coeff d'écartement
 base = np.linspace(-10, 10, N)
 x_pol_1 = -2
 x_pol_2 = 4
-X = {} 
+X = {}
 for i in range(N_item):
     X[i] = np.concatenate((np.full(disp*i, -10), np.linspace(-10, 10, N), np.full(N, 10)), axis = None)
 color = ['blue', 'green']
@@ -29,7 +29,7 @@ color = ['blue', 'green']
 plt.plot([x_pol_1,x_pol_1], [10.5,-10.5], color = 'black')
 plt.plot([x_pol_2,x_pol_2], [10.5,-10.5], color = 'black')
 
-ax.set_xticklabels([]) 
+ax.set_xticklabels([])
 ax.set_yticklabels([])
 
 plt.tick_params(axis = 'x', length = 0)
@@ -61,7 +61,7 @@ def animate(i):
                 photons[c].set_color(random.choice(color))
 
         if abs(photons[c].get_xdata() - x_pol_2) <= 10**-1 and photons[c].get_color() == 'green':
-            photons[c].set_color('white')
+            photons[c].set_alpha(0.0)
 
         if abs(photons[c].get_xdata() - 8) <= 10**-1 and photons[c].get_color() != 'white':
             key[c] = '1'
