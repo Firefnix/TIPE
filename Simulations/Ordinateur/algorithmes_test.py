@@ -4,6 +4,7 @@ from calcul import zero, un
 from dj import est_constante, bv
 from fonctions_utiles import ket_vers_liste
 import pair_impair, parite
+from grover import indicatrice, grover, solution
 
 
 class TestDJ(TestCase):
@@ -36,6 +37,14 @@ class TestPairImpair(TestCase):
     def test_parite(self):
         for n in list(range(15)):
             assert parite.est_pair(n) == (n % 2 == 0)
+
+
+class TestGrover:
+    def test_grover(self):
+        l = ((0, 1, 1), (0, 0))
+        for i in l:
+            a = grover(*indicatrice(*i))
+            assert solution(a) == i
 
 
 if __name__ == '__main__':
